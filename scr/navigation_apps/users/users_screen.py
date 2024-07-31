@@ -5,6 +5,30 @@ import scr.exit
 import scr.BD.bd_user
 
 
+def update_data(page):
+    page.controls.clear()
+    page.vertical_alignment = ft.MainAxisAlignment.CENTER
+    reading_value = ft.TextField(label="Показания счетчика", width=300)
+    remark = ft.TextField(label="Поддробная информация", width=300,)
+    photo_picker = ft.ElevatedButton("Добавить фотографию", )
+    page.add(
+        ft.Row(
+            [
+                ft.Column(
+                    [
+                        reading_value,
+                        remark,
+                        photo_picker
+                    ],
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER
+
+                )
+            ],
+            alignment=ft.MainAxisAlignment.CENTER
+        )
+    )
+
+
 def user_main(page):
     page.clean()
     page.controls.clear()
@@ -52,6 +76,10 @@ def user_main(page):
         for result in filtered_results:
             street, dom, apartment = result
             result_info = f"Адрес: {street} Дом {dom} Квартира {apartment}"
+
+            def on_click(e):
+                update_data(page)
+
             row = ft.Row(
                 [
                     ft.Container(
@@ -60,7 +88,8 @@ def user_main(page):
                         margin=5,
                         border_radius=5,
                         width=580,
-                        bgcolor=ft.colors.BLUE_400
+                        bgcolor=ft.colors.BLUE_400,
+                        on_click=on_click
                     )
                 ],
                 alignment=ft.MainAxisAlignment.CENTER
