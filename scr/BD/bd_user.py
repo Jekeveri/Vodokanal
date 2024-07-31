@@ -55,5 +55,12 @@ def select_user_data():
 def delete_data_db():
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
-        query = """ Delete from user """
-        cursor.execute(query)
+        delete_user = """ Delete from user """
+        delete_task = """ Delete from tasks """
+        delete_address = """ Delete from address """
+        delete_photo = """ Delete from picture """
+        cursor.execute(delete_user)
+        cursor.execute(delete_task)
+        cursor.execute(delete_address)
+        cursor.execute(delete_photo)
+
