@@ -56,7 +56,7 @@ def select_task_data(id_user):
             district = record[4]
             street = record[5]
             dom = record[6]
-            floor = record[7]
+            apartment = record[7]
             entrance = record[8]
             phone_number = record[9]
             email = record[10]
@@ -68,6 +68,6 @@ def select_task_data(id_user):
             date_task = record[16]
             remark = record[17]
             status_task = record[18]
-            scr.BD.bd_user.insert_bd_task(task_id, name, address_id, city, district, street, dom, floor, entrance, phone_number,
-                                          email, meter_number, instalation_day,
+            scr.BD.bd_user.insert_bd_task(task_id, name, address_id, city, district, street, dom, apartment,
+                                          entrance, phone_number, email, meter_number, instalation_day,
                                           meter_type, last_reading_date, reading_value, date_task, remark, status_task)

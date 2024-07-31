@@ -43,30 +43,30 @@ def user_main(page):
 
     page.update()
 
-    # def update_results():
-    #     results = scr.BD.bd_user.insert(page)
-    #     filtered_results = [
-    #         result for result in results
-    #     ]
-    #     column.controls.clear()
-    #     for result in filtered_results:
-    #         id_, client_data, meters_data, last_reading, remark, status, remark = result
-    #         result_info = f"{client_data} {remark} Дата: {client_data}"
-    #         row = ft.Row(
-    #             [
-    #                 ft.Container(
-    #                     content=ft.Text(result_info),
-    #                     padding=10,
-    #                     margin=5,
-    #                     border_radius=5,
-    #                     width=580,
-    #                     bgcolor=ft.colors.BLUE_400
-    #                 )
-    #             ],
-    #             alignment=ft.MainAxisAlignment.CENTER
-    #         )
-    #         column.controls.append(row)
-    #     page.update()
+    def update_results():
+        results = scr.BD.bd_user.select_task_data()
+        filtered_results = [
+            result for result in results
+        ]
+        column.controls.clear()
+        for result in filtered_results:
+            street, dom, apartment = result
+            result_info = f"Адрес: {street} Дом {dom} Квартира {apartment}"
+            row = ft.Row(
+                [
+                    ft.Container(
+                        content=ft.Text(result_info),
+                        padding=10,
+                        margin=5,
+                        border_radius=5,
+                        width=580,
+                        bgcolor=ft.colors.BLUE_400
+                    )
+                ],
+                alignment=ft.MainAxisAlignment.CENTER
+            )
+            column.controls.append(row)
+        page.update()
 
     column = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True)
 
@@ -89,5 +89,8 @@ def user_main(page):
             horizontal_alignment=ft.CrossAxisAlignment.CENTER
         ),
     )
-    # update_results()
+    update_results()
+    page.add(
+        column
+    )
     page.update()

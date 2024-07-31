@@ -13,7 +13,7 @@ def local_user_db():
         table_picture = """ Create table if not exists picture(id Integer, value BLOB, task_id Integer) """
         table_user = """ Create table if not exists user(id Integer, login Text, password Text, privileges integer) """
         table_address = """ Create table if not exists address(id integer, city text, district text, street Text, 
-        dom text, floor text, entrance text)"""
+        dom text, apartment text, entrance text)"""
         cursor.execute(table_task)
         cursor.execute(table_picture)
         cursor.execute(table_user)
@@ -29,7 +29,7 @@ def insert_bd_user(id_user, login, password, privileges, page):
     scr.navigation_apps.navigations.role_definition(privileges, page)
 
 
-def insert_bd_task(task_id, name, address_id, city, district, street, dom, floor, entrance, phone_number, email,
+def insert_bd_task(task_id, name, address_id, city, district, street, dom, apartment, entrance, phone_number, email,
                    meter_number, instalation_day,
                    meter_type, last_reading_date, reading_value, date_task, remark, status_task):
     with sl.connect('database_client.db') as db:
@@ -38,7 +38,8 @@ def insert_bd_task(task_id, name, address_id, city, district, street, dom, floor
             '{meter_number}', '{instalation_day}', '{meter_type}', '{last_reading_date}', 
             '{reading_value}', '{date_task}', '{remark}', '{status_task}')"""
         cursor.execute(query)
-        query2 = f""" Insert into address values ({address_id},'{city}', '{district}', '{street}', '{dom}', '{floor}', '{entrance}')"""
+        query2 = f""" Insert into address values ({address_id},'{city}', '{district}', '{street}', '{dom}', 
+            '{apartment}', '{entrance}')"""
         cursor.execute(query2)
         print(task_id)
 
@@ -47,6 +48,16 @@ def select_user_data():
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         query = """ Select login, password, privileges from user """
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return result
+
+
+def select_task_data():
+    with sl.connect('database_client.db') as db:
+        cursor = db.cursor()
+        query = """ Select a.street, a.dom, a.apartment from tasks as t
+            join address as a on a.id = t.address_id """
         cursor.execute(query)
         result = cursor.fetchall()
         return result
