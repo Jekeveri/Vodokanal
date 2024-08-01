@@ -9,7 +9,7 @@ def local_user_db():
         cursor = db.cursor()
         table_task = """ Create table if not exists tasks(id Integer, name Text, address_id integer, phone_number Text, 
         email Text, meters_number Text, instalation_day Text, meter_type Text, 
-        last_reading_date Text, last_reading_value Text, date Text, remark Text, status Text ) """
+        last_reading_date Text, last_reading_value Text, date Text, remark Text, status Text, unloading_time Text ) """
         table_picture = """ Create table if not exists picture(id Integer, value BLOB, task_id Integer) """
         table_user = """ Create table if not exists user(id Integer, login Text, password Text, privileges integer) """
         table_address = """ Create table if not exists address(id integer, city text, district text, street Text, 
@@ -34,7 +34,10 @@ def insert_bd_task(task_id, name, address_id, city, district, street, dom, apart
                    meter_type, last_reading_date, reading_value, date_task, remark, status_task):
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
-        query = f""" Insert into tasks values ({task_id}, '{name}', {address_id}, '{phone_number}', '{email}', 
+        query = f""" Insert into tasks 
+        (id, name, address_id, phone_number, email, meters_number, instalation_day, meter_type, 
+        last_reading_date, last_reading_value, date, remark, status)
+         values ({task_id}, '{name}', {address_id}, '{phone_number}', '{email}', 
             '{meter_number}', '{instalation_day}', '{meter_type}', '{last_reading_date}', 
             '{reading_value}', '{date_task}', '{remark}', '{status_task}')"""
         cursor.execute(query)
@@ -56,7 +59,7 @@ def select_user_data():
 def select_task_data():
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
-        query = """ Select a.street, a.dom, a.apartment from tasks as t
+        query = """ Select t.id, a.street, a.dom, a.apartment from tasks as t
             join address as a on a.id = t.address_id """
         cursor.execute(query)
         result = cursor.fetchall()
@@ -75,3 +78,10 @@ def delete_data_db():
         cursor.execute(delete_address)
         cursor.execute(delete_photo)
 
+
+def update_local_tasks():
+    with sl.connect('database_client.db') as db:
+        cursor = db.cursor()
+        query = """ update tasks """
+        cursor.execute(query)
+        db.commit()

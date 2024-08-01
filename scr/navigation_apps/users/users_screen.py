@@ -1,16 +1,29 @@
 import os
+import datetime
+
 import flet as ft
 
 import scr.exit
 import scr.BD.bd_user
 
 
-def update_data(page):
+def update_data(page, id_task):
+    def on_click_time_task(e):
+        today = datetime.datetime.now().strftime("%H:%M:%S")
+        if remark.value != "" and reading_value.value != "":
+            print(id_task)
+            pass
+
+    def on_click_back(e):
+        user_main(page)
+
     page.controls.clear()
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     reading_value = ft.TextField(label="Показания счетчика", width=300)
-    remark = ft.TextField(label="Поддробная информация", width=300,)
-    photo_picker = ft.ElevatedButton("Добавить фотографию", )
+    remark = ft.TextField(label="Поддробная информация", width=300, )
+    photo_picker = ft.ElevatedButton("Добавить фотографию")
+    button_save = ft.ElevatedButton("ХУЙ", on_click=on_click_time_task, disabled=False)
+    button_back = ft.ElevatedButton("Back", on_click=on_click_back, disabled=False)
     page.add(
         ft.Row(
             [
@@ -18,7 +31,9 @@ def update_data(page):
                     [
                         reading_value,
                         remark,
-                        photo_picker
+                        photo_picker,
+                        button_save,
+                        button_back
                     ],
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER
 
@@ -74,11 +89,15 @@ def user_main(page):
         ]
         column.controls.clear()
         for result in filtered_results:
-            street, dom, apartment = result
+            id_task, street, dom, apartment = result
             result_info = f"Адрес: {street} Дом {dom} Квартира {apartment}"
+            # Используем замыкание для передачи правильного apartment
+            def create_on_click(id_task):
+                def on_click(e):
+                    update_data(page, id_task)
+                return on_click
 
-            def on_click(e):
-                update_data(page)
+            on_click = create_on_click(id_task)
 
             row = ft.Row(
                 [
@@ -119,7 +138,5 @@ def user_main(page):
         ),
     )
     update_results()
-    page.add(
-        column
-    )
+    page.add(column)
     page.update()
