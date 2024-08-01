@@ -11,8 +11,7 @@ def update_data(page, id_task):
     def on_click_time_task(e):
         today = datetime.datetime.now().strftime("%H:%M:%S")
         if remark.value != "" and reading_value.value != "":
-            print(id_task)
-            pass
+            scr.BD.bd_user.update_local_tasks(str(today), id_task, reading_value.value, remark.value)
 
     def on_click_back(e):
         user_main(page)

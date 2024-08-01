@@ -79,9 +79,13 @@ def delete_data_db():
         cursor.execute(delete_photo)
 
 
-def update_local_tasks():
+def update_local_tasks(unloading_time, task_id, reading_value, remark):
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
-        query = """ update tasks """
+        query = f""" update tasks set 
+            unloading_time = '{unloading_time}', 
+            last_reading_value = '{reading_value}', 
+            remark = '{remark}' 
+            where id = {task_id}"""
         cursor.execute(query)
         db.commit()
