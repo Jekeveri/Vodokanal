@@ -1,5 +1,6 @@
 import os
 import sqlite3 as sl
+import datetime
 
 import scr.navigation_apps.navigations
 
@@ -81,11 +82,14 @@ def delete_data_db():
 
 def update_local_tasks(unloading_time, task_id, reading_value, remark):
     with sl.connect('database_client.db') as db:
+        today = datetime.datetime.now().strftime("%Y-%m-%d")
         cursor = db.cursor()
         query = f""" update tasks set 
             unloading_time = '{unloading_time}', 
             last_reading_value = '{reading_value}', 
-            remark = '{remark}' 
+            last_reading_date = '{today}',
+            remark = '{remark}',
+            status = 'выполнен'
             where id = {task_id}"""
         cursor.execute(query)
         db.commit()
