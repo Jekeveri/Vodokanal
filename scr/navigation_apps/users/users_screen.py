@@ -1,10 +1,9 @@
-import os
 import datetime
 
 import flet as ft
 
-import scr.exit
 import scr.BD.bd_user
+import scr.exit
 
 
 def update_data(page, id_task):
@@ -35,7 +34,6 @@ def update_data(page, id_task):
                         button_back
                     ],
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER
-
                 )
             ],
             alignment=ft.MainAxisAlignment.CENTER
@@ -90,13 +88,15 @@ def user_main(page):
         for result in filtered_results:
             id_task, street, dom, apartment = result
             result_info = f"Адрес: {street} Дом {dom} Квартира {apartment}"
+
             # Используем замыкание для передачи правильного apartment
             def create_on_click(id_task):
                 def on_click(e):
                     update_data(page, id_task)
+
                 return on_click
 
-            on_click = create_on_click(id_task)
+            on_click_container = create_on_click(id_task)
 
             row = ft.Row(
                 [
@@ -107,7 +107,7 @@ def user_main(page):
                         border_radius=5,
                         width=580,
                         bgcolor=ft.colors.BLUE_400,
-                        on_click=on_click
+                        on_click=on_click_container
                     )
                 ],
                 alignment=ft.MainAxisAlignment.CENTER
