@@ -45,7 +45,6 @@ def insert_bd_task(task_id, name, address_id, city, district, street, dom, apart
         query2 = f""" Insert into address values ({address_id},'{city}', '{district}', '{street}', '{dom}', 
             '{apartment}', '{entrance}')"""
         cursor.execute(query2)
-        print(task_id)
 
 
 def select_user_data():

@@ -19,11 +19,8 @@ def exit_account(page):
                     scr.navigation_apps.navigations.role_definition(privileges, page)
                     scr.func.show_snack_bar(page, "Успешний вход в систему.")
                 else:
-                    print(1)  # Причины не запуска и тд
                     scr.verifications.authentication(page)
         else:
-            print(2)
             scr.verifications.authentication(page)
     else:
-        print(3)
         scr.verifications.authentication(page)

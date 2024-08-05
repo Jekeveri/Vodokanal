@@ -84,7 +84,6 @@ def upload_data_to_server():
         )
         time_to_server = datetime.datetime.now().strftime("%H:%M:%S")
         result = scr.BD.bd_user.get_data_to_upload()
-        print(result)
         for record in result:
             task_id = record[0]
             unloading_time = record[1]
@@ -95,10 +94,20 @@ def upload_data_to_server():
             meter_id = record[6]
             cursor = conn.cursor()
             cursor.execute(f""" update tasks set uploud_to_local_data = '{unloading_time}', 
-            uploud_to_server = '{time_to_server}', remark = {remark}, status = '{status}' where id = {task_id}""")
-            query = f""" insert into meter_reading (meter_id, reading_date, reading_values) values
+            uploud_to_server = '{time_to_server}', remark = '{remark}', status = '{status}' where id = {task_id}""")
+            # здесь добавить какую-нибудь проверку будет либо инсерт либо апдейт
+            query_check = f""" select EXISTS(select * from meter_reading 
+            where reading_date = '{last_reading_date}') """
+            cursor.execute(query_check)
+            result = cursor.fetchall()
+            if result==False:
+                query = f""" insert into meter_reading (meter_id, reading_date, reading_values) values
                 ({meter_id}, '{last_reading_date}',{last_reading_value})"""
-            cursor.execute(query)
+                cursor.execute(query)
+            else:
+                query = f""" update meter_reading set reading_values = {last_reading_value} 
+                where meter_id = {meter_id} and reading_date = '{last_reading_date}'"""
+                cursor.execute(query)
         conn.commit()
         conn.close()
 
