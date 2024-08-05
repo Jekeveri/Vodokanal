@@ -10,6 +10,7 @@ import scr.exit
 def update_data(page, id_task):
     def on_click_upload(e):
         scr.BD.bd_server.upload_data_to_server()
+        user_main(page)
 
     def on_click_time_task(e):
         today = datetime.datetime.now().strftime("%H:%M:%S")
@@ -127,7 +128,10 @@ def user_main(page):
         page.update()
 
     column = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True)
-
+    icons = ft.Icon(
+        name=ft.icons.MENU,
+        color=ft.colors.LIME_50
+    )
     page.add(
         ft.Column(
             [
@@ -135,6 +139,7 @@ def user_main(page):
                     [
                         ft.Column(
                             [
+                                icons,
                                 ft.FloatingActionButton(icon=ft.icons.MENU, bgcolor=ft.colors.GREY_50, scale=0.6,
                                                         on_click=lambda e: page.open(end_drawer))
                             ],

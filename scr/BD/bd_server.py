@@ -110,6 +110,5 @@ def upload_data_to_server():
                 cursor.execute(query)
         conn.commit()
         conn.close()
-
     except Exception as ex:
         print(ex)
