@@ -1,4 +1,5 @@
 import psycopg2
+import datetime
 
 import scr.BD.bd_user
 import scr.func
@@ -68,6 +69,38 @@ def select_task_data(id_user):
             date_task = record[16]
             remark = record[17]
             status_task = record[18]
+            meter_id = record[19]
             scr.BD.bd_user.insert_bd_task(task_id, name, address_id, city, district, street, dom, apartment,
                                           entrance, phone_number, email, meter_number, instalation_day,
-                                          meter_type, last_reading_date, reading_value, date_task, remark, status_task)
+                                          meter_type, last_reading_date, reading_value, date_task, remark, status_task, meter_id)
+
+
+def upload_data_to_server():
+    try:
+        conn = psycopg2.connect(
+            dbname="test",
+            user="postgres",
+            password=123321
+        )
+        time_to_server = datetime.datetime.now().strftime("%H:%M:%S")
+        result = scr.BD.bd_user.get_data_to_upload()
+        print(result)
+        for record in result:
+            task_id = record[0]
+            unloading_time = record[1]
+            last_reading_value = record[2]
+            last_reading_date = record[3]
+            remark = record[4]
+            status = record[5]
+            meter_id = record[6]
+            cursor = conn.cursor()
+            cursor.execute(f""" update tasks set uploud_to_local_data = '{unloading_time}', 
+            uploud_to_server = '{time_to_server}', remark = {remark}, status = '{status}' where id = {task_id}""")
+            query = f""" insert into meter_reading (meter_id, reading_date, reading_values) values
+                ({meter_id}, '{last_reading_date}',{last_reading_value})"""
+            cursor.execute(query)
+        conn.commit()
+        conn.close()
+
+    except Exception as ex:
+        print(ex)

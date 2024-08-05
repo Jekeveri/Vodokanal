@@ -3,10 +3,14 @@ import datetime
 import flet as ft
 
 import scr.BD.bd_user
+import scr.BD.bd_server
 import scr.exit
 
 
 def update_data(page, id_task):
+    def on_click_upload(e):
+        scr.BD.bd_server.upload_data_to_server()
+
     def on_click_time_task(e):
         today = datetime.datetime.now().strftime("%H:%M:%S")
         if remark.value != "" and reading_value.value != "":
@@ -21,7 +25,7 @@ def update_data(page, id_task):
     remark = ft.TextField(label="Поддробная информация", width=300, )
     photo_picker = ft.ElevatedButton("Добавить фотографию")
     button_save = ft.ElevatedButton("Сохранить изменения", on_click=on_click_time_task, disabled=False)
-    button_save_upload = ft.ElevatedButton("Сохранить и отправить", on_click=on_click_time_task, disabled=False)
+    button_save_upload = ft.ElevatedButton("Сохранить и отправить", on_click=on_click_upload, disabled=False)
     button_back = ft.ElevatedButton("Back", on_click=on_click_back, disabled=False)
     page.add(
         ft.Row(
@@ -145,4 +149,12 @@ def user_main(page):
     )
     update_results()
     page.add(column)
+    page.vertical_alignment = ft.MainAxisAlignment.END
+    page.add(
+        ft.Row(
+            [
+                ft.ElevatedButton(text="Отгрузить все данные")
+            ], alignment=ft.MainAxisAlignment.CENTER,
+        )
+    )
     page.update()

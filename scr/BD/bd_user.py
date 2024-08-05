@@ -9,7 +9,7 @@ def local_user_db():
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         table_task = """ Create table if not exists tasks(id Integer, name Text, address_id integer, phone_number Text, 
-        email Text, meters_number Text, instalation_day Text, meter_type Text, 
+        email Text, meter_id integer, meters_number Text, instalation_day Text, meter_type Text, 
         last_reading_date Text, last_reading_value Text, date Text, remark Text, status Text, unloading_time Text ) """
         table_picture = """ Create table if not exists picture(id Integer, value BLOB, task_id Integer) """
         table_user = """ Create table if not exists user(id Integer, login Text, password Text, privileges integer) """
@@ -32,15 +32,15 @@ def insert_bd_user(id_user, login, password, privileges, page):
 
 def insert_bd_task(task_id, name, address_id, city, district, street, dom, apartment, entrance, phone_number, email,
                    meter_number, instalation_day,
-                   meter_type, last_reading_date, reading_value, date_task, remark, status_task):
+                   meter_type, last_reading_date, reading_value, date_task, remark, status_task, meter_id):
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         query = f""" Insert into tasks 
         (id, name, address_id, phone_number, email, meters_number, instalation_day, meter_type, 
-        last_reading_date, last_reading_value, date, remark, status)
+        last_reading_date, last_reading_value, date, remark, status, meter_id)
          values ({task_id}, '{name}', {address_id}, '{phone_number}', '{email}', 
             '{meter_number}', '{instalation_day}', '{meter_type}', '{last_reading_date}', 
-            '{reading_value}', '{date_task}', '{remark}', '{status_task}')"""
+            '{reading_value}', '{date_task}', '{remark}', '{status_task}' , {meter_id})"""
         cursor.execute(query)
         query2 = f""" Insert into address values ({address_id},'{city}', '{district}', '{street}', '{dom}', 
             '{apartment}', '{entrance}')"""
@@ -93,3 +93,13 @@ def update_local_tasks(unloading_time, task_id, reading_value, remark):
             where id = {task_id}"""
         cursor.execute(query)
         db.commit()
+
+
+def get_data_to_upload():
+    with sl.connect('database_client.db') as db:
+        cursor = db.cursor()
+        query = """ Select id, unloading_time, last_reading_value, 
+        last_reading_date,remark, status, meter_id from tasks """
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return result
