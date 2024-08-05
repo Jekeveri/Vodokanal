@@ -9,8 +9,7 @@ import scr.exit
 
 def update_data(page, id_task):
     def on_click_upload(e):
-        scr.BD.bd_server.upload_data_to_server()
-        user_main(page)
+        pass
 
     def on_click_time_task(e):
         today = datetime.datetime.now().strftime("%H:%M:%S")
@@ -96,9 +95,17 @@ def user_main(page):
         filtered_results = [
             result for result in results
         ]
+        color = ft.colors.GREY
         column.controls.clear()
         for result in filtered_results:
-            id_task, street, dom, apartment = result
+            id_task, street, dom, apartment, status = result
+
+            if status == 'выполнен':
+                color = ft.colors.GREEN
+            elif status == 'в_исполнении':
+                color = ft.colors.GREY
+            else:
+                color = ft.colors.RED
             result_info = f"Адрес: {street} Дом {dom} Квартира {apartment}"
 
             # Используем замыкание для передачи правильного apartment
@@ -118,7 +125,7 @@ def user_main(page):
                         margin=5,
                         border_radius=5,
                         width=580,
-                        bgcolor=ft.colors.BLUE_400,
+                        bgcolor=color,
                         on_click=on_click_container
                     )
                 ],
@@ -139,7 +146,6 @@ def user_main(page):
                     [
                         ft.Column(
                             [
-                                icons,
                                 ft.FloatingActionButton(icon=ft.icons.MENU, bgcolor=ft.colors.GREY_50, scale=0.6,
                                                         on_click=lambda e: page.open(end_drawer))
                             ],
@@ -152,13 +158,17 @@ def user_main(page):
             horizontal_alignment=ft.CrossAxisAlignment.CENTER
         ),
     )
+
+    def on_click_upload(e):
+        scr.BD.bd_server.upload_data_to_server()
+
     update_results()
     page.add(column)
     page.vertical_alignment = ft.MainAxisAlignment.END
     page.add(
         ft.Row(
             [
-                ft.ElevatedButton(text="Отгрузить все данные")
+                ft.ElevatedButton(text="Отгрузить все данные", on_click=on_click_upload)
             ], alignment=ft.MainAxisAlignment.CENTER,
         )
     )

@@ -59,7 +59,7 @@ def select_user_data():
 def select_task_data():
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
-        query = """ Select t.id, a.street, a.dom, a.apartment from tasks as t
+        query = """ Select t.id, a.street, a.dom, a.apartment, t.status from tasks as t
             join address as a on a.id = t.address_id """
         cursor.execute(query)
         result = cursor.fetchall()
