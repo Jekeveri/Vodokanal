@@ -20,7 +20,8 @@ def update_data(page, id_task):
     reading_value = ft.TextField(label="Показания счетчика", width=300)
     remark = ft.TextField(label="Поддробная информация", width=300, )
     photo_picker = ft.ElevatedButton("Добавить фотографию")
-    button_save = ft.ElevatedButton("ХУЙ", on_click=on_click_time_task, disabled=False)
+    button_save = ft.ElevatedButton("Сохранить изменения", on_click=on_click_time_task, disabled=False)
+    button_save_upload = ft.ElevatedButton("Сохранить и отправить", on_click=on_click_time_task, disabled=False)
     button_back = ft.ElevatedButton("Back", on_click=on_click_back, disabled=False)
     page.add(
         ft.Row(
@@ -30,8 +31,14 @@ def update_data(page, id_task):
                         reading_value,
                         remark,
                         photo_picker,
-                        button_save,
-                        button_back
+                        button_back,
+                        ft.Row(
+                            [
+                                button_save,
+                                button_save_upload
+                            ],
+                            alignment=ft.MainAxisAlignment.CENTER
+                        ),
                     ],
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER
                 )
