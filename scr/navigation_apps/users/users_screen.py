@@ -17,30 +17,19 @@ def update_data(page, id_task, result_info):
             scr.BD.bd_user.update_local_tasks(str(today), id_task, reading_value.value, remark.value)
 
     def on_click_back(e):
-        user_main(page)
+        page.close(dlg_modal)
 
-    page.controls.clear()
-    page.vertical_alignment = ft.MainAxisAlignment.CENTER
     reading_value = ft.TextField(label="Показания счетчика", width=300)
     remark = ft.TextField(label="Поддробная информация", width=300, )
     photo_picker = ft.ElevatedButton("Добавить фотографию")
     button_save = ft.ElevatedButton("Сохранить изменения", on_click=on_click_time_task, disabled=False)
     button_save_upload = ft.ElevatedButton("Сохранить и отправить", on_click=on_click_upload, disabled=False)
     button_back = ft.ElevatedButton("Back", on_click=on_click_back, disabled=False)
-    page.add(
-        ft.Column(
-            [
-
-            ],
-        )
-    )
-    page.add(
+    content_dialog = \
         ft.Row(
             [
                 ft.Column(
                     [
-                        ft.Text(f"Номер: {id_task}", size=17),
-                        ft.Text(result_info, size=17),
                         reading_value,
                         remark,
                         photo_picker,
@@ -58,7 +47,21 @@ def update_data(page, id_task, result_info):
             ],
             alignment=ft.MainAxisAlignment.CENTER
         )
+    title = ft.Column(
+        [
+            ft.Text(f"Номер: {id_task}", size=17),
+            ft.Text(result_info, size=17),
+        ]
     )
+    dlg_modal = ft.AlertDialog(
+        modal=True,
+        title=title,
+        content=content_dialog,
+        content_padding=50,
+        on_dismiss=on_click_back
+    )
+    page.open(dlg_modal)
+    page.update()
 
 
 def user_main(page):

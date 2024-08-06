@@ -44,7 +44,7 @@ def select_task_data(id_user):
         password=123321
     )
     cursor = conn.cursor()
-    cursor.execute(f""" SELECT * FROM get_task_data({id_user}) """)
+    cursor.execute(f""" SELECT * FROM get_task_data_new({id_user}) """)
     result = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -59,20 +59,37 @@ def select_task_data(id_user):
             dom = record[6]
             apartment = record[7]
             entrance = record[8]
-            phone_number = record[9]
-            email = record[10]
-            meter_number = record[11]
-            instalation_day = record[12]
-            meter_type = record[13]
-            last_reading_date = record[14]
-            reading_value = record[15]
-            date_task = record[16]
-            remark = record[17]
-            status_task = record[18]
-            meter_id = record[19]
+            id_customer = record[9]
+            phone_number = record[10]
+            email = record[11]
+            date_task = record[12]
+            remark = record[13]
+            status_task = record[14]
             scr.BD.bd_user.insert_bd_task(task_id, name, address_id, city, district, street, dom, apartment,
-                                          entrance, phone_number, email, meter_number, instalation_day,
-                                          meter_type, last_reading_date, reading_value, date_task, remark, status_task, meter_id)
+                                          entrance, id_customer, phone_number, email, date_task, remark, status_task)
+    cursor = conn.cursor()
+    cursor.execute(f""" SELECT * FROM get_meters_data_new({id_user}) """)
+    result = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    if result:
+        for record in result:
+            id_meter = record[0]
+            meter_number = record[1]
+            instalation_day = record[2]
+            meter_type = record[3]
+            scr.BD.bd_user.insert_bd_meters(id_meter, meter_number, instalation_day, meter_type)
+    cursor = conn.cursor()
+    cursor.execute(f""" SELECT * FROM get_meter_reading_data_new({id_user}) """)
+    result = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    if result:
+        for record in result:
+            meter_id = record[0]
+            reading_date = record[1]
+            reading_values = record[2]
+            scr.BD.bd_user.insert_bd_meter_reading(meter_id, reading_date, reading_values)
 
 
 def upload_data_to_server():
@@ -100,7 +117,7 @@ def upload_data_to_server():
             where reading_date = '{last_reading_date}') """
             cursor.execute(query_check)
             result = cursor.fetchall()
-            if result==False:
+            if result == False:
                 query = f""" insert into meter_reading (meter_id, reading_date, reading_values) values
                 ({meter_id}, '{last_reading_date}',{last_reading_value})"""
                 cursor.execute(query)
