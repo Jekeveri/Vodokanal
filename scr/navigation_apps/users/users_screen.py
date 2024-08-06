@@ -7,7 +7,7 @@ import scr.BD.bd_server
 import scr.exit
 
 
-def update_data(page, id_task):
+def update_data(page, id_task, result_info):
     def on_click_upload(e):
         pass
 
@@ -28,10 +28,19 @@ def update_data(page, id_task):
     button_save_upload = ft.ElevatedButton("Сохранить и отправить", on_click=on_click_upload, disabled=False)
     button_back = ft.ElevatedButton("Back", on_click=on_click_back, disabled=False)
     page.add(
+        ft.Column(
+            [
+
+            ],
+        )
+    )
+    page.add(
         ft.Row(
             [
                 ft.Column(
                     [
+                        ft.Text(f"Номер: {id_task}", size=17),
+                        ft.Text(result_info, size=17),
                         reading_value,
                         remark,
                         photo_picker,
@@ -106,12 +115,18 @@ def user_main(page):
                 color = ft.colors.GREY
             else:
                 color = ft.colors.RED
-            result_info = f"Адрес: {street} Дом {dom} Квартира {apartment}"
+            result_info = f"Улица: {street} Дом {dom} Квартира {apartment}"
+            row = ft.Column(
+                [
+                    ft.Text(f"Номер: {id_task}", size=17),
+                    ft.Text(result_info, size=17),
+                ],
+            )
 
             # Используем замыкание для передачи правильного apartment
             def create_on_click(id_task):
                 def on_click(e):
-                    update_data(page, id_task)
+                    update_data(page, id_task, result_info)
 
                 return on_click
 
@@ -120,12 +135,12 @@ def user_main(page):
             row = ft.Row(
                 [
                     ft.Container(
-                        content=ft.Text(result_info),
+                        content=row,
                         padding=10,
                         margin=5,
-                        border_radius=5,
-                        width=580,
+                        border_radius=15,
                         bgcolor=color,
+                        ink=True,
                         on_click=on_click_container
                     )
                 ],
