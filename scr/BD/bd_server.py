@@ -46,8 +46,6 @@ def select_task_data(id_user):
     cursor = conn.cursor()
     cursor.execute(f""" SELECT * FROM get_task_data_new({id_user}) """)
     result = cursor.fetchall()
-    cursor.close()
-    conn.close()
     if result:
         for record in result:
             task_id = record[0]
@@ -70,15 +68,14 @@ def select_task_data(id_user):
     cursor = conn.cursor()
     cursor.execute(f""" SELECT * FROM get_meters_data_new({id_user}) """)
     result = cursor.fetchall()
-    cursor.close()
-    conn.close()
     if result:
         for record in result:
             id_meter = record[0]
             meter_number = record[1]
             instalation_day = record[2]
             meter_type = record[3]
-            scr.BD.bd_user.insert_bd_meters(id_meter, meter_number, instalation_day, meter_type)
+            id_customer = record[4]
+            scr.BD.bd_user.insert_bd_meters(id_meter, meter_number, instalation_day, meter_type, id_customer)
     cursor = conn.cursor()
     cursor.execute(f""" SELECT * FROM get_meter_reading_data_new({id_user}) """)
     result = cursor.fetchall()

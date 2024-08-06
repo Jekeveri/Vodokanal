@@ -54,11 +54,10 @@ def update_data(page, id_task, result_info):
         ]
     )
     dlg_modal = ft.AlertDialog(
-        modal=True,
+        modal=False,
         title=title,
         content=content_dialog,
         content_padding=50,
-        on_dismiss=on_click_back
     )
     page.open(dlg_modal)
     page.update()
@@ -76,19 +75,7 @@ def user_main(page):
             page.close(end_drawer)
             scr.exit.exit_account(page)
         else:
-            page.add(
-                ft.Row(
-                    [
-                        ft.Column(
-                            [
-                                ft.Text("была нажата кнопка 2")
-                            ],
-                            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                            width=400,
-                        )
-                    ], alignment=ft.MainAxisAlignment.CENTER
-                )
-            )
+           pass
 
     end_drawer = ft.NavigationDrawer(
         on_change=handle_change,
