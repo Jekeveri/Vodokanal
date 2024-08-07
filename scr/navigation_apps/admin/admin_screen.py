@@ -9,6 +9,8 @@ def admin_main(page):
     page.controls.clear()
     page.title = "Администратор"
     page.vertical_alignment = ft.MainAxisAlignment.START
+    screen_width = page.window_width
+    screen_height = page.window_height
 
     def handle_change(e):
         if e.control.selected_index == 1:

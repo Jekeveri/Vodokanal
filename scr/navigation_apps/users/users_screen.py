@@ -8,6 +8,9 @@ import scr.exit
 
 
 def update_data(page, id_task, result_info):
+    screen_width = page.window_width
+    screen_height = page.window_height
+
     def on_click_upload(e):
         pass
 
@@ -19,12 +22,12 @@ def update_data(page, id_task, result_info):
     def on_click_back(e):
         page.close(dlg_modal)
 
-    reading_value = ft.TextField(label="Показания счетчика")
-    remark = ft.TextField(label="Поддробная информация", width=300, )
-    photo_picker = ft.ElevatedButton("Добавить фотографию")
-    button_save = ft.ElevatedButton("Сохранить изменения", on_click=on_click_time_task, disabled=False)
-    button_save_upload = ft.ElevatedButton("Сохранить и отправить", on_click=on_click_upload, disabled=False)
-    button_back = ft.ElevatedButton("Back", on_click=on_click_back, disabled=False)
+    reading_value = ft.TextField(label="Показания счетчика", width=screen_width * 0.2)
+    remark = ft.TextField(label="Поддробная информация", width=screen_width * 0.2)
+    photo_picker = ft.ElevatedButton("Добавить фотографию", width=screen_width * 0.2)
+    button_save = ft.ElevatedButton("Сохранить изменения", on_click=on_click_time_task, width=screen_width * 0.2)
+    button_save_upload = ft.ElevatedButton("Сохранить и отправить", on_click=on_click_upload, width=screen_width * 0.2)
+    button_back = ft.ElevatedButton("Back", on_click=on_click_back, width=screen_width * 0.2)
     content_dialog = \
         ft.Row(
             [
@@ -49,8 +52,8 @@ def update_data(page, id_task, result_info):
         )
     title = ft.Column(
         [
-            ft.Text(f"Номер: {id_task}", size=17),
-            ft.Text(result_info, size=17),
+            ft.Text(f"Номер: {id_task}", size=17, width=screen_width * 0.2),
+            ft.Text(result_info, size=17, width=screen_width * 0.2),
         ]
     )
     dlg_modal = ft.AlertDialog(
@@ -58,6 +61,7 @@ def update_data(page, id_task, result_info):
         title=title,
         content=content_dialog,
         content_padding=20,
+
     )
     page.open(dlg_modal)
     page.update()
@@ -65,6 +69,8 @@ def update_data(page, id_task, result_info):
 
 def user_main(page):
     page.controls.clear()
+    screen_width = page.window_width
+    screen_height = page.window_height
     page.title = "Пользователь"
     page.vertical_alignment = ft.MainAxisAlignment.START
 
@@ -74,7 +80,7 @@ def user_main(page):
             page.close(end_drawer)
             scr.exit.exit_account(page)
         else:
-           pass
+            pass
 
     end_drawer = ft.NavigationDrawer(
         on_change=handle_change,
@@ -89,6 +95,7 @@ def user_main(page):
     page.update()
 
     def update_results():
+
         results = scr.BD.bd_user.select_task_data()
         filtered_results = [
             result for result in results
@@ -107,8 +114,8 @@ def user_main(page):
             result_info = f"Улица: {street} Дом {dom} Квартира {apartment}"
             row = ft.Column(
                 [
-                    ft.Text(f"Номер: {id_task}", size=17),
-                    ft.Text(result_info, size=17),
+                    ft.Text(f"Номер: {id_task}", size=17, width=screen_width * 0.2),
+                    ft.Text(result_info, size=17, width=screen_width * 0.2),
                 ],
             )
 
@@ -172,7 +179,7 @@ def user_main(page):
     page.add(
         ft.Row(
             [
-                ft.ElevatedButton(text="Отгрузить все данные", on_click=on_click_upload)
+                ft.ElevatedButton(text="Отгрузить все данные", on_click=on_click_upload, width=screen_width * 0.2)
             ], alignment=ft.MainAxisAlignment.CENTER,
         )
     )
