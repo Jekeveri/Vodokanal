@@ -65,6 +65,7 @@ def select_task_data(id_user):
             status_task = record[14]
             scr.BD.bd_user.insert_bd_task(task_id, name, address_id, city, district, street, dom, apartment,
                                           entrance, id_customer, phone_number, email, date_task, remark, status_task)
+
     cursor = conn.cursor()
     cursor.execute(f""" SELECT * FROM get_meters_data_new({id_user}) """)
     result = cursor.fetchall()

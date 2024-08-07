@@ -19,7 +19,7 @@ def update_data(page, id_task, result_info):
     def on_click_back(e):
         page.close(dlg_modal)
 
-    reading_value = ft.TextField(label="Показания счетчика", width=300)
+    reading_value = ft.TextField(label="Показания счетчика")
     remark = ft.TextField(label="Поддробная информация", width=300, )
     photo_picker = ft.ElevatedButton("Добавить фотографию")
     button_save = ft.ElevatedButton("Сохранить изменения", on_click=on_click_time_task, disabled=False)
@@ -57,14 +57,13 @@ def update_data(page, id_task, result_info):
         modal=False,
         title=title,
         content=content_dialog,
-        content_padding=50,
+        content_padding=20,
     )
     page.open(dlg_modal)
     page.update()
 
 
 def user_main(page):
-    page.clean()
     page.controls.clear()
     page.title = "Пользователь"
     page.vertical_alignment = ft.MainAxisAlignment.START
@@ -102,9 +101,9 @@ def user_main(page):
             if status == 'выполнен':
                 color = ft.colors.GREEN
             elif status == 'в_исполнении':
-                color = ft.colors.GREY
+                color = ft.colors.YELLOW
             else:
-                color = ft.colors.RED
+                color = ft.colors.GREY
             result_info = f"Улица: {street} Дом {dom} Квартира {apartment}"
             row = ft.Column(
                 [
