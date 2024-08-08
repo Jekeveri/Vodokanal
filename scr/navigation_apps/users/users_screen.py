@@ -7,7 +7,7 @@ import scr.BD.bd_server
 import scr.exit
 
 
-def show_meters_data(page, id_task, result_info1):
+def show_meters_data(page, id_task, result_info_address):
     screen_width = page.window_width
     screen_height = page.window_height
     results = scr.BD.bd_user.select_meters_data_new(id_task)
@@ -30,18 +30,18 @@ def show_meters_data(page, id_task, result_info1):
             color = ft.colors.YELLOW
         else:
             color = ft.colors.GREY
-        result_info = f"Счетчик: {meter_number} Дата установки {instalation_day} тип {meter_type}"
-        row1 = ft.Column(
+        result_info_meters = f"Счетчик: {meter_number} Дата установки: {instalation_day} Тип: {meter_type}"
+        row_to_container = ft.Column(
             [
                 ft.Text(f"Номер: {id_meters}", size=17, width=screen_width * 0.2),
-                ft.Text(result_info, size=17, width=screen_width * 0.2),
+                ft.Text(result_info_meters, size=17, width=screen_width * 0.2),
             ],
         )
 
         # Используем замыкание для передачи правильного apartment
         def create_on_click(id_task, id_meters):
             def on_click(e):
-                update_data(page, id_meters, result_info, id_task, result_info1)
+                update_data(page, id_meters, result_info_meters, id_task, result_info_address)
 
             return on_click
 
@@ -50,7 +50,7 @@ def show_meters_data(page, id_task, result_info1):
         row = ft.Row(
             [
                 ft.Container(
-                    content=row1,
+                    content=row_to_container,
                     padding=10,
                     margin=5,
                     border_radius=15,
@@ -66,7 +66,7 @@ def show_meters_data(page, id_task, result_info1):
     title = ft.Column(
         [
             ft.Text(f"Номер: {id_task}", size=17, width=screen_width * 0.2),
-            ft.Text(result_info1, size=17, width=screen_width * 0.2),
+            ft.Text(result_info_address, size=17, width=screen_width * 0.2),
         ]
     )
     row_button = ft.Row(alignment=ft.MainAxisAlignment.CENTER)
@@ -81,13 +81,14 @@ def show_meters_data(page, id_task, result_info1):
             row_button
         ],
         actions_alignment=ft.MainAxisAlignment.END,
+        on_dismiss=user_main(page)
 
     )
     page.open(dlg_modal)
     page.update()
 
 
-def update_data(page, meter_id, result_info, id_task, result_info1):
+def update_data(page, meter_id, result_info_meters, id_task, result_info_address):
     screen_width = page.window_width
     screen_height = page.window_height
 
@@ -100,7 +101,7 @@ def update_data(page, meter_id, result_info, id_task, result_info1):
             scr.BD.bd_user.update_local_tasks(str(today), id_task, reading_value.value, remark.value)
 
     def on_click_back(e):
-        show_meters_data(page, id_task, result_info1)
+        show_meters_data(page, id_task, result_info_address)
 
     reading_value = ft.TextField(label="Показания счетчика", width=screen_width * 0.2)
     remark = ft.TextField(label="Поддробная информация", width=screen_width * 0.2)
@@ -125,19 +126,21 @@ def update_data(page, meter_id, result_info, id_task, result_info1):
     title = ft.Column(
         [
             ft.Text(f"Номер: {meter_id}", size=17, width=screen_width * 0.2),
-            ft.Text(result_info, size=17, width=screen_width * 0.2),
+            ft.Text(result_info_meters, size=17, width=screen_width * 0.2),
         ]
     )
     dlg_modal = ft.AlertDialog(
         modal=False,
         title=title,
-        content=column
+        content=column,
+        on_dismiss=user_main(page)
     )
     page.open(dlg_modal)
     page.update()
 
 
 def user_main(page):
+    page.update()
     page.controls.clear()
     screen_width = page.window_width
     screen_height = page.window_height
@@ -161,7 +164,6 @@ def user_main(page):
             ft.NavigationDrawerDestination(icon=ft.icons.EXIT_TO_APP, label="Выход"),
         ],
     )
-
     page.update()
 
     def update_results():
