@@ -54,7 +54,7 @@ def insert_bd_meters(id_meter, meter_number, instalation_day, meter_type, id_cus
         cursor = db.cursor()
         query = f""" Insert into meters 
         (id, meter_number, instalation_date, meter_type, id_customer)
-         values ({id_meter}, '{meter_number}', {instalation_day}, '{meter_type}', {id_customer}) """
+         values ({id_meter}, '{meter_number}', '{instalation_day}', '{meter_type}', {id_customer}) """
         cursor.execute(query)
 
 
@@ -86,7 +86,18 @@ def select_task_data():
         return result
 
 
-def select_task_data_new():  # потом переделываем select_task_data здесь на другой
+def select_meters_data_new(id_task):
+    with sl.connect('database_client.db') as db:
+        cursor = db.cursor()
+        query = f""" Select m.* from meters as m
+          join tasks as t on t.id_customer = m.id_customer
+          where t.id ={id_task} """
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return result
+
+
+def select_tasks_data_new():  # потом переделываем select_task_data здесь на другой
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         query = """ Select t.id, t.name, a.street, a.dom, a.apartment, t.phone_number, 
@@ -104,8 +115,12 @@ def delete_data_db():
         delete_user = """ Delete from user """
         delete_task = """ Delete from tasks """
         delete_address = """ Delete from address """
+        delete_meters = """ Delete from meters """
+        delete_meter_reading = """ Delete from meter_reading """
         delete_photo = """ Delete from picture """
         cursor.execute(delete_user)
+        cursor.execute(delete_meters)
+        cursor.execute(delete_meter_reading)
         cursor.execute(delete_task)
         cursor.execute(delete_address)
         cursor.execute(delete_photo)

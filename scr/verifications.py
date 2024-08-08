@@ -30,7 +30,7 @@ def authentication(page):
                     [
                         login,
                         password,
-                        ft.ElevatedButton(text="Вход", on_click=on_click, width=screen_width * 0.2)
+                        ft.ElevatedButton(text="Вход", on_click=on_click, width=screen_width * 0.1)
                     ],
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                     width=400,
