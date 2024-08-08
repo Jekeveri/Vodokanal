@@ -7,7 +7,7 @@ import scr.BD.bd_server
 import scr.exit
 
 
-def show_meters_data(page, id_task, result_info):
+def show_meters_data(page, id_task, result_info1):
     screen_width = page.window_width
     screen_height = page.window_height
     results = scr.BD.bd_user.select_meters_data_new(id_task)
@@ -31,7 +31,7 @@ def show_meters_data(page, id_task, result_info):
         else:
             color = ft.colors.GREY
         result_info = f"Счетчик: {meter_number} Дата установки {instalation_day} тип {meter_type}"
-        row1 = ft.Column(
+        row = ft.Column(
             [
                 ft.Text(f"Номер: {id_meters}", size=17, width=screen_width * 0.2),
                 ft.Text(result_info, size=17, width=screen_width * 0.2),
@@ -41,7 +41,7 @@ def show_meters_data(page, id_task, result_info):
         # Используем замыкание для передачи правильного apartment
         def create_on_click(id_task, id_meters):
             def on_click(e):
-                update_data(page, id_meters, result_info, id_task)
+                update_data(page, id_meters, result_info, id_task, result_info1)
 
             return on_click
 
@@ -50,7 +50,7 @@ def show_meters_data(page, id_task, result_info):
         row = ft.Row(
             [
                 ft.Container(
-                    content=row1,
+                    content=row,
                     padding=10,
                     margin=5,
                     border_radius=15,
@@ -67,7 +67,7 @@ def show_meters_data(page, id_task, result_info):
     title = ft.Column(
         [
             ft.Text(f"Номер: {id_task}", size=17, width=screen_width * 0.2),
-            ft.Text(result_info, size=17, width=screen_width * 0.2),
+            ft.Text(result_info1, size=17, width=screen_width * 0.2),
         ]
     )
 
@@ -82,7 +82,7 @@ def show_meters_data(page, id_task, result_info):
     page.update()
 
 
-def update_data(page, meter_id, result_info, id_task):
+def update_data(page, meter_id, result_info, id_task, result_info1):
     screen_width = page.window_width
     screen_height = page.window_height
 
@@ -95,7 +95,7 @@ def update_data(page, meter_id, result_info, id_task):
             scr.BD.bd_user.update_local_tasks(str(today), id_task, reading_value.value, remark.value)
 
     def on_click_back(e):
-        show_meters_data(page, id_task, result_info)
+        show_meters_data(page, id_task, result_info1)
 
     reading_value = ft.TextField(label="Показания счетчика", width=screen_width * 0.2)
     remark = ft.TextField(label="Поддробная информация", width=screen_width * 0.2)
