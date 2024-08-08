@@ -31,7 +31,7 @@ def show_meters_data(page, id_task, result_info1):
         else:
             color = ft.colors.GREY
         result_info = f"Счетчик: {meter_number} Дата установки {instalation_day} тип {meter_type}"
-        row = ft.Column(
+        row1 = ft.Column(
             [
                 ft.Text(f"Номер: {id_meters}", size=17, width=screen_width * 0.2),
                 ft.Text(result_info, size=17, width=screen_width * 0.2),
@@ -50,7 +50,7 @@ def show_meters_data(page, id_task, result_info1):
         row = ft.Row(
             [
                 ft.Container(
-                    content=row,
+                    content=row1,
                     padding=10,
                     margin=5,
                     border_radius=15,
@@ -62,7 +62,6 @@ def show_meters_data(page, id_task, result_info1):
             alignment=ft.MainAxisAlignment.CENTER
         )
         column.controls.append(row)
-    column.controls.append(button_back)
     content_dialog = column
     title = ft.Column(
         [
@@ -70,12 +69,18 @@ def show_meters_data(page, id_task, result_info1):
             ft.Text(result_info1, size=17, width=screen_width * 0.2),
         ]
     )
+    row_button = ft.Row(alignment=ft.MainAxisAlignment.CENTER)
+    row_button.controls.append(button_back)
 
     dlg_modal = ft.AlertDialog(
         modal=False,
         title=title,
         content=content_dialog,
         content_padding=20,
+        actions=[
+            row_button
+        ],
+        actions_alignment=ft.MainAxisAlignment.END,
 
     )
     page.open(dlg_modal)
