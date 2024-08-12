@@ -9,9 +9,9 @@ def local_user_db():
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         table_task = """ Create table if not exists tasks(id Integer, name Text, address_id integer, phone_number Text, 
-        email Text, id_customer integer, date Text, remark Text, status Text, unloading_time Text ) """
+        email Text, date Text, remark Text, status Text, unloading_time Text ) """
         table_meters = """ Create table if not exists meters(
-        id Integer, meter_number Text, instalation_date Text, meter_type text, id_customer integer)"""
+        id Integer, meter_number Text, instalation_date Text, meter_type text, id_address integer)"""
         table_meter_reading = """ Create table if not exists meter_reading(
         meter_id integer, last_reading_date Text, last_reading_value Text) """
         table_picture = """ Create table if not exists picture(id Integer, value BLOB, task_id Integer) """
@@ -36,25 +36,25 @@ def insert_bd_user(id_user, login, password, privileges, page):
 
 
 def insert_bd_task(task_id, name, address_id, city, district, street, dom, apartment,
-                   entrance, id_customer, phone_number, email, date_task, remark, status_task):
+                   entrance, phone_number, email, date_task, remark, status_task):
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         query = f""" Insert into tasks 
-        (id, name, address_id, phone_number, email, id_customer, date, remark, status)
+        (id, name, address_id, phone_number, email, date, remark, status)
          values ({task_id}, '{name}', {address_id}, '{phone_number}', '{email}', 
-            {id_customer}, '{date_task}', '{remark}', '{status_task}') """
+            '{date_task}', '{remark}', '{status_task}') """
         cursor.execute(query)
         query2 = f""" Insert into address values ({address_id},'{city}', '{district}', '{street}', '{dom}', 
             '{apartment}', '{entrance}')"""
         cursor.execute(query2)
 
 
-def insert_bd_meters(id_meter, meter_number, instalation_day, meter_type, id_customer):
+def insert_bd_meters(id_meter, meter_number, instalation_day, meter_type, id_address):
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         query = f""" Insert into meters 
-        (id, meter_number, instalation_date, meter_type, id_customer)
-         values ({id_meter}, '{meter_number}', '{instalation_day}', '{meter_type}', {id_customer}) """
+        (id, meter_number, instalation_date, meter_type, id_address)
+         values ({id_meter}, '{meter_number}', '{instalation_day}', '{meter_type}', {id_address}) """
         cursor.execute(query)
 
 

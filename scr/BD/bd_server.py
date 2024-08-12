@@ -57,14 +57,13 @@ def select_task_data(id_user):
             dom = record[6]
             apartment = record[7]
             entrance = record[8]
-            id_customer = record[9]
-            phone_number = record[10]
-            email = record[11]
-            date_task = record[12]
-            remark = record[13]
-            status_task = record[14]
+            phone_number = record[9]
+            email = record[10]
+            date_task = record[11]
+            remark = record[12]
+            status_task = record[13]
             scr.BD.bd_user.insert_bd_task(task_id, name, address_id, city, district, street, dom, apartment,
-                                          entrance, id_customer, phone_number, email, date_task, remark, status_task)
+                                          entrance, phone_number, email, date_task, remark, status_task)
 
     cursor = conn.cursor()
     cursor.execute(f""" SELECT * FROM get_meters_data_new({id_user}) """)
@@ -75,8 +74,8 @@ def select_task_data(id_user):
             meter_number = record[1]
             instalation_day = record[2]
             meter_type = record[3]
-            id_customer = record[4]
-            scr.BD.bd_user.insert_bd_meters(id_meter, meter_number, instalation_day, meter_type, id_customer)
+            id_address = record[4]
+            scr.BD.bd_user.insert_bd_meters(id_meter, meter_number, instalation_day, meter_type, id_address)
     cursor = conn.cursor()
     cursor.execute(f""" SELECT * FROM get_meter_reading_data_new({id_user}) """)
     result = cursor.fetchall()
