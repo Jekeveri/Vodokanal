@@ -9,7 +9,7 @@ def local_user_db():
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         table_task = """ Create table if not exists tasks(id Integer, name Text, id_address integer, phone_number Text, 
-        email Text, date Text, remark Text, status Text, unloading_time Text ) """
+        personal_account Text, date Text, remark Text, status Text, unloading_time Text ) """
         table_meters = """ Create table if not exists meters(
         id Integer, meter_number Text, instalation_date Text, meter_type text, id_address integer)"""
         table_meter_reading = """ Create table if not exists meter_reading(
@@ -36,12 +36,12 @@ def insert_bd_user(id_user, login, password, privileges, page):
 
 
 def insert_bd_task(task_id, name, address_id, city, district, street, dom, apartment,
-                   entrance, phone_number, email, date_task, remark, status_task):
+                   entrance, phone_number, personal_account, date_task, remark, status_task):
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         query = f""" Insert into tasks 
-        (id, name, id_address, phone_number, email, date, remark, status)
-         values ({task_id}, '{name}', {address_id}, '{phone_number}', '{email}', 
+        (id, name, id_address, phone_number, personal_account, date, remark, status)
+         values ({task_id}, '{name}', {address_id}, '{phone_number}', '{personal_account}', 
             '{date_task}', '{remark}', '{status_task}') """
         cursor.execute(query)
         query2 = f""" Insert into address values ({address_id},'{city}', '{district}', '{street}', '{dom}', 
@@ -101,8 +101,7 @@ def select_tasks_data_new():  # потом переделываем select_task_
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         query = """ Select t.id, t.name, a.street, a.dom, a.apartment, t.phone_number, 
-        t.email, t.meter_id, t.meters_number, t.instalation_day, t.meter_type, 
-        t.last_reading_date, t.last_reading_value, t.date, t.remark, t.status from tasks as t
+        t.personal_account, t.date, t.remark, t.status from tasks as t
             join address as a on a.id = t.id_address """
         cursor.execute(query)
         result = cursor.fetchall()

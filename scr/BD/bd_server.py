@@ -58,12 +58,12 @@ def select_task_data(id_user):
             apartment = record[7]
             entrance = record[8]
             phone_number = record[9]
-            email = record[10]
+            personal_account = record[10]
             date_task = record[11]
             remark = record[12]
             status_task = record[13]
             scr.BD.bd_user.insert_bd_task(task_id, name, address_id, city, district, street, dom, apartment,
-                                          entrance, phone_number, email, date_task, remark, status_task)
+                                          entrance, phone_number, personal_account, date_task, remark, status_task)
 
     cursor = conn.cursor()
     cursor.execute(f""" SELECT * FROM get_meters_data_new({id_user}) """)
