@@ -39,13 +39,13 @@ def show_meters_data(page, id_task, result_info_address):
         )
 
         # Используем замыкание для передачи правильного apartment
-        def create_on_click(id_task, id_meters):
+        def create_on_click(id_task, id_meters, result_info_meters):
             def on_click(e):
                 update_data(page, id_meters, result_info_meters, id_task, result_info_address)
 
             return on_click
 
-        on_click_container = create_on_click(id_task, id_meters)
+        on_click_container = create_on_click(id_task, id_meters, result_info_meters)
 
         row = ft.Row(
             [
@@ -73,7 +73,7 @@ def show_meters_data(page, id_task, result_info_address):
     row_button.controls.append(button_back)
 
     dlg_modal = ft.AlertDialog(
-        modal=False,
+        modal=True,
         title=title,
         content=content_dialog,
         content_padding=20,
@@ -130,7 +130,7 @@ def update_data(page, meter_id, result_info_meters, id_task, result_info_address
         ]
     )
     dlg_modal = ft.AlertDialog(
-        modal=False,
+        modal=True,
         title=title,
         content=column,
         on_dismiss=user_main(page)

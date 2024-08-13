@@ -8,7 +8,7 @@ import scr.navigation_apps.navigations
 def local_user_db():
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
-        table_task = """ Create table if not exists tasks(id Integer, name Text, address_id integer, phone_number Text, 
+        table_task = """ Create table if not exists tasks(id Integer, name Text, id_address integer, phone_number Text, 
         email Text, date Text, remark Text, status Text, unloading_time Text ) """
         table_meters = """ Create table if not exists meters(
         id Integer, meter_number Text, instalation_date Text, meter_type text, id_address integer)"""
@@ -40,7 +40,7 @@ def insert_bd_task(task_id, name, address_id, city, district, street, dom, apart
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         query = f""" Insert into tasks 
-        (id, name, address_id, phone_number, email, date, remark, status)
+        (id, name, id_address, phone_number, email, date, remark, status)
          values ({task_id}, '{name}', {address_id}, '{phone_number}', '{email}', 
             '{date_task}', '{remark}', '{status_task}') """
         cursor.execute(query)
@@ -80,7 +80,7 @@ def select_task_data():
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         query = """ Select t.id, a.street, a.dom, a.apartment, t.status from tasks as t
-            join address as a on a.id = t.address_id """
+            join address as a on a.id = t.id_address """
         cursor.execute(query)
         result = cursor.fetchall()
         return result
@@ -90,7 +90,7 @@ def select_meters_data_new(id_task):
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         query = f""" Select m.* from meters as m
-          join tasks as t on t.id_customer = m.id_customer
+          join tasks as t on t.id_address = m.id_address
           where t.id ={id_task} """
         cursor.execute(query)
         result = cursor.fetchall()
@@ -103,7 +103,7 @@ def select_tasks_data_new():  # потом переделываем select_task_
         query = """ Select t.id, t.name, a.street, a.dom, a.apartment, t.phone_number, 
         t.email, t.meter_id, t.meters_number, t.instalation_day, t.meter_type, 
         t.last_reading_date, t.last_reading_value, t.date, t.remark, t.status from tasks as t
-            join address as a on a.id = t.address_id """
+            join address as a on a.id = t.id_address """
         cursor.execute(query)
         result = cursor.fetchall()
         return result
@@ -140,8 +140,8 @@ def update_local_tasks(unloading_time, task_id, reading_value, remark):
             last_reading_date = '{today}',
             last_reading_value = '{reading_value}'
             where meter_id = (select m.id from meters as m
-            join tasks as t on m.id_customer = t.id_customer
-            where m.id_customer =t.id_customer and t.id = {task_id}) """
+            join tasks as t on m.id_address = t.id_address
+            where m.id_address =t.id_address and t.id = {task_id}) """
         cursor.execute(query1)
         db.commit()
 
@@ -151,7 +151,7 @@ def get_data_to_upload():
         cursor = db.cursor()
         query = """ Select t.id, t.unloading_time, mr.last_reading_value, 
         mr.last_reading_date, t.remark, t.status, mr.meter_id from tasks as t
-        join meters as m on m.id_customer = t.id_customer
+        join meters as m on m.id_address = t.id_address
         join meter_reading as mr on mr.meter_id = m.id"""
         cursor.execute(query)
         result = cursor.fetchall()

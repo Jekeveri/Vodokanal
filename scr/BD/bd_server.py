@@ -89,6 +89,7 @@ def select_task_data(id_user):
             scr.BD.bd_user.insert_bd_meter_reading(meter_id, reading_date, reading_values)
 
 
+# переписать отгрузку на сервер новых показаний (пересмотреть запсросы)
 def upload_data_to_server():
     try:
         conn = psycopg2.connect(
@@ -109,19 +110,9 @@ def upload_data_to_server():
             cursor = conn.cursor()
             cursor.execute(f""" update tasks set uploud_to_local_data = '{unloading_time}', 
             uploud_to_server = '{time_to_server}', remark = '{remark}', status = '{status}' where id = {task_id}""")
-            # здесь добавить какую-нибудь проверку будет либо инсерт либо апдейт
-            query_check = f""" select EXISTS(select * from meter_reading 
-            where reading_date = '{last_reading_date}') """
-            cursor.execute(query_check)
-            result = cursor.fetchall()
-            if result == False:
-                query = f""" insert into meter_reading (meter_id, reading_date, reading_values) values
-                ({meter_id}, '{last_reading_date}',{last_reading_value})"""
-                cursor.execute(query)
-            else:
-                query = f""" update meter_reading set reading_values = {last_reading_value} 
-                where meter_id = {meter_id} and reading_date = '{last_reading_date}'"""
-                cursor.execute(query)
+            query = f""" insert into meter_reading (meter_id, reading_date, reading_values) values
+            ({meter_id}, '{last_reading_date}',{last_reading_value})"""
+            cursor.execute(query)
         conn.commit()
         conn.close()
     except Exception as ex:
