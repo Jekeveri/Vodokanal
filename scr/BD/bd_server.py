@@ -28,6 +28,8 @@ def check_user_credentials(login, password, page):
             login_user = record[1]
             password_user = record[2]
             privileges = record[3]
+            # Как то изменить, может быть что понадобится либо больше пользователей либо еще виды локальных баз,
+            # например для мастера(админа)
             if privileges != 1:
                 scr.BD.bd_user.insert_bd_user(id_user, login_user, password_user, privileges, page)
             else:
@@ -54,6 +56,7 @@ def select_task_data(id_user):
         for record in task_data:
             task_id, name, address_id, city, district, street, dom, apartment, entrance, phone_number, \
                 personal_account, date_task, remark, status_task, purpose = record
+
             scr.BD.bd_user.insert_bd_task(
                 task_id, name, address_id, city, district, street, dom, apartment,
                 entrance, phone_number, personal_account, date_task, remark, status_task, purpose
