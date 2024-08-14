@@ -14,6 +14,7 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
 
     def on_click_back(e):
         page.close(dlg_modal)
+        user_main(page)
     button_back = ft.ElevatedButton("Back", on_click=on_click_back, width=screen_width * 0.2)
     filtered_results = [
         result for result in results
@@ -22,11 +23,11 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
     color = ft.colors.GREY
     column.controls.clear()
     for result in filtered_results:
-        id_meters, meter_number, instalation_day, meter_type, status = result
+        id_meters, meter_number, instalation_day, meter_type, status, status_filling = result
 
-        if status == 'выполнен':
+        if status_filling == 'выполнен':
             color = ft.colors.GREEN
-        elif status == 'в_исполнении':
+        elif status_filling == 'в_исполнении':
             color = ft.colors.YELLOW
         else:
             color = ft.colors.GREY
@@ -98,7 +99,7 @@ def update_data(page, meter_id, result_info_meters, id_task, result_info_address
     def on_click_time_task(e):
         today = datetime.datetime.now().strftime("%H:%M:%S")
         if remark.value != "" and reading_value.value != "":
-            scr.BD.bd_user.update_local_tasks(str(today), id_task, reading_value.value, remark.value)
+            scr.BD.bd_user.update_local_tasks(str(today), id_task, reading_value.value, remark.value, meter_id)
 
     def on_click_back(e):
         show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number)
@@ -173,7 +174,8 @@ def user_main(page):
         color = ft.colors.GREY
         column.controls.clear()
         for result in filtered_results:
-            id_task, person_name, street, dom, apartment, phone_number, personal_account, date, remark, status = result
+            id_task, person_name, street, dom, apartment, phone_number, \
+                personal_account, date, remark, status, purpose = result
 
             if status == 'выполнен':
                 color = ft.colors.GREEN
@@ -185,8 +187,8 @@ def user_main(page):
             result_tasks_info = f"Лицевой счет: {personal_account} ФИО: {person_name}"
             row = ft.Column(
                 [
-                    ft.Text(f"Номер: {id_task}", size=17, width=screen_width * 0.2),
                     ft.Text(result_info, size=17, width=screen_width * 0.2),
+                    ft.Text(f"Цель задания: {purpose}", size=17, width=screen_width * 0.2),
                 ],
             )
 
