@@ -11,16 +11,17 @@ import scr.func
 def show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number):
     screen_width = page.window.width
     screen_height = page.window.height
+    page.controls.clear()
 
     results = scr.BD.bd_user.select_meters_data_new(id_task)
 
     def on_click_back(e):
-        page.close(dlg_modal)
+        user_main(page)
         user_main(page)
 
-    button_back = ft.ElevatedButton("Back", on_click=on_click_back, bgcolor=ft.colors.RED_200, )
+    button_back = ft.ElevatedButton("Back", on_click=on_click_back, bgcolor=ft.colors.RED_200)
     filtered_results = [result for result in results]
-    column = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+    column = ft.Column(scroll=ft.ScrollMode.AUTO, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
     color = ft.colors.GREY
     column.controls.clear()
 
@@ -113,18 +114,17 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
     row_button = ft.Row(alignment=ft.MainAxisAlignment.CENTER)
     row_button.controls.append(button_back)
 
-    dlg_modal = ft.AlertDialog(
-        modal=True,
-        title=title,
-        content=content_dialog,
-        content_padding=20,
-        actions=[
-            row_button
-        ],
-        actions_alignment=ft.MainAxisAlignment.END
-
+    page.add(
+        ft.Column(
+            [
+                title,
+                content_dialog,
+                row_button
+            ],
+            scroll=ft.ScrollMode.AUTO, expand=True, horizontal_alignment=ft.CrossAxisAlignment.CENTER
+        )
     )
-    page.open(dlg_modal)
+    # page.open(dlg_modal)
     page.update()
 
 
@@ -139,16 +139,20 @@ def update_data(page, meter_id, result_info_meters, id_task, result_info_address
         today = datetime.datetime.now().strftime("%H:%M:%S")
         if remark.value != "" and reading_value.value != "":
             scr.BD.bd_user.update_local_tasks(str(today), id_task, reading_value.value, remark.value, meter_id)
+            show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number)
+            page.close(dlg_modal)
+            page.update()
 
     def on_click_back(e):
+        page.close(dlg_modal)
         show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number)
 
     reading_value = ft.TextField(label="Показания счетчика", )
     remark = ft.TextField(label="Поддробная информация", )
     photo_picker = ft.ElevatedButton("Добавить фотографию", )
-    button_save = ft.ElevatedButton("Сохранить", on_click=on_click_time_task, bgcolor=ft.colors.BLUE_200,)
+    button_save = ft.ElevatedButton("Сохранить", on_click=on_click_time_task, bgcolor=ft.colors.BLUE_200, )
     button_save_upload = ft.ElevatedButton("Сохранить и отправить", on_click=on_click_upload, )
-    button_back = ft.ElevatedButton("Back", on_click=on_click_back, bgcolor=ft.colors.RED_200,)
+    button_back = ft.ElevatedButton("Back", on_click=on_click_back, bgcolor=ft.colors.RED_200, )
 
     column = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
     column.controls.clear()
