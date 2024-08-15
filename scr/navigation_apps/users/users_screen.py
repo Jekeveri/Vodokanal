@@ -18,7 +18,7 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
         page.close(dlg_modal)
         user_main(page)
 
-    button_back = ft.ElevatedButton("Back", on_click=on_click_back, width=screen_width * 0.2)
+    button_back = ft.ElevatedButton("Back", on_click=on_click_back, bgcolor=ft.colors.RED_200, )
     filtered_results = [result for result in results]
     column = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
     color = ft.colors.GREY
@@ -44,8 +44,8 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
 
         row_to_container = ft.Column(
             [
-                ft.Text(f"Номер: {id_meters}", size=17, width=screen_width * 0.2),
-                ft.Text(result_info_meters, size=17, width=screen_width * 0.2),
+                ft.Text(f"Номер: {id_meters}", size=17, ),
+                ft.Text(result_info_meters, size=17, ),
             ],
         )
 
@@ -74,12 +74,39 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
             alignment=ft.MainAxisAlignment.CENTER
         )
         column.controls.append(row)
+    dop_buttons_redact = ft.Row(
+        [
+            ft.Column(
+                [
+                    ft.ElevatedButton("Сальдо"),
+                    ft.ElevatedButton("Прописанно"),
+                    ft.ElevatedButton("Нормативы"),
+                    ft.ElevatedButton("Площадь"),
+                ]
+            )
+        ]
+    )
+    panels = [
+        ft.ExpansionPanel(
+            header=ft.Text("Редактирование данных адреса"),
+            can_tap_header=True,
+            content=dop_buttons_redact,
+            expanded=False,
+            aspect_ratio=100,
+            bgcolor=ft.colors.BLUE_100
+        ),
+    ]
+    panel_list = ft.ExpansionPanelList(
+        elevation=10,
+        controls=panels
+    )
     column.controls.append(button_add)
+    column.controls.append(panel_list)
     content_dialog = column
     title = ft.Column(
         [
-            ft.Text(result_tasks_info, size=17, width=screen_width * 0.2),
-            ft.Text(result_info_address, size=17, width=screen_width * 0.2),
+            ft.Text(result_tasks_info, size=17, ),
+            ft.Text(result_info_address, size=17, ),
             ft.Text(f"{phone_number}", size=17, )
         ]
     )
@@ -116,12 +143,12 @@ def update_data(page, meter_id, result_info_meters, id_task, result_info_address
     def on_click_back(e):
         show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number)
 
-    reading_value = ft.TextField(label="Показания счетчика", width=screen_width * 0.2)
-    remark = ft.TextField(label="Поддробная информация", width=screen_width * 0.2)
-    photo_picker = ft.ElevatedButton("Добавить фотографию", width=screen_width * 0.2)
-    button_save = ft.ElevatedButton("Сохранить", on_click=on_click_time_task)
-    button_save_upload = ft.ElevatedButton("Сохранить и отправить", on_click=on_click_upload, width=screen_width * 0.11)
-    button_back = ft.ElevatedButton("Back", on_click=on_click_back)
+    reading_value = ft.TextField(label="Показания счетчика", )
+    remark = ft.TextField(label="Поддробная информация", )
+    photo_picker = ft.ElevatedButton("Добавить фотографию", )
+    button_save = ft.ElevatedButton("Сохранить", on_click=on_click_time_task, bgcolor=ft.colors.BLUE_200,)
+    button_save_upload = ft.ElevatedButton("Сохранить и отправить", on_click=on_click_upload, )
+    button_back = ft.ElevatedButton("Back", on_click=on_click_back, bgcolor=ft.colors.RED_200,)
 
     column = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
     column.controls.clear()
@@ -131,13 +158,41 @@ def update_data(page, meter_id, result_info_meters, id_task, result_info_address
 
     title = ft.Column(
         [
-            ft.Text(f"Номер: {meter_id}", size=17, width=screen_width * 0.2),
-            ft.Text(result_info_meters, size=17, width=screen_width * 0.2),
+            ft.Text(f"Номер: {meter_id}", size=17, ),
+            ft.Text(result_info_meters, size=17, ),
         ]
     )
     row_button = ft.Row(alignment=ft.MainAxisAlignment.CENTER)
     row_button.controls.append(button_save)
     row_button.controls.append(button_back)
+    dop_buttons_redact = ft.Row(
+        [
+            ft.Column(
+                [
+                    ft.ElevatedButton("Марка"),
+                    ft.ElevatedButton("Заводской номер"),
+                    ft.ElevatedButton("Номер пломбы"),
+                    ft.ElevatedButton("Место расположение"),
+                    ft.ElevatedButton("Тип услуги"),
+                ]
+            )
+        ]
+    )
+    panels = [
+        ft.ExpansionPanel(
+            header=ft.Text("Редактирование данных счётчика"),
+            can_tap_header=True,
+            content=dop_buttons_redact,
+            expanded=False,
+            aspect_ratio=100,
+            bgcolor=ft.colors.BLUE_100
+        ),
+    ]
+    panel_list = ft.ExpansionPanelList(
+        elevation=10,
+        controls=panels
+    )
+    column.controls.append(panel_list)
     dlg_modal = ft.AlertDialog(
         modal=True,
         title=title,
@@ -198,8 +253,8 @@ def user_main(page):
             result_tasks_info = f"Лицевой счет: {personal_account} ФИО: {person_name}"
             row = ft.Column(
                 [
-                    ft.Text(result_info, size=17, width=screen_width * 0.2),
-                    ft.Text(f"Цель задания: {purpose}", size=17, width=screen_width * 0.2),
+                    ft.Text(result_info, size=17, ),
+                    ft.Text(f"Цель задания: {purpose}", size=17, ),
                 ],
             )
 
@@ -263,7 +318,7 @@ def user_main(page):
     page.add(
         ft.Row(
             [
-                ft.ElevatedButton(text="Отгрузить все данные", on_click=on_click_upload, width=screen_width * 0.2)
+                ft.ElevatedButton(text="Отгрузить все данные", on_click=on_click_upload, )
             ], alignment=ft.MainAxisAlignment.CENTER,
         )
     )
