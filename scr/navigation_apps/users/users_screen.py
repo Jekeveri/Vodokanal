@@ -9,7 +9,9 @@ import scr.func
 
 
 def show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number):
-    screen_width = page.window.width
+    screen_width = page.width
+    screen_width1 = page.window.width
+    scr.func.show_snack_bar(page, screen_width)
     screen_height = page.window.height
     page.controls.clear()
 
@@ -94,15 +96,19 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
             content=dop_buttons_redact,
             expanded=False,
             aspect_ratio=100,
-            bgcolor=ft.colors.BLUE_100
+            bgcolor=ft.colors.BLUE_100,
         ),
     ]
     panel_list = ft.ExpansionPanelList(
         elevation=10,
-        controls=panels
+        controls=panels,
+    )
+    container = ft.Container(
+        content=panel_list,
+        width=screen_width*0.2,  # Задаем ширину контейнера
     )
     column.controls.append(button_add)
-    column.controls.append(panel_list)
+    column.controls.append(container)
     content_dialog = column
     title = ft.Column(
         [
@@ -129,7 +135,8 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
 
 
 def update_data(page, meter_id, result_info_meters, id_task, result_info_address, result_tasks_info, phone_number):
-    screen_width = page.window.width
+    screen_width = page.width
+
     screen_height = page.window_height
 
     def on_click_upload(e):
