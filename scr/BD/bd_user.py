@@ -14,7 +14,8 @@ def local_user_db():
         id Integer, meter_number Text, instalation_date Text, meter_type text, id_address integer, 
         status_filling Text) """
         table_meter_reading = """ Create table if not exists meter_reading(
-        meter_id integer, last_reading_date Text, last_reading_value Text) """
+        meter_id integer, last_reading_date Text, last_reading_value Text, 
+        new_reading_date Text, new_reading_value Text) """
         table_picture = """ Create table if not exists picture(id Integer, value BLOB, task_id Integer) """
         table_user = """ Create table if not exists user(id Integer, login Text, password Text, privileges integer) """
         table_address = """ Create table if not exists address(id integer, city text, district text, street Text, 
@@ -89,6 +90,16 @@ def select_meters_data_new(id_task):
         return result
 
 
+def select_meter_reading_new(meter_id):
+    with sl.connect('database_client.db') as db:
+        cursor = db.cursor()
+        query = f""" Select meter_id, last_reading_date, last_reading_value from meter_reading 
+          where meter_id = {meter_id} """
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return result
+
+
 def select_tasks_data_new():  # потом переделываем select_task_data здесь на другой
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
@@ -128,8 +139,8 @@ def update_local_tasks(unloading_time, task_id, reading_value, remark, meter_id)
             where id = {task_id}"""
         cursor.execute(query)
         query1 = f""" update meter_reading set  
-            last_reading_date = '{today}',
-            last_reading_value = '{reading_value}'
+            new_reading_date = '{today}',
+            new_reading_value = '{reading_value}'
             where meter_id = (select m.id from meters as m
             join tasks as t on m.id_address = t.id_address
             where m.id_address =t.id_address and t.id = {task_id}) """
@@ -144,8 +155,8 @@ def update_local_tasks(unloading_time, task_id, reading_value, remark, meter_id)
 def get_data_to_upload():
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
-        query = """ Select t.id, t.unloading_time, mr.last_reading_value, 
-        mr.last_reading_date, t.remark, t.status, mr.meter_id from tasks as t
+        query = """ Select t.id, t.unloading_time, mr.new_reading_value, 
+        mr.new_reading_date, t.remark, t.status, mr.meter_id from tasks as t
         join meters as m on m.id_address = t.id_address
         join meter_reading as mr on mr.meter_id = m.id"""
         cursor.execute(query)

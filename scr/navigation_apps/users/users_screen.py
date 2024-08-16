@@ -136,7 +136,7 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
 
 def update_data(page, meter_id, result_info_meters, id_task, result_info_address, result_tasks_info, phone_number):
     screen_width = page.width
-
+    today = datetime.datetime.now().strftime("%H:%M:%S")
     screen_height = page.window_height
 
     def on_click_upload(e):
@@ -154,6 +154,17 @@ def update_data(page, meter_id, result_info_meters, id_task, result_info_address
         page.close(dlg_modal)
         show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number)
 
+    results = scr.BD.bd_user.select_meter_reading_new(meter_id)
+    filtered_results = [result for result in results]
+    for result in filtered_results:
+        id_meters, last_reading_date, last_reading_value = result
+
+    container = ft.Column(
+        [
+            ft.Text(f"Дата контрольных показаний: {last_reading_date}"),
+            ft.Text(f"Контрольные показания: {last_reading_value}"),
+        ]
+    )
     reading_value = ft.TextField(label="Показания счетчика", )
     remark = ft.TextField(label="Поддробная информация", )
     photo_picker = ft.ElevatedButton("Добавить фотографию", )
@@ -163,6 +174,7 @@ def update_data(page, meter_id, result_info_meters, id_task, result_info_address
 
     column = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
     column.controls.clear()
+    column.controls.append(container)
     column.controls.append(reading_value)
     column.controls.append(remark)
     column.controls.append(photo_picker)
