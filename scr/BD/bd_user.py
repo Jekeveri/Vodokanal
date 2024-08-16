@@ -141,9 +141,7 @@ def update_local_tasks(unloading_time, task_id, reading_value, remark, meter_id)
         query1 = f""" update meter_reading set  
             new_reading_date = '{today}',
             new_reading_value = '{reading_value}'
-            where meter_id = (select m.id from meters as m
-            join tasks as t on m.id_address = t.id_address
-            where m.id_address =t.id_address and t.id = {task_id}) """
+            where meter_id = {meter_id} """
         query2 = f""" update meters set  
             status_filling = 'выполнен'
             where id = {meter_id} """
