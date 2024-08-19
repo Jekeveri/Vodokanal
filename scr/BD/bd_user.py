@@ -12,7 +12,7 @@ def local_user_db():
         personal_account Text, date Text, remark Text, status Text, unloading_time Text, purpose Text ) """
         table_meters = """ Create table if not exists meters(
         id Integer, meter_number Text, instalation_date Text, meter_type text, id_address integer, 
-        status_filling Text) """
+        status_filling Text, meter_remark Text) """
         table_meter_reading = """ Create table if not exists meter_reading(
         meter_id integer, last_reading_date Text, last_reading_value Text, 
         new_reading_date Text, new_reading_value Text) """
@@ -52,12 +52,16 @@ def insert_bd_task(task_id, name, address_id, city, district, street, dom, apart
         cursor.execute(query2)
 
 
-def insert_bd_meters(id_meter, meter_number, instalation_day, meter_type, id_address):
+def insert_bd_meters(id_meter, meter_number, instalation_day, meter_type, id_address, meter_remark):
+    if meter_remark is None:
+        meter_remark = ""
+        print(1)
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         query = f""" Insert into meters 
-        (id, meter_number, instalation_date, meter_type, id_address, status_filling)
-         values ({id_meter}, '{meter_number}', '{instalation_day}', '{meter_type}', {id_address}, 'невыполнено') """
+        (id, meter_number, instalation_date, meter_type, id_address, status_filling, meter_remark)
+         values ({id_meter}, '{meter_number}', '{instalation_day}', '{meter_type}', 
+            {id_address}, 'невыполнено', '{meter_remark}')"""
         cursor.execute(query)
 
 
@@ -134,7 +138,6 @@ def update_local_tasks(unloading_time, task_id, reading_value, remark, meter_id)
         cursor = db.cursor()
         query = f""" update tasks set 
             unloading_time = '{unloading_time}',  
-            remark = '{remark}',
             status = 'выполнен'
             where id = {task_id}"""
         cursor.execute(query)
@@ -143,7 +146,8 @@ def update_local_tasks(unloading_time, task_id, reading_value, remark, meter_id)
             new_reading_value = '{reading_value}'
             where meter_id = {meter_id} """
         query2 = f""" update meters set  
-            status_filling = 'выполнен'
+            status_filling = 'выполнен',
+            meter_remark = '{remark}'
             where id = {meter_id} """
         cursor.execute(query1)
         cursor.execute(query2)

@@ -8,7 +8,7 @@ import scr.exit
 import scr.func
 
 
-def show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number):
+def show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number, remark):
     screen_width = page.width
     screen_width1 = page.window.width
     scr.func.show_snack_bar(page, screen_width)
@@ -34,7 +34,7 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
     button_add = ft.FloatingActionButton(icon=ft.icons.ADD, on_click=on_click_add,
                                          bgcolor=ft.colors.LIME_300)
     for result in filtered_results:
-        id_meters, meter_number, instalation_day, meter_type, status, status_filling = result
+        id_meters, meter_number, instalation_day, meter_type, status, status_filling, meter_remark = result
 
         if status_filling == 'выполнен':
             color = ft.colors.GREEN
@@ -53,14 +53,14 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
         )
 
         # Используем замыкание для передачи правильного apartment
-        def create_on_click(id_task, id_meters, result_info_meters, result_tasks_info, phone_number):
+        def create_on_click(id_task, id_meters, result_info_meters, result_tasks_info, phone_number, meter_remark, remark):
             def on_click(e):
                 update_data(page, id_meters, result_info_meters, id_task, result_info_address, result_tasks_info,
-                            phone_number)
+                            phone_number, meter_remark, remark)
 
             return on_click
 
-        on_click_container = create_on_click(id_task, id_meters, result_info_meters, result_tasks_info, phone_number)
+        on_click_container = create_on_click(id_task, id_meters, result_info_meters, result_tasks_info, phone_number, meter_remark, remark)
 
         row = ft.Row(
             [
@@ -114,7 +114,8 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
         [
             ft.Text(result_tasks_info, size=17, ),
             ft.Text(result_info_address, size=17, ),
-            ft.Text(f"{phone_number}", size=17, )
+            ft.Text(f"{phone_number}", size=17, ),
+            ft.Text(f"Примечание по адрессу: {remark}", size=17, ),
         ]
     )
     row_button = ft.Row(alignment=ft.MainAxisAlignment.CENTER)
@@ -134,7 +135,8 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
     page.update()
 
 
-def update_data(page, meter_id, result_info_meters, id_task, result_info_address, result_tasks_info, phone_number):
+def update_data(page, meter_id, result_info_meters, id_task, result_info_address, result_tasks_info,
+                phone_number, meter_remark, task_remark):
     screen_width = page.width
     today = datetime.datetime.now().strftime("%H:%M:%S")
     screen_height = page.window_height
@@ -146,13 +148,13 @@ def update_data(page, meter_id, result_info_meters, id_task, result_info_address
         today = datetime.datetime.now().strftime("%H:%M:%S")
         if remark.value != "" and reading_value.value != "":
             scr.BD.bd_user.update_local_tasks(str(today), id_task, reading_value.value, remark.value, meter_id)
-            show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number)
+            show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number, task_remark)
             page.close(dlg_modal)
             page.update()
 
     def on_click_back(e):
         page.close(dlg_modal)
-        show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number)
+        show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number, task_remark)
 
     results = scr.BD.bd_user.select_meter_reading_new(meter_id)
     filtered_results = [result for result in results]
@@ -166,10 +168,10 @@ def update_data(page, meter_id, result_info_meters, id_task, result_info_address
         ]
     )
     reading_value = ft.TextField(label="Показания счетчика", )
-    remark = ft.TextField(label="Поддробная информация", )
+    remark = ft.TextField(label="Примечания по счетчику", )
     photo_picker = ft.ElevatedButton("Добавить фотографию", )
     button_save = ft.ElevatedButton("Сохранить", on_click=on_click_time_task, bgcolor=ft.colors.BLUE_200, )
-    button_save_upload = ft.ElevatedButton("Сохранить и отправить", on_click=on_click_upload, )
+    # button_save_upload = ft.ElevatedButton("Сохранить и отправить", on_click=on_click_upload, )
     button_back = ft.ElevatedButton("Back", on_click=on_click_back, bgcolor=ft.colors.RED_200, )
 
     column = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
@@ -282,13 +284,13 @@ def user_main(page):
             )
 
             # Используем замыкание для передачи правильного apartment
-            def create_on_click(id_task, result_info, result_tasks_info, phone_number):
+            def create_on_click(id_task, result_info, result_tasks_info, phone_number, remark):
                 def on_click(e):
-                    show_meters_data(page, id_task, result_info, result_tasks_info, phone_number)
+                    show_meters_data(page, id_task, result_info, result_tasks_info, phone_number, remark)
 
                 return on_click
 
-            on_click_container = create_on_click(id_task, result_info, result_tasks_info, phone_number)
+            on_click_container = create_on_click(id_task, result_info, result_tasks_info, phone_number, remark)
 
             row = ft.Row(
                 [

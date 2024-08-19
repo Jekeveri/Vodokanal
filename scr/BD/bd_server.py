@@ -69,9 +69,9 @@ def select_task_data(id_user):
 
     if meter_data:
         for record in meter_data:
-            id_meter, meter_number, instalation_day, meter_type, id_address = record
+            id_meter, meter_number, instalation_day, meter_type, id_address, meter_remark = record
             scr.BD.bd_user.insert_bd_meters(
-                id_meter, meter_number, instalation_day, meter_type, id_address
+                id_meter, meter_number, instalation_day, meter_type, id_address, meter_remark
             )
 
     cursor.execute(f"""
