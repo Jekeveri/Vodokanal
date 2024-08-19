@@ -10,6 +10,8 @@ import scr.func
 
 def show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number, remark):
     screen_width = page.width
+    screen_width1 = page.window.width
+    scr.func.show_snack_bar(page, screen_width)
     screen_height = page.window.height
     page.controls.clear()
 
@@ -69,8 +71,7 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
                     border_radius=15,
                     bgcolor=color,
                     ink=True,
-                    on_click=on_click_container,
-                    width=screen_width * 0.9,
+                    on_click=on_click_container
                 )
             ],
             alignment=ft.MainAxisAlignment.CENTER
@@ -96,17 +97,15 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
             expanded=False,
             aspect_ratio=100,
             bgcolor=ft.colors.BLUE_100,
-            width=screen_width * 0.9,
         ),
     ]
     panel_list = ft.ExpansionPanelList(
         elevation=10,
         controls=panels,
-        width=screen_width * 0.9,
     )
     container = ft.Container(
         content=panel_list,
-        width=screen_width*0.9,  # Задаем ширину контейнера
+        width=screen_width*0.2,  # Задаем ширину контейнера
     )
     column.controls.append(button_add)
     column.controls.append(container)
@@ -168,12 +167,12 @@ def update_data(page, meter_id, result_info_meters, id_task, result_info_address
             ft.Text(f"Контрольные показания: {last_reading_value}"),
         ]
     )
-    reading_value = ft.TextField(label="Показания счетчика", width=screen_width*0.9,)
-    remark = ft.TextField(label="Примечания по счетчику", width=screen_width*0.9,)
-    photo_picker = ft.ElevatedButton("Добавить фотографию", width=screen_width*0.9,)
-    button_save = ft.ElevatedButton("Сохранить", on_click=on_click_time_task, bgcolor=ft.colors.BLUE_200, width=screen_width*0.3,)
+    reading_value = ft.TextField(label="Показания счетчика", )
+    remark = ft.TextField(label="Примечания по счетчику", )
+    photo_picker = ft.ElevatedButton("Добавить фотографию", )
+    button_save = ft.ElevatedButton("Сохранить", on_click=on_click_time_task, bgcolor=ft.colors.BLUE_200, )
     # button_save_upload = ft.ElevatedButton("Сохранить и отправить", on_click=on_click_upload, )
-    button_back = ft.ElevatedButton("Back", on_click=on_click_back, bgcolor=ft.colors.RED_200, width=screen_width*0.3,)
+    button_back = ft.ElevatedButton("Back", on_click=on_click_back, bgcolor=ft.colors.RED_200, )
 
     column = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
     column.controls.clear()
@@ -211,14 +210,12 @@ def update_data(page, meter_id, result_info_meters, id_task, result_info_address
             content=dop_buttons_redact,
             expanded=False,
             aspect_ratio=100,
-            bgcolor=ft.colors.BLUE_100,
-            width=screen_width * 0.9,
+            bgcolor=ft.colors.BLUE_100
         ),
     ]
     panel_list = ft.ExpansionPanelList(
         elevation=10,
-        controls=panels,
-        width=screen_width * 0.9,
+        controls=panels
     )
     column.controls.append(panel_list)
     dlg_modal = ft.AlertDialog(
@@ -304,8 +301,7 @@ def user_main(page):
                         border_radius=15,
                         bgcolor=color,
                         ink=True,
-                        on_click=on_click_container,
-                        width=screen_width * 0.9,
+                        on_click=on_click_container
                     )
                 ],
                 alignment=ft.MainAxisAlignment.CENTER
