@@ -44,10 +44,12 @@ def employee_navigation(privileges, page):
 
     page.navigation_bar = ft.NavigationBar(
         destinations=[
-            ft.NavigationBarDestination(icon=ft.icons.TASK_ROUNDED, ),
+            ft.NavigationBarDestination(icon=ft.icons.TASK_ROUNDED),
             ft.NavigationBarDestination(icon=ft.icons.BAR_CHART),
             ft.NavigationBarDestination(icon=ft.icons.LOCATION_ON),
             ft.NavigationBarDestination(icon=ft.icons.SETTINGS),
         ], on_change=navigate,
-        elevation=0.1
+        label_behavior=ft.NavigationBarLabelBehavior.ONLY_SHOW_SELECTED,
+        indicator_color=ft.colors.TRANSPARENT,
+        height=50
     )

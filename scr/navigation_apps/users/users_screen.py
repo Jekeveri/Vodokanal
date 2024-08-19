@@ -244,9 +244,11 @@ def user_main(page):
     screen_height = page.height
     page.title = "Пользователь"
     page.vertical_alignment = ft.MainAxisAlignment.START
+
     page.appbar = ft.AppBar(
         title=ft.Text("Задачи"),
         center_title=True,
+        toolbar_height=40,
         bgcolor=ft.colors.BLUE_GREY_50
     )
 
