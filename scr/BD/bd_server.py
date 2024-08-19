@@ -14,7 +14,7 @@ def check_user_credentials(login, password, page):
     )
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT e.id, e.login, e.password, p.privileges FROM public.employees e
+        SELECT e.id, e.login, e.password, p.privileges, e.first_name, e.last_name FROM public.employees e
         JOIN public.post p on p.id = e.post_id 
         WHERE login = %s AND password = %s
     """, (login, password))
@@ -24,14 +24,10 @@ def check_user_credentials(login, password, page):
     scr.BD.bd_user.local_user_db()
     if result:
         for record in result:
-            id_user = record[0]
-            login_user = record[1]
-            password_user = record[2]
-            privileges = record[3]
-            # Как то изменить, может быть что понадобится либо больше пользователей либо еще виды локальных баз,
-            # например для мастера(админа)
+            id_user, login_user, password_user, privileges, first_name, last_name = record
             if privileges != 1:
-                scr.BD.bd_user.insert_bd_user(id_user, login_user, password_user, privileges, page)
+                scr.BD.bd_user.insert_bd_user(id_user, login_user, password_user, privileges,
+                                              first_name, last_name, page)
             else:
                 scr.navigation_apps.navigations.role_definition(privileges, page)
     else:

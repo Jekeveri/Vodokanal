@@ -17,7 +17,8 @@ def local_user_db():
         meter_id integer, last_reading_date Text, last_reading_value Text, 
         new_reading_date Text, new_reading_value Text) """
         table_picture = """ Create table if not exists picture(id Integer, value BLOB, task_id Integer) """
-        table_user = """ Create table if not exists user(id Integer, login Text, password Text, privileges integer) """
+        table_user = """ Create table if not exists user
+        (id Integer, login Text, password Text, privileges integer, first_name Text, last_name Text) """
         table_address = """ Create table if not exists address(id integer, city text, district text, street Text, 
         dom text, apartment text, entrance text)"""
         cursor.execute(table_task)
@@ -28,10 +29,11 @@ def local_user_db():
         cursor.execute(table_address)
 
 
-def insert_bd_user(id_user, login, password, privileges, page):
+def insert_bd_user(id_user, login, password, privileges, first_name, last_name, page):
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
-        query = f""" Insert into user values({id_user}, {login}, {password}, {privileges}) """
+        query = f""" Insert into user values({id_user}, '{login}', '{password}', 
+            {privileges}, '{first_name}','{last_name}' ) """
         cursor.execute(query)
     scr.BD.bd_server.select_task_data(id_user)
     scr.navigation_apps.navigations.role_definition(privileges, page)
@@ -55,7 +57,6 @@ def insert_bd_task(task_id, name, address_id, city, district, street, dom, apart
 def insert_bd_meters(id_meter, meter_number, instalation_day, meter_type, id_address, meter_remark):
     if meter_remark is None:
         meter_remark = ""
-        print(1)
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         query = f""" Insert into meters 
@@ -77,7 +78,7 @@ def insert_bd_meter_reading(meter_id, reading_date, reading_values):
 def select_user_data():
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
-        query = """ Select login, password, privileges from user """
+        query = """ Select login, password, privileges, last_name, first_name from user """
         cursor.execute(query)
         result = cursor.fetchall()
         return result
