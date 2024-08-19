@@ -1,6 +1,8 @@
 import scr.navigation_apps.admin.admin_screen
 import scr.navigation_apps.users.users_screen
 import scr.navigation_apps.users.user_seting_page
+import scr.navigation_apps.users.ratyng_user_screen
+import scr.navigation_apps.users.map_user_screen
 import scr.BD.bd_user
 import flet as ft
 
@@ -25,9 +27,15 @@ def employee_navigation(privileges, page):
             else:
                 scr.navigation_apps.users.users_screen.user_main(page)
         elif nav == 1:
-            pass
+            if privileges == 1:
+                pass
+            else:
+                scr.navigation_apps.users.ratyng_user_screen.rating(page)
         elif nav == 2:
-            pass
+            if privileges == 1:
+                pass
+            else:
+                scr.navigation_apps.users.map_user_screen.map(page)
         elif nav == 3:
             if privileges == 1:
                 pass
@@ -40,5 +48,6 @@ def employee_navigation(privileges, page):
             ft.NavigationBarDestination(icon=ft.icons.BAR_CHART),
             ft.NavigationBarDestination(icon=ft.icons.LOCATION_ON),
             ft.NavigationBarDestination(icon=ft.icons.SETTINGS),
-        ], on_change=navigate
+        ], on_change=navigate,
+        elevation=0.1
     )

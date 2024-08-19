@@ -8,6 +8,7 @@ import scr.navigation_apps.navigations
 def authentication(page):
     page.clean()
     page.navigation_bar = None
+    page.appbar = None
     page.controls.clear()
     screen_width = page.window_width
     screen_height = page.window_height

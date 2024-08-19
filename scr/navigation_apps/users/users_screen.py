@@ -10,9 +10,7 @@ import scr.func
 
 def show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number, remark):
     screen_width = page.width
-    screen_width1 = page.window.width
-    scr.func.show_snack_bar(page, screen_width)
-    screen_height = page.window.height
+    screen_height = page.height
     page.controls.clear()
 
     results = scr.BD.bd_user.select_meters_data_new(id_task)
@@ -53,14 +51,16 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
         )
 
         # Используем замыкание для передачи правильного apartment
-        def create_on_click(id_task, id_meters, result_info_meters, result_tasks_info, phone_number, meter_remark, remark):
+        def create_on_click(id_task, id_meters, result_info_meters, result_tasks_info, phone_number, meter_remark,
+                            remark):
             def on_click(e):
                 update_data(page, id_meters, result_info_meters, id_task, result_info_address, result_tasks_info,
                             phone_number, meter_remark, remark)
 
             return on_click
 
-        on_click_container = create_on_click(id_task, id_meters, result_info_meters, result_tasks_info, phone_number, meter_remark, remark)
+        on_click_container = create_on_click(id_task, id_meters, result_info_meters, result_tasks_info, phone_number,
+                                             meter_remark, remark)
 
         row = ft.Row(
             [
@@ -105,7 +105,7 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
     )
     container = ft.Container(
         content=panel_list,
-        width=screen_width*0.2,  # Задаем ширину контейнера
+        width=screen_width * 0.2,  # Задаем ширину контейнера
     )
     column.controls.append(button_add)
     column.controls.append(container)
@@ -137,12 +137,9 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
 
 def update_data(page, meter_id, result_info_meters, id_task, result_info_address, result_tasks_info,
                 phone_number, meter_remark, task_remark):
-    screen_width = page.width
     today = datetime.datetime.now().strftime("%H:%M:%S")
-    screen_height = page.window_height
-
-    def on_click_upload(e):
-        pass
+    screen_width = page.width
+    screen_height = page.height
 
     def on_click_time_task(e):
         today = datetime.datetime.now().strftime("%H:%M:%S")
@@ -161,25 +158,8 @@ def update_data(page, meter_id, result_info_meters, id_task, result_info_address
     for result in filtered_results:
         id_meters, last_reading_date, last_reading_value = result
 
-    container = ft.Column(
-        [
-            ft.Text(f"Дата контрольных показаний: {last_reading_date}"),
-            ft.Text(f"Контрольные показания: {last_reading_value}"),
-        ]
-    )
     reading_value = ft.TextField(label="Показания счетчика", )
     remark = ft.TextField(label="Примечания по счетчику", )
-    photo_picker = ft.ElevatedButton("Добавить фотографию", )
-    button_save = ft.ElevatedButton("Сохранить", on_click=on_click_time_task, bgcolor=ft.colors.BLUE_200, )
-    # button_save_upload = ft.ElevatedButton("Сохранить и отправить", on_click=on_click_upload, )
-    button_back = ft.ElevatedButton("Back", on_click=on_click_back, bgcolor=ft.colors.RED_200, )
-
-    column = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
-    column.controls.clear()
-    column.controls.append(container)
-    column.controls.append(reading_value)
-    column.controls.append(remark)
-    column.controls.append(photo_picker)
 
     title = ft.Column(
         [
@@ -187,9 +167,7 @@ def update_data(page, meter_id, result_info_meters, id_task, result_info_address
             ft.Text(result_info_meters, size=17, ),
         ]
     )
-    row_button = ft.Row(alignment=ft.MainAxisAlignment.CENTER)
-    row_button.controls.append(button_save)
-    row_button.controls.append(button_back)
+
     dop_buttons_redact = ft.Row(
         [
             ft.Column(
@@ -217,15 +195,44 @@ def update_data(page, meter_id, result_info_meters, id_task, result_info_address
         elevation=10,
         controls=panels
     )
-    column.controls.append(panel_list)
+
+    meters_data = ft.Container(
+        content=ft.Column(
+            [
+                ft.Text(f"Дата контрольных показаний: {last_reading_date}"),
+                ft.Text(f"Контрольные показания: {last_reading_value}"),
+
+                reading_value,
+                remark,
+
+                ft.ElevatedButton("Добавить фотографию"),
+
+                ft.Column(
+                    [
+                        panel_list
+                    ], scroll=ft.ScrollMode.AUTO,
+                    expand=True,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                )
+            ]
+        )
+    )
+
     dlg_modal = ft.AlertDialog(
         modal=True,
+        content=meters_data,
         title=title,
-        content=column,
         actions=[
-            row_button
+            ft.Row(
+                [
+                    ft.ElevatedButton("Сохранить", on_click=on_click_time_task, bgcolor=ft.colors.BLUE_200),
+                    ft.ElevatedButton("Назад", on_click=on_click_back, bgcolor=ft.colors.RED_200)
+                ], alignment=ft.MainAxisAlignment.CENTER
+            )
         ],
     )
+
+    page.controls.clear()
     page.open(dlg_modal)
     page.update()
 
@@ -233,10 +240,15 @@ def update_data(page, meter_id, result_info_meters, id_task, result_info_address
 def user_main(page):
     page.update()
     page.controls.clear()
-    screen_width = page.window_width
-    screen_height = page.window_height
+    screen_width = page.width
+    screen_height = page.height
     page.title = "Пользователь"
     page.vertical_alignment = ft.MainAxisAlignment.START
+    page.appbar = ft.AppBar(
+        title=ft.Text("Задачи"),
+        center_title=True,
+        bgcolor=ft.colors.BLUE_GREY_50
+    )
 
     def handle_change(e):
         if e.control.selected_index == 1:
@@ -313,25 +325,6 @@ def user_main(page):
     icons = ft.Icon(
         name=ft.icons.MENU,
         color=ft.colors.LIME_50
-    )
-    page.add(
-        ft.Column(
-            [
-                ft.Row(
-                    [
-                        ft.Column(
-                            [
-                                ft.FloatingActionButton(icon=ft.icons.MENU, bgcolor=ft.colors.GREY_50, scale=0.6,
-                                                        on_click=lambda e: page.open(end_drawer))
-                            ],
-                            horizontal_alignment=ft.CrossAxisAlignment.START,
-                            width=400,
-                        )
-                    ], alignment=ft.MainAxisAlignment.START,
-                ),
-            ],
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER
-        ),
     )
 
     def on_click_upload(e):
