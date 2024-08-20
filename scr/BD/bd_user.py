@@ -11,7 +11,8 @@ def local_user_db():
         table_task = """ Create table if not exists tasks(id Integer, name Text, id_address integer, phone_number Text, 
         personal_account Text, date Text, remark Text, status Text, unloading_time Text, purpose Text ) """
         table_meters = """ Create table if not exists meters(
-        id Integer, meter_number Text, instalation_date Text, meter_type text, id_address integer, 
+        id Integer, meter_number Text, instalation_date Text, meter_type text, id_address integer,
+        marka Text, seal_number Text, date_next_verification Text, location Text, saldo Text,
         status_filling Text, meter_remark Text) """
         table_meter_reading = """ Create table if not exists meter_reading(
         meter_id integer, last_reading_date Text, last_reading_value Text, 
@@ -20,7 +21,8 @@ def local_user_db():
         table_user = """ Create table if not exists user
         (id Integer, login Text, password Text, privileges integer, first_name Text, last_name Text) """
         table_address = """ Create table if not exists address(id integer, city text, district text, street Text, 
-        dom text, apartment text, entrance text)"""
+        dom text, apartment text, entrance text, registered_residing integer, 
+        status Text, standarts REAL, area REAL )"""
         cursor.execute(table_task)
         cursor.execute(table_meters)
         cursor.execute(table_meter_reading)
@@ -40,7 +42,8 @@ def insert_bd_user(id_user, login, password, privileges, first_name, last_name, 
 
 
 def insert_bd_task(task_id, name, address_id, city, district, street, dom, apartment,
-                   entrance, phone_number, personal_account, date_task, remark, status_task, purpose):
+                   entrance, phone_number, personal_account, date_task, remark, status_task, purpose,
+                   registered_residing, address_status, standarts, area):
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         query = f""" Insert into tasks 
@@ -50,19 +53,22 @@ def insert_bd_task(task_id, name, address_id, city, district, street, dom, apart
         cursor.execute(query)
 
         query2 = f""" Insert into address values ({address_id}, '{city}', '{district}', '{street}', '{dom}', 
-            '{apartment}', '{entrance}')"""
+            '{apartment}', '{entrance}', {registered_residing}, '{address_status}',  {standarts}, {area})"""
         cursor.execute(query2)
 
 
-def insert_bd_meters(id_meter, meter_number, instalation_day, meter_type, id_address, meter_remark):
+def insert_bd_meters(id_meter, meter_number, instalation_day, meter_type, id_address, meter_remark, marka, seal_number,
+                     date_next_verification, location, saldo):
     if meter_remark is None:
         meter_remark = ""
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         query = f""" Insert into meters 
-        (id, meter_number, instalation_date, meter_type, id_address, status_filling, meter_remark)
+        (id, meter_number, instalation_date, meter_type, id_address, status_filling, meter_remark,
+        marka, seal_number, date_next_verification, location, saldo)
          values ({id_meter}, '{meter_number}', '{instalation_day}', '{meter_type}', 
-            {id_address}, 'невыполнено', '{meter_remark}')"""
+            {id_address}, 'невыполнено', '{meter_remark}', '{marka}', '{seal_number}', 
+            '{date_next_verification}', '{location}', {saldo})"""
         cursor.execute(query)
 
 
@@ -98,7 +104,8 @@ def select_meters_data_new(id_task):
 def select_meter_reading_new(meter_id):
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
-        query = f""" Select meter_id, last_reading_date, last_reading_value from meter_reading 
+        query = f""" Select meter_id, last_reading_date, last_reading_value, 
+            new_reading_date, new_reading_value from meter_reading 
           where meter_id = {meter_id} """
         cursor.execute(query)
         result = cursor.fetchall()

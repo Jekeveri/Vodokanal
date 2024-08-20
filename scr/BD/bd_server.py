@@ -50,12 +50,14 @@ def select_task_data(id_user):
 
     if task_data:
         for record in task_data:
-            task_id, name, address_id, city, district, street, dom, apartment, entrance, phone_number, \
+            task_id, name, address_id, city, district, street, dom, apartment, entrance,\
+                registered_residing, address_status, standarts, area, phone_number, \
                 personal_account, date_task, remark, status_task, purpose = record
 
             scr.BD.bd_user.insert_bd_task(
                 task_id, name, address_id, city, district, street, dom, apartment,
-                entrance, phone_number, personal_account, date_task, remark, status_task, purpose
+                entrance, phone_number, personal_account, date_task, remark, status_task, purpose,
+                registered_residing, address_status, standarts, area
             )
 
     cursor.execute(f"""
@@ -65,9 +67,11 @@ def select_task_data(id_user):
 
     if meter_data:
         for record in meter_data:
-            id_meter, meter_number, instalation_day, meter_type, id_address, meter_remark = record
+            id_meter, meter_number, instalation_day, meter_type, id_address, meter_remark, marka, seal_number, \
+                date_next_verification, location, saldo = record
             scr.BD.bd_user.insert_bd_meters(
-                id_meter, meter_number, instalation_day, meter_type, id_address, meter_remark
+                id_meter, meter_number, instalation_day, meter_type, id_address, meter_remark, marka, seal_number,
+                date_next_verification, location, saldo
             )
 
     cursor.execute(f"""

@@ -32,7 +32,8 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
     button_add = ft.FloatingActionButton(icon=ft.icons.ADD, on_click=on_click_add,
                                          bgcolor=ft.colors.LIME_300)
     for result in filtered_results:
-        id_meters, meter_number, instalation_day, meter_type, status, status_filling, meter_remark = result
+        id_meters, meter_number, instalation_day, meter_type, id_address, marka, seal_number, \
+            date_next_verification, location, saldo, status_filling, meter_remark = result
 
         if status_filling == 'выполнен':
             color = ft.colors.GREEN
@@ -81,10 +82,10 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
         [
             ft.Column(
                 [
-                    ft.ElevatedButton("Сальдо"),
-                    ft.ElevatedButton("Прописанно"),
-                    ft.ElevatedButton("Нормативы"),
-                    ft.ElevatedButton("Площадь"),
+                    ft.TextField(label="Сальдо"),
+                    ft.TextField(label="Прописанно"),
+                    ft.TextField(label="Нормативы"),
+                    ft.TextField(label="Площадь"),
                 ]
             )
         ]
@@ -105,7 +106,7 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
     )
     container = ft.Container(
         content=panel_list,
-        width=screen_width * 0.2,  # Задаем ширину контейнера
+        width=screen_width * 0.9,
     )
     column.controls.append(button_add)
     column.controls.append(container)
@@ -135,31 +136,69 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
     page.update()
 
 
+m_value = ""
+m_remark = ""
+
+
 def update_data(page, meter_id, result_info_meters, id_task, result_info_address, result_tasks_info,
                 phone_number, meter_remark, task_remark):
     today = datetime.datetime.now().strftime("%H:%M:%S")
     screen_width = page.width
     screen_height = page.height
 
+    def bottom_sheet_yes(e):
+        page.close(bottom_sheet)
+        page.close(dlg_modal)
+        show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number, task_remark)
+
+    def bottom_sheet_no(e):
+        page.close(bottom_sheet)
+
+    bottom_sheet = ft.BottomSheet(
+        content=ft.Container(
+            padding=50,
+            content=ft.Column(
+                tight=True,
+                controls=[
+                    ft.Text("Вы точно хотите выйти?"),
+                    ft.Text("Не сохраненные данные удалятся!"),
+                    ft.Row(
+                        [
+                            ft.ElevatedButton("Да", on_click=bottom_sheet_yes),
+                            ft.ElevatedButton("Нет", on_click=bottom_sheet_no)
+                        ],
+                        alignment=ft.MainAxisAlignment.CENTER
+                    ),
+                ],
+            ),
+        ),
+    )
+
     def on_click_time_task(e):
         today = datetime.datetime.now().strftime("%H:%M:%S")
         if remark.value != "" and reading_value.value != "":
+            global m_remark, m_value
+            m_value = reading_value.value
+            m_remark = remark.value
             scr.BD.bd_user.update_local_tasks(str(today), id_task, reading_value.value, remark.value, meter_id)
             show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number, task_remark)
             page.close(dlg_modal)
             page.update()
 
     def on_click_back(e):
-        page.close(dlg_modal)
-        show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number, task_remark)
+        if reading_value.value != m_value or remark.value != m_remark:
+            page.open(bottom_sheet)
+        else:
+            page.close(dlg_modal)
+            show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number, task_remark)
 
     results = scr.BD.bd_user.select_meter_reading_new(meter_id)
     filtered_results = [result for result in results]
     for result in filtered_results:
-        id_meters, last_reading_date, last_reading_value = result
+        id_meters, last_reading_date, last_reading_value, new_reading_date, new_reading_value = result
 
-    reading_value = ft.TextField(label="Показания счетчика", )
-    remark = ft.TextField(label="Примечания по счетчику", )
+    reading_value = ft.TextField(label="Показания счетчика", value=new_reading_value, )
+    remark = ft.TextField(label="Примечания по счетчику", value=meter_remark)
 
     title = ft.Column(
         [

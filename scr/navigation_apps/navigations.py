@@ -1,6 +1,6 @@
 import scr.navigation_apps.admin.admin_screen
 import scr.navigation_apps.users.users_screen
-import scr.navigation_apps.users.user_seting_page
+import scr.navigation_apps.users.user_setting_page
 import scr.navigation_apps.users.ratyng_user_screen
 import scr.navigation_apps.users.map_user_screen
 import scr.BD.bd_user
@@ -21,26 +21,17 @@ def employee_navigation(privileges, page):
     def navigate(e):
         nav = page.navigation_bar.selected_index
         page.controls.clear()
-        if nav == 0:
-            if privileges == 1:
-                pass
-            else:
+        if privileges == 1:
+            pass
+        else:
+            if nav == 0:
                 scr.navigation_apps.users.users_screen.user_main(page)
-        elif nav == 1:
-            if privileges == 1:
-                pass
-            else:
+            elif nav == 1:
                 scr.navigation_apps.users.ratyng_user_screen.rating(page)
-        elif nav == 2:
-            if privileges == 1:
-                pass
-            else:
+            elif nav == 2:
                 scr.navigation_apps.users.map_user_screen.map(page)
-        elif nav == 3:
-            if privileges == 1:
-                pass
-            else:
-                scr.navigation_apps.users.user_seting_page.setting(page)
+            elif nav == 3:
+                scr.navigation_apps.users.user_setting_page.setting(page)
 
     page.navigation_bar = ft.NavigationBar(
         destinations=[
