@@ -6,6 +6,8 @@ import scr.navigation_apps.users.map_user_screen
 import scr.BD.bd_user
 import flet as ft
 
+import scr.constants as const
+
 
 # тут программа смотрит какая роль у человека
 def role_definition(privileges, page):
@@ -35,7 +37,8 @@ def employee_navigation(privileges, page):
 
     page.navigation_bar = ft.NavigationBar(
         destinations=[
-            ft.NavigationBarDestination(icon=ft.icons.TASK_ROUNDED),
+            ft.Image(src=const.tasks_line_icon),
+            ft.NavigationBarDestination(const.setting_line_icon),
             ft.NavigationBarDestination(icon=ft.icons.BAR_CHART),
             ft.NavigationBarDestination(icon=ft.icons.LOCATION_ON),
             ft.NavigationBarDestination(icon=ft.icons.SETTINGS),
