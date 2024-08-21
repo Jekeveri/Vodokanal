@@ -115,8 +115,9 @@ def select_meter_reading_new(meter_id):
 def select_tasks_data_new():  # потом переделываем select_task_data здесь на другой
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
-        query = """ Select t.id, t.name, a.street, a.dom, a.apartment, t.phone_number, 
-        t.personal_account, t.date, t.remark, t.status, t.purpose from tasks as t
+        query = """ Select t.id|| '', t.name, a.street, a.dom, a.apartment, t.phone_number, 
+        t.personal_account || '', t.date, t.remark, t.status, t.purpose, a.registered_residing|| '', 
+        a.status, a.standarts|| '', a.area|| '' from tasks as t
             join address as a on a.id = t.id_address """
         cursor.execute(query)
         result = cursor.fetchall()

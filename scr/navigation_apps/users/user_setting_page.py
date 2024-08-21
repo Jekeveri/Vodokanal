@@ -4,6 +4,7 @@ import scr.exit
 import scr.func
 import scr.BD.bd_user
 import scr.navigation_apps.navigations
+import scr.constants as const
 
 
 def setting(page):
@@ -27,11 +28,11 @@ def setting(page):
         content=ft.Row([
             ft.Icon(ft.icons.TIME_TO_LEAVE, color=ft.colors.WHITE),
             ft.Text("Выход", style=ft.TextStyle(color=ft.colors.WHITE))
-            ],
+        ],
             alignment=ft.MainAxisAlignment.CENTER,
         ),
         padding=ft.padding.only(top=20, left=50, right=50, bottom=20),
-        bgcolor=ft.colors.BLUE_GREY_100,
+        bgcolor=const.tasks_fulfilled_text_color,
         border_radius=ft.border_radius.all(25),
         shadow=ft.BoxShadow(
             offset=ft.Offset(5, 5),

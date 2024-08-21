@@ -12,8 +12,10 @@ def rating(page):
     page.appbar = ft.AppBar(
         title=ft.Text("Рейтинг"),
         center_title=True,
+        toolbar_height=40,
         bgcolor=ft.colors.BLUE_GREY_50
     )
+
     page.add(
         ft.Column(
             [
@@ -23,7 +25,8 @@ def rating(page):
                             [
                                 ft.ProgressRing(scale=2, color=ft.colors.BLACK45),
                                 ft.Text("Здесь пока что ничего нет", size=20)
-                            ],horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                            spacing=50
                         )
                     ],
                     alignment=ft.MainAxisAlignment.CENTER
