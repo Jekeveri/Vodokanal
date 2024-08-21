@@ -63,26 +63,28 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
         on_click_container = create_on_click(id_task, id_meters, result_info_meters, result_tasks_info, phone_number,
                                              meter_remark, remark, result_address)
 
-        row = ft.Row(
-            [
-                ft.Container(
+        container = ft.Container(
                     content=row_to_container,
-                    padding=10,
+                    padding=ft.padding.only(top=20, left=50, right=50, bottom=20),
                     margin=5,
                     border_radius=15,
                     bgcolor=color,
                     ink=True,
+                    shadow=ft.BoxShadow(
+                        offset=ft.Offset(0, 7),
+                        blur_radius=10,
+                        color=ft.colors.BLACK38
+                    ),
+                    alignment=ft.alignment.center,
                     on_click=on_click_container
                 )
-            ],
-            alignment=ft.MainAxisAlignment.CENTER
-        )
-        column.controls.append(row)
+        column.controls.append(container)
     filtered_results = [
         result for result in result_address
     ]
     for resultt in filtered_results:
-        id_task, person_name, street, dom, apartment, phone_number,personal_account, date, remark, status, purpose, registered_residing,status, standarts, area = resultt
+        id_task, person_name, street, dom, apartment, phone_number,personal_account, date, remark, status, purpose, \
+            registered_residing,status, standarts, area = resultt
     dop_buttons_redact = ft.Row(
         [
             ft.Column(
