@@ -1,7 +1,9 @@
 import psycopg2
 import datetime
 
-import scr.BD.bd_user
+import scr.BD.bd_users.select_bd
+import scr.BD.bd_users.insert_bd
+import scr.BD.bd_users.create_bd
 import scr.func
 import scr.navigation_apps.navigations
 
@@ -21,13 +23,13 @@ def check_user_credentials(login, password, page):
     result = cursor.fetchall()
     cursor.close()
     conn.close()
-    scr.BD.bd_user.local_user_db()
+    scr.BD.bd_users.create_bd.local_user_db()
     if result:
         for record in result:
             id_user, login_user, password_user, privileges, first_name, last_name = record
             if privileges != 1:
-                scr.BD.bd_user.insert_bd_user(id_user, login_user, password_user, privileges,
-                                              first_name, last_name, page)
+                scr.BD.bd_users.insert_bd.insert_bd_user(id_user, login_user, password_user, privileges,
+                                                         first_name, last_name, page)
             else:
                 scr.navigation_apps.navigations.role_definition(privileges, page)
     else:
@@ -50,14 +52,14 @@ def select_task_data(id_user):
 
     if task_data:
         for record in task_data:
-            task_id, name, address_id, city, district, street, dom, apartment, entrance,\
+            task_id, name, address_id, city, district, street, dom, apartment, entrance, \
                 registered_residing, address_status, standarts, area, phone_number, \
-                personal_account, date_task, remark, status_task, purpose = record
+                personal_account, date_task, remark, status_task, purpose, saldo = record
 
-            scr.BD.bd_user.insert_bd_task(
+            scr.BD.bd_users.insert_bd.insert_bd_task(
                 task_id, name, address_id, city, district, street, dom, apartment,
                 entrance, phone_number, personal_account, date_task, remark, status_task, purpose,
-                registered_residing, address_status, standarts, area
+                registered_residing, address_status, standarts, area, saldo
             )
 
     cursor.execute(f"""
@@ -68,10 +70,10 @@ def select_task_data(id_user):
     if meter_data:
         for record in meter_data:
             id_meter, meter_number, instalation_day, meter_type, id_address, meter_remark, marka, seal_number, \
-                date_next_verification, location, saldo = record
-            scr.BD.bd_user.insert_bd_meters(
+                date_next_verification, location = record
+            scr.BD.bd_users.insert_bd.insert_bd_meters(
                 id_meter, meter_number, instalation_day, meter_type, id_address, meter_remark, marka, seal_number,
-                date_next_verification, location, saldo
+                date_next_verification, location
             )
 
     cursor.execute(f"""
@@ -82,7 +84,7 @@ def select_task_data(id_user):
     if meter_reading_data:
         for record in meter_reading_data:
             meter_id, reading_date, reading_values = record
-            scr.BD.bd_user.insert_bd_meter_reading(
+            scr.BD.bd_users.insert_bd.insert_bd_meter_reading(
                 meter_id, reading_date, reading_values
             )
 
@@ -99,7 +101,7 @@ def upload_data_to_server():
             password=123321
         )
         time_to_server = datetime.datetime.now().strftime("%H:%M:%S")
-        result = scr.BD.bd_user.get_data_to_upload()
+        result = scr.BD.bd_users.select_bd.get_data_to_upload()
         for record in result:
             task_id = record[0]
             unloading_time = record[1]

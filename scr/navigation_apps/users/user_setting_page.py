@@ -2,7 +2,8 @@ import flet as ft
 
 import scr.exit
 import scr.func
-import scr.BD.bd_user
+import scr.BD.bd_users.delete_bd
+import scr.BD.bd_users.select_bd
 import scr.navigation_apps.navigations
 import scr.constants as const
 
@@ -18,11 +19,11 @@ def setting(page):
     )
 
     def on_click_exit(e):
-        scr.BD.bd_user.delete_data_db()
+        scr.BD.bd_users.delete_bd.delete_data_db()
         scr.exit.exit_account(page)
 
     scr.func.show_snack_bar(page, "Setting")
-    result = scr.BD.bd_user.select_user_data()
+    result = scr.BD.bd_users.select_bd.select_user_data()
 
     bte = ft.Container(
         content=ft.Row([

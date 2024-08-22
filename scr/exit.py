@@ -1,7 +1,7 @@
 import os
 
 import scr.BD.bd_server
-import scr.BD.bd_user
+import scr.BD.bd_users.select_bd
 import scr.func
 import scr.navigation_apps.navigations
 import scr.verifications
@@ -9,7 +9,7 @@ import scr.verifications
 
 def exit_account(page):
     if os.path.exists("database_client.db"):
-        result = scr.BD.bd_user.select_user_data()
+        result = scr.BD.bd_users.select_bd.select_user_data()
         if result:  # Проверяем, что содержимое не пустое
             for record in result:
                 login = record[0]

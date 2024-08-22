@@ -3,7 +3,6 @@ import scr.navigation_apps.users.users_screen
 import scr.navigation_apps.users.user_setting_page
 import scr.navigation_apps.users.ratyng_user_screen
 import scr.navigation_apps.users.map_user_screen
-import scr.BD.bd_user
 import flet as ft
 
 

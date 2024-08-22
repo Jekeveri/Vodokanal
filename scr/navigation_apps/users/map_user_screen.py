@@ -1,7 +1,6 @@
 import flet as ft
 
 import scr.func
-import scr.BD.bd_user
 import scr.navigation_apps.navigations
 
 
@@ -10,7 +9,7 @@ def map(page):
     page.controls.clear()
 
     page.appbar = ft.AppBar(
-        title=ft.Text("Карта"),
+        title=ft.Text("Обратная связь"),
         center_title=True,
         toolbar_height=40,
         bgcolor=ft.colors.BLUE_GREY_50

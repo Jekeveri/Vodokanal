@@ -2,28 +2,58 @@ import datetime
 
 import flet as ft
 
-import scr.BD.bd_user
+import scr.BD.bd_users.update_bd
+import scr.BD.bd_users.insert_bd
+import scr.BD.bd_users.select_bd
 import scr.BD.bd_server
 import scr.exit
 import scr.func
 import scr.constants as const
 
 
-def show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number, remark, result_address):
+def show_meters_data(page, id_task):
     screen_width = page.width
     screen_height = page.height
     page.controls.clear()
-    results = scr.BD.bd_user.select_meters_data_new(id_task)
+    results_meters_data = scr.BD.bd_users.select_bd.select_meters_data_new(id_task)
+    results_address_data = scr.BD.bd_users.select_bd.select_tasks_data_for_one(id_task)
+
+    filtered_results = [
+        result_address_data for result_address_data in results_address_data
+    ]
+
+    for result in filtered_results:
+        id_task, person_name, street, dom, apartment, phone_number, \
+            personal_account, date, remark, status, purpose, registered_residing, \
+            status_address, standarts, area, saldo = result
+    result_info_address = f"Улица: {street} Дом {dom} Квартира {apartment}"
+    row_address = ft.Column(
+        [
+            ft.Text(result_info_address, size=17, color=const.tasks_text_color),
+            ft.Text(f"Цель задания: {purpose}", size=17, color=const.tasks_text_color),
+        ],
+    )
 
     def on_click_back(e):
         user_main(page)
-        user_main(page)
 
-    button_back = ft.ElevatedButton("Back", on_click=on_click_back, bgcolor=ft.colors.RED_200)
-    filtered_results = [result for result in results]
+    def on_click_save(e):
+        scr.BD.bd_users.update_bd.update_dop_data_address(remark_textfield.value,saldo_textfield.value,
+                                                          registered_residing_textfield.value,standarts_textfield.value,
+                                                          area_textfield.value, id_address, id_task, id_meters)
+        user_main(page)
+        page.update()
+
+    button_back = ft.ElevatedButton("Назад", on_click=on_click_back, bgcolor=ft.colors.RED_200)
+    button_save = ft.ElevatedButton("Сохранить", on_click=on_click_save, bgcolor=ft.colors.RED_200, visible=False)
+    filtered_results_meters = [result for result in results_meters_data]
     column = ft.Column(scroll=ft.ScrollMode.AUTO, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
     color = ft.colors.GREY
     column.controls.clear()
+
+    def on_change_dop_data(e):
+        button_save.visible = True
+        page.update()
 
     def on_click_add(e):
         scr.func.show_alert_yn(page, "Заполните новый счетчик", id_task)
@@ -31,9 +61,9 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
 
     button_add = ft.FloatingActionButton(icon=ft.icons.ADD, on_click=on_click_add,
                                          bgcolor=ft.colors.LIME_300)
-    for result in filtered_results:
+    for result in filtered_results_meters:
         id_meters, meter_number, instalation_day, meter_type, id_address, marka, seal_number, \
-            date_next_verification, location, saldo, status_filling, meter_remark = result
+            date_next_verification, location, status_filling, meter_remark = result
 
         if status_filling == 'выполнен':
             color = const.tasks_fulfilled_color
@@ -42,7 +72,7 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
         else:
             color = const.tasks_pending_color
 
-        result_info_meters = f"Счетчик: {meter_number} Дата установки: {instalation_day} Тип: {meter_type}"
+        result_info_meters = f"Счетчик: {marka} Дата установки: {instalation_day} Тип: {meter_type}"
 
         row_to_container = ft.Column(
             [
@@ -52,47 +82,47 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
         )
 
         # Используем замыкание для передачи правильного apartment
-        def create_on_click(id_task, id_meters, result_info_meters, result_tasks_info, phone_number, meter_remark,
-                            remark, result_address):
+        def create_on_click(id_task, id_meters):
             def on_click(e):
-                update_data(page, id_meters, result_info_meters, id_task, result_info_address, result_tasks_info,
-                            phone_number, meter_remark, remark, result_address)
+                update_data(page, id_meters, id_task)
 
             return on_click
 
-        on_click_container = create_on_click(id_task, id_meters, result_info_meters, result_tasks_info, phone_number,
-                                             meter_remark, remark, result_address)
+        on_click_container = create_on_click(id_task, id_meters)
 
         container = ft.Container(
-                    content=row_to_container,
-                    padding=ft.padding.only(top=20, left=50, right=50, bottom=20),
-                    margin=5,
-                    border_radius=15,
-                    bgcolor=color,
-                    ink=True,
-                    shadow=ft.BoxShadow(
-                        offset=ft.Offset(0, 7),
-                        blur_radius=10,
-                        color=ft.colors.BLACK38
-                    ),
-                    alignment=ft.alignment.center,
-                    on_click=on_click_container
-                )
+            content=row_to_container,
+            padding=ft.padding.only(top=20, left=50, right=50, bottom=20),
+            margin=5,
+            border_radius=15,
+            bgcolor=color,
+            ink=True,
+            shadow=ft.BoxShadow(
+                offset=ft.Offset(0, 7),
+                blur_radius=10,
+                color=ft.colors.BLACK38
+            ),
+            alignment=ft.alignment.center,
+            on_click=on_click_container
+        )
         column.controls.append(container)
-    filtered_results = [
-        result for result in result_address
-    ]
-    for resultt in filtered_results:
-        id_task, person_name, street, dom, apartment, phone_number,personal_account, date, remark, status, purpose, \
-            registered_residing,status, standarts, area = resultt
+
+    remark_textfield = ft.TextField(label="Примечание", value=remark, on_change=on_change_dop_data)
+    saldo_textfield = ft.TextField(label="Сальдо", value=saldo, on_change=on_change_dop_data)
+    registered_residing_textfield = ft.TextField(label="Прописанно", value=registered_residing,
+                                                 on_change=on_change_dop_data)
+    standarts_textfield = ft.TextField(label="Нормативы", value=standarts, on_change=on_change_dop_data)
+    area_textfield = ft.TextField(label="Площадь", value=area, on_change=on_change_dop_data)
     dop_buttons_redact = ft.Row(
         [
             ft.Column(
                 [
-                    ft.TextField(label="Сальдо", value=saldo),
-                    ft.TextField(label="Прописанно", value=registered_residing),
-                    ft.TextField(label="Нормативы", value=standarts),
-                    ft.TextField(label="Площадь", value=area),
+                    remark_textfield,
+                    saldo_textfield,
+                    registered_residing_textfield,
+                    standarts_textfield,
+                    area_textfield
+
                 ]
             )
         ]
@@ -128,13 +158,14 @@ def show_meters_data(page, id_task, result_info_address, result_tasks_info, phon
     content_dialog = column
     title = ft.Column(
         [
-            ft.Text(result_tasks_info, size=17, ),
+            row_address,
             ft.Text(result_info_address, size=17, ),
             ft.Text(f"{phone_number}", size=17, ),
             ft.Text(f"Примечание по адрессу: {remark}", size=17, ),
         ]
     )
     row_button = ft.Row(alignment=ft.MainAxisAlignment.CENTER)
+    row_button.controls.append(button_save)
     row_button.controls.append(button_back)
 
     page.add(
@@ -154,16 +185,14 @@ m_value = ""
 m_remark = ""
 
 
-def update_data(page, meter_id, result_info_meters, id_task, result_info_address, result_tasks_info,
-                phone_number, meter_remark, task_remark, result_address):
-    today = datetime.datetime.now().strftime("%H:%M:%S")
+def update_data(page, meter_id, id_task):
     screen_width = page.width
     screen_height = page.height
 
     def bottom_sheet_yes(e):
         page.close(bottom_sheet)
         page.close(dlg_modal)
-        show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number, task_remark, result_address)
+        show_meters_data(page, id_task)
 
     def bottom_sheet_no(e):
         page.close(bottom_sheet)
@@ -194,8 +223,9 @@ def update_data(page, meter_id, result_info_meters, id_task, result_info_address
             global m_remark, m_value
             m_value = reading_value.value
             m_remark = remark.value
-            scr.BD.bd_user.update_local_tasks(str(today), id_task, reading_value.value, remark.value, meter_id)
-            show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number, task_remark, result_address)
+            scr.BD.bd_users.update_bd.update_local_tasks(
+                str(today), id_task, reading_value.value, remark.value, meter_id)
+            show_meters_data(page, id_task)
             page.close(dlg_modal)
             page.update()
 
@@ -204,9 +234,15 @@ def update_data(page, meter_id, result_info_meters, id_task, result_info_address
             page.open(bottom_sheet)
         else:
             page.close(dlg_modal)
-            show_meters_data(page, id_task, result_info_address, result_tasks_info, phone_number, task_remark, result_address)
+            show_meters_data(page, id_task)
 
-    results = scr.BD.bd_user.select_meter_reading_new(meter_id)
+    results_meters_data = scr.BD.bd_users.select_bd.select_meters_data_new_for_one(id_task, meter_id)
+    filtered_results_meters = [result for result in results_meters_data]
+    for result in filtered_results_meters:
+        id_meters, meter_number, instalation_day, meter_type, id_address, marka, seal_number, \
+            date_next_verification, location, status_filling, meter_remark = result
+    result_info_meters = f"Счетчик: {marka} Дата установки: {instalation_day} Тип: {meter_type}"
+    results = scr.BD.bd_users.select_bd.select_meter_reading_new(meter_id)
     filtered_results = [result for result in results]
     for result in filtered_results:
         id_meters, last_reading_date, last_reading_value, new_reading_date, new_reading_value = result
@@ -307,7 +343,7 @@ def user_main(page):
     page.update()
 
     def update_results():
-        results = scr.BD.bd_user.select_tasks_data_new()
+        results = scr.BD.bd_users.select_bd.select_tasks_data_new()
         filtered_results = [
             result for result in results
         ]
@@ -316,7 +352,7 @@ def user_main(page):
         for result in filtered_results:
             id_task, person_name, street, dom, apartment, phone_number, \
                 personal_account, date, remark, status, purpose, registered_residing, \
-                status_address, standarts, area = result
+                status_address, standarts, area, saldo = result
             if status == 'выполнен':
                 color = const.tasks_fulfilled_color
             elif status == 'в_исполнении':
@@ -324,7 +360,6 @@ def user_main(page):
             else:
                 color = const.tasks_pending_color
             result_info = f"Улица: {street} Дом {dom} Квартира {apartment}"
-            result_tasks_info = f"Лицевой счет: {personal_account} ФИО: {person_name}"
             row = ft.Column(
                 [
                     ft.Text(result_info, size=17, color=const.tasks_text_color),
@@ -333,29 +368,29 @@ def user_main(page):
             )
 
             # Используем замыкание для передачи правильного apartment
-            def create_on_click(id_task, result_info, result_tasks_info, phone_number, remark, results):
+            def create_on_click(id_task):
                 def on_click(e):
-                    show_meters_data(page, id_task, result_info, result_tasks_info, phone_number, remark, results)
+                    show_meters_data(page, id_task)
 
                 return on_click
 
-            on_click_container = create_on_click(id_task, result_info, result_tasks_info, phone_number, remark, results)
+            on_click_container = create_on_click(id_task)
 
             task_container = ft.Container(
-                        content=row,
-                        padding=ft.padding.only(top=20, left=50, right=50, bottom=20),
-                        margin=5,
-                        border_radius=15,
-                        bgcolor=color,
-                        ink=True,
-                        shadow=ft.BoxShadow(
-                            offset=ft.Offset(0, 7),
-                            blur_radius=10,
-                            color=ft.colors.BLACK38
-                        ),
-                        alignment=ft.alignment.center,
-                        on_click=on_click_container
-                    )
+                content=row,
+                padding=ft.padding.only(top=20, left=50, right=50, bottom=20),
+                margin=5,
+                border_radius=15,
+                bgcolor=color,
+                ink=True,
+                shadow=ft.BoxShadow(
+                    offset=ft.Offset(0, 7),
+                    blur_radius=10,
+                    color=ft.colors.BLACK38
+                ),
+                alignment=ft.alignment.center,
+                on_click=on_click_container
+            )
 
             column.controls.append(task_container)
 

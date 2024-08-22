@@ -1,7 +1,6 @@
 import flet as ft
 
 import scr.func
-import scr.BD.bd_user
 import scr.navigation_apps.navigations
 
 

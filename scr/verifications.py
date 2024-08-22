@@ -1,6 +1,6 @@
 import flet as ft
 
-import scr.BD.bd_user
+import scr.BD.bd_server
 import scr.func
 import scr.navigation_apps.navigations
 
@@ -10,8 +10,8 @@ def authentication(page):
     page.navigation_bar = None
     page.appbar = None
     page.controls.clear()
-    screen_width = page.window_width
-    screen_height = page.window_height
+    screen_width = page.width
+    screen_height = page.height
 
     page.title = "Авторизация"
     page.vertical_alignment = ft.MainAxisAlignment.CENTER

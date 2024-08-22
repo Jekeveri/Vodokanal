@@ -1,6 +1,6 @@
 import flet as ft
 
-import scr.BD.bd_user
+import scr.BD.bd_users.delete_bd
 import scr.exit
 
 
@@ -14,7 +14,7 @@ def admin_main(page):
 
     def handle_change(e):
         if e.control.selected_index == 1:
-            scr.BD.bd_user.delete_data_db()
+            scr.BD.bd_users.delete_bd.delete_data_db()
             page.close(end_drawer)
             scr.exit.exit_account(page)
         else:
