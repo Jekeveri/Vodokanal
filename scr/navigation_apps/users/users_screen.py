@@ -38,9 +38,9 @@ def show_meters_data(page, id_task):
         user_main(page)
 
     def on_click_save(e):
-        scr.BD.bd_users.update_bd.update_dop_data_address(remark_textfield.value,saldo_textfield.value,
-                                                          registered_residing_textfield.value,standarts_textfield.value,
-                                                          area_textfield.value, id_address, id_task, id_meters)
+        scr.BD.bd_users.update_bd.update_dop_data_address(
+            remark_textfield.value, registered_residing_textfield.value, standarts_textfield.value,
+            area_textfield.value, id_address, id_task)
         user_main(page)
         page.update()
 
@@ -108,7 +108,7 @@ def show_meters_data(page, id_task):
         column.controls.append(container)
 
     remark_textfield = ft.TextField(label="Примечание", value=remark, on_change=on_change_dop_data)
-    saldo_textfield = ft.TextField(label="Сальдо", value=saldo, on_change=on_change_dop_data)
+    saldo_text = ft.Text(f"Сальдо: {saldo}", size=17)
     registered_residing_textfield = ft.TextField(label="Прописанно", value=registered_residing,
                                                  on_change=on_change_dop_data)
     standarts_textfield = ft.TextField(label="Нормативы", value=standarts, on_change=on_change_dop_data)
@@ -118,7 +118,7 @@ def show_meters_data(page, id_task):
             ft.Column(
                 [
                     remark_textfield,
-                    saldo_textfield,
+                    saldo_text,
                     registered_residing_textfield,
                     standarts_textfield,
                     area_textfield
@@ -257,15 +257,21 @@ def update_data(page, meter_id, id_task):
         ]
     )
 
+    marka_textfield = ft.TextField(label="Марка", value=marka)
+    meter_number_textfield = ft.TextField(label="Заводской номер", value=meter_number)
+    seal_number_textfield = ft.TextField(label="Номер пломбы", value=seal_number)
+    location_textfield = ft.TextField(label="Место расположение", value=location)
+    meter_type_textfield = ft.TextField(label="Тип услуги", value=meter_type)
+
     dop_buttons_redact = ft.Row(
         [
             ft.Column(
                 [
-                    ft.ElevatedButton("Марка"),
-                    ft.ElevatedButton("Заводской номер"),
-                    ft.ElevatedButton("Номер пломбы"),
-                    ft.ElevatedButton("Место расположение"),
-                    ft.ElevatedButton("Тип услуги"),
+                    marka_textfield,
+                    meter_number_textfield,
+                    seal_number_textfield,
+                    location_textfield,
+                    meter_type_textfield,
                 ]
             )
         ]

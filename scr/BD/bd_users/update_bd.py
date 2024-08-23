@@ -24,7 +24,7 @@ def update_local_tasks(unloading_time, task_id, reading_value, remark, meter_id)
         db.commit()
 
 
-def update_dop_data_address(remark, saldo, registered_residing, standarts, area, address_id, task_id, id_meters):
+def update_dop_data_address(remark, registered_residing, standarts, area, address_id, task_id,):
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         query = f""" update tasks set 
@@ -36,10 +36,5 @@ def update_dop_data_address(remark, saldo, registered_residing, standarts, area,
             standarts = '{standarts}',
             area = '{area}'
             where id = {address_id} """
-        # query2 = f""" update meters set
-        #     saldo = {saldo},
-        #     meter_remark = '{remark}'
-        #     where id = {id_meters} """
         cursor.execute(query1)
-        # cursor.execute(query2)
         db.commit()
