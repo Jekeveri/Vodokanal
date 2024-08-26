@@ -13,7 +13,6 @@ def authentication(page):
     screen_width = page.width
     screen_height = page.height
 
-    page.title = "Авторизация"
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
 
     login = ft.TextField(label="Логин", )

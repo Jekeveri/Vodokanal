@@ -189,6 +189,7 @@ def update_data(page, meter_id, id_task):
     screen_width = page.width
     screen_height = page.height
 
+    # Функции для работы с BottomSheet
     def bottom_sheet_yes(e):
         page.close(bottom_sheet)
         page.close(dlg_modal)
@@ -197,6 +198,7 @@ def update_data(page, meter_id, id_task):
     def bottom_sheet_no(e):
         page.close(bottom_sheet)
 
+    # BottomSheet для подтверждения выхода
     bottom_sheet = ft.BottomSheet(
         content=ft.Container(
             padding=50,
@@ -217,18 +219,23 @@ def update_data(page, meter_id, id_task):
         ),
     )
 
+    # Обработка нажатия кнопки сохранения
     def on_click_time_task(e):
         today = datetime.datetime.now().strftime("%H:%M:%S")
-        if remark.value != "" and reading_value.value != "":
+        if remark.value and reading_value.value:  # Упростил проверку на пустоту
             global m_remark, m_value
             m_value = reading_value.value
             m_remark = remark.value
             scr.BD.bd_users.update_bd.update_local_tasks(
-                str(today), id_task, reading_value.value, remark.value, meter_id)
+                str(today), id_task, m_value, m_remark, meter_id)
             show_meters_data(page, id_task)
             page.close(dlg_modal)
             page.update()
+        else:
+            reading_value.error_text = "Введите данные"
+            page.update()
 
+    # Обработка нажатия кнопки назад
     def on_click_back(e):
         if reading_value.value != m_value or remark.value != m_remark:
             page.open(bottom_sheet)
@@ -236,33 +243,57 @@ def update_data(page, meter_id, id_task):
             page.close(dlg_modal)
             show_meters_data(page, id_task)
 
+    # Инициализация переменных на случай, если данные не будут получены
+    marka = "Неизвестно"
+    meter_number = "Неизвестно"
+    instalation_day = "Неизвестно"
+    meter_type = "Неизвестно"
+    seal_number = "Неизвестно"
+    location = "Неизвестно"
+    meter_remark = "Неизвестно"
+
+    # Получение данных счетчика
     results_meters_data = scr.BD.bd_users.select_bd.select_meters_data_new_for_one(id_task, meter_id)
-    filtered_results_meters = [result for result in results_meters_data]
-    for result in filtered_results_meters:
-        id_meters, meter_number, instalation_day, meter_type, id_address, marka, seal_number, \
-            date_next_verification, location, status_filling, meter_remark = result
+    if results_meters_data:
+        for result in results_meters_data:
+            id_meters, meter_number, instalation_day, meter_type, id_address, marka, seal_number, \
+                date_next_verification, location, status_filling, meter_remark = result
+
+    # Формирование текста с информацией о счетчике
     result_info_meters = f"Счетчик: {marka} Дата установки: {instalation_day} Тип: {meter_type}"
+
+    # Инициализация переменных для показаний
+    last_reading_date = "Неизвестно"
+    last_reading_value = "Неизвестно"
+    new_reading_value = ""
+
+    # Получение данных показаний счетчика
     results = scr.BD.bd_users.select_bd.select_meter_reading_new(meter_id)
-    filtered_results = [result for result in results]
-    for result in filtered_results:
-        id_meters, last_reading_date, last_reading_value, new_reading_date, new_reading_value = result
+    if results:
+        for result in results:
+            id_meters, last_reading_date, last_reading_value, new_reading_date, new_reading_value = result
 
-    reading_value = ft.TextField(label="Показания счетчика", value=new_reading_value, )
-    remark = ft.TextField(label="Примечания по счетчику", value=meter_remark)
+    # Поля ввода для показаний и примечаний
+    reading_value = ft.TextField(label="Показания счетчика", value=new_reading_value)
+    remark = ft.TextField(label="Примечания по счетчику", value=meter_remark, multiline=True, min_lines=1,
+                          max_lines=3, )
 
+    # Заголовок
     title = ft.Column(
         [
-            ft.Text(f"Номер: {meter_id}", size=17, ),
-            ft.Text(result_info_meters, size=17, ),
+            ft.Text(f"Номер: {meter_id}", size=17),
+            ft.Text(result_info_meters, size=17),
         ]
     )
 
+    # Поля ввода для редактирования данных счетчика
     marka_textfield = ft.TextField(label="Марка", value=marka)
     meter_number_textfield = ft.TextField(label="Заводской номер", value=meter_number)
     seal_number_textfield = ft.TextField(label="Номер пломбы", value=seal_number)
-    location_textfield = ft.TextField(label="Место расположение", value=location)
+    location_textfield = ft.TextField(label="Место расположения", value=location)
     meter_type_textfield = ft.TextField(label="Тип услуги", value=meter_type)
 
+    # Расширяемый список для редактирования данных счетчика
     dop_buttons_redact = ft.Row(
         [
             ft.Column(
@@ -276,6 +307,7 @@ def update_data(page, meter_id, id_task):
             )
         ]
     )
+
     panels = [
         ft.ExpansionPanel(
             header=ft.Text("Редактирование данных счётчика"),
@@ -286,22 +318,21 @@ def update_data(page, meter_id, id_task):
             bgcolor=ft.colors.BLUE_100
         ),
     ]
+
     panel_list = ft.ExpansionPanelList(
         elevation=10,
         controls=panels
     )
 
+    # Основной контент модального окна
     meters_data = ft.Container(
         content=ft.Column(
             [
                 ft.Text(f"Дата контрольных показаний: {last_reading_date}"),
                 ft.Text(f"Контрольные показания: {last_reading_value}"),
-
                 reading_value,
                 remark,
-
                 ft.ElevatedButton("Добавить фотографию"),
-
                 ft.Column(
                     [
                         panel_list
@@ -313,6 +344,7 @@ def update_data(page, meter_id, id_task):
         )
     )
 
+    # Модальное окно с данными счетчика
     dlg_modal = ft.AlertDialog(
         modal=True,
         content=meters_data,
@@ -327,6 +359,7 @@ def update_data(page, meter_id, id_task):
         ],
     )
 
+    # Очищаем и обновляем контент страницы
     page.controls.clear()
     page.open(dlg_modal)
     page.update()
@@ -337,7 +370,6 @@ def user_main(page):
     page.controls.clear()
     screen_width = page.width
     screen_height = page.height
-    page.title = "Пользователь"
     page.vertical_alignment = ft.MainAxisAlignment.START
 
     page.appbar = ft.AppBar(

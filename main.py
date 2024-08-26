@@ -4,6 +4,7 @@ import scr.exit
 
 def main(page: ft.Page):
     page.theme_mode = 'light'
+    page.title = "Мобильный контралер"
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     scr.exit.exit_account(page)
 

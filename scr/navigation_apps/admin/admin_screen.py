@@ -7,7 +7,6 @@ import scr.exit
 def admin_main(page):
     page.clean()
     page.controls.clear()
-    page.title = "Администратор"
     page.vertical_alignment = ft.MainAxisAlignment.START
     screen_width = page.window_width
     screen_height = page.window_height
