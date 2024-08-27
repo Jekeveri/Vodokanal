@@ -111,11 +111,13 @@ def upload_data_to_server():
             status = record[5]
             meter_id = record[6]
             cursor = conn.cursor()
-            cursor.execute(f""" update tasks set uploud_to_local_data = '{unloading_time}', 
-            uploud_to_server = '{time_to_server}', remark = '{remark}', status = '{status}' where id = {task_id}""")
-            query = f""" insert into meter_reading (meter_id, reading_date, reading_values) values
-            ({meter_id}, '{last_reading_date}',{last_reading_value})"""
-            cursor.execute(query)
+            if status == "выполнен":
+                cursor.execute(f""" update tasks set uploud_to_local_data = '{unloading_time}',
+                 uploud_to_server = '{time_to_server}',remark = '{remark}', status = '{status}' where id = {task_id}""")
+                query = f""" insert into meter_reading (meter_id, reading_date, reading_values) values
+                            ({meter_id}, '{last_reading_date}', {last_reading_value})"""
+                cursor.execute(query)
+
         conn.commit()
         conn.close()
     except Exception as ex:

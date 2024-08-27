@@ -232,7 +232,7 @@ def update_data(page, meter_id, id_task):
             page.close(dlg_modal)
             page.update()
         else:
-            reading_value.error_text = "Введите данные"
+            reading_value.error_text = "✱ Введите данные"
             page.update()
 
     # Обработка нажатия кнопки назад
@@ -276,7 +276,7 @@ def update_data(page, meter_id, id_task):
     # Поля ввода для показаний и примечаний
     reading_value = ft.TextField(label="Показания счетчика", value=new_reading_value)
     remark = ft.TextField(label="Примечания по счетчику", value=meter_remark, multiline=True, min_lines=1,
-                          max_lines=3, )
+                          max_lines=3)
 
     # Заголовок
     title = ft.Column(
