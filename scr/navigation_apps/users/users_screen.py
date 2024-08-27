@@ -27,17 +27,17 @@ def show_meters_data(page, id_task):
             personal_account, date, remark, status, purpose, registered_residing, \
             status_address, standarts, area, saldo = result
     result_info_address = f"Улица: {street} Дом {dom} Квартира {apartment}"
+    result_info_person = f"ФИО владельца: {person_name}"
     row_address = ft.Column(
         [
             ft.Text(result_info_address, size=17, color=const.tasks_text_color),
-            ft.Text(f"Цель задания: {purpose}", size=17, color=const.tasks_text_color),
         ],
     )
 
     def on_click_back(e):
         user_main(page)
 
-    def on_click_save(e):
+    def on_click_save(e): # переписать чтобы не выходило а перезапускало страницу
         scr.BD.bd_users.update_bd.update_dop_data_address(
             remark_textfield.value, registered_residing_textfield.value, standarts_textfield.value,
             area_textfield.value, id_address, id_task)
@@ -45,7 +45,7 @@ def show_meters_data(page, id_task):
         page.update()
 
     button_back = ft.ElevatedButton("Назад", on_click=on_click_back, bgcolor=ft.colors.RED_200)
-    button_save = ft.ElevatedButton("Сохранить", on_click=on_click_save, bgcolor=ft.colors.RED_200, visible=False)
+    button_save = ft.ElevatedButton("Сохранить", on_click=on_click_save, bgcolor=ft.colors.BLUE_200, visible=False)
     filtered_results_meters = [result for result in results_meters_data]
     column = ft.Column(scroll=ft.ScrollMode.AUTO, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
     color = ft.colors.GREY
@@ -55,12 +55,6 @@ def show_meters_data(page, id_task):
         button_save.visible = True
         page.update()
 
-    def on_click_add(e):
-        scr.func.show_alert_yn(page, "Заполните новый счетчик", id_task)
-        page.update()
-
-    button_add = ft.FloatingActionButton(icon=ft.icons.ADD, on_click=on_click_add,
-                                         bgcolor=ft.colors.LIME_300)
     for result in filtered_results_meters:
         id_meters, meter_number, instalation_day, meter_type, id_address, marka, seal_number, \
             date_next_verification, location, status_filling, meter_remark = result
@@ -72,11 +66,10 @@ def show_meters_data(page, id_task):
         else:
             color = const.tasks_pending_color
 
-        result_info_meters = f"Счетчик: {marka} Дата установки: {instalation_day} Тип: {meter_type}"
+        result_info_meters = f"Марка: {marka}\nЗаводской номер: {meter_number}\nТип: {meter_type}"
 
         row_to_container = ft.Column(
             [
-                ft.Text(f"Номер: {id_meters}", size=17, ),
                 ft.Text(result_info_meters, size=17, ),
             ],
         )
@@ -108,7 +101,6 @@ def show_meters_data(page, id_task):
         column.controls.append(container)
 
     remark_textfield = ft.TextField(label="Примечание", value=remark, on_change=on_change_dop_data)
-    saldo_text = ft.Text(f"Сальдо: {saldo}", size=17)
     registered_residing_textfield = ft.TextField(label="Прописанно", value=registered_residing,
                                                  on_change=on_change_dop_data)
     standarts_textfield = ft.TextField(label="Нормативы", value=standarts, on_change=on_change_dop_data)
@@ -118,7 +110,6 @@ def show_meters_data(page, id_task):
             ft.Column(
                 [
                     remark_textfield,
-                    saldo_text,
                     registered_residing_textfield,
                     standarts_textfield,
                     area_textfield
@@ -153,14 +144,13 @@ def show_meters_data(page, id_task):
         width=screen_width * 0.9,
         border_radius=15,
     )
-    column.controls.append(button_add)
     column.controls.append(container)
     content_dialog = column
     title = ft.Column(
         [
-            row_address,
             ft.Text(result_info_address, size=17, ),
-            ft.Text(f"{phone_number}", size=17, ),
+            ft.Text(result_info_person, size=17, ),
+            ft.Text(f"Номер телефона владельца {phone_number}", size=17, ),
             ft.Text(f"Примечание по адрессу: {remark}", size=17, ),
         ]
     )
@@ -401,7 +391,6 @@ def user_main(page):
             row = ft.Column(
                 [
                     ft.Text(result_info, size=17, color=const.tasks_text_color),
-                    ft.Text(f"Цель задания: {purpose}", size=17, color=const.tasks_text_color),
                 ],
             )
 
