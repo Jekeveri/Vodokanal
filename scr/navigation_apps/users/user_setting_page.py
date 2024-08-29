@@ -32,7 +32,7 @@ def setting(page):
             alignment=ft.MainAxisAlignment.CENTER,
         ),
         padding=ft.padding.only(top=20, left=50, right=50, bottom=20),
-        bgcolor=const.tasks_fulfilled_text_color,
+        bgcolor=const.tasks_completed_text_color,
         border_radius=ft.border_radius.all(25),
         shadow=ft.BoxShadow(
             offset=ft.Offset(5, 5),
