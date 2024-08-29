@@ -28,15 +28,12 @@ def employee_navigation(privileges, page):
             elif nav == 1:
                 scr.navigation_apps.users.ratyng_user_screen.rating(page)
             elif nav == 2:
-                scr.navigation_apps.users.map_user_screen.map(page)
-            elif nav == 3:
                 scr.navigation_apps.users.user_setting_page.setting(page)
 
     page.navigation_bar = ft.NavigationBar(
         destinations=[
             ft.NavigationBarDestination(icon=ft.icons.ASSIGNMENT_OUTLINED, selected_icon=ft.icons.ASSIGNMENT_ROUNDED),
             ft.NavigationBarDestination(icon=ft.icons.ASSESSMENT_OUTLINED, selected_icon=ft.icons.ASSESSMENT_ROUNDED),
-            ft.NavigationBarDestination(icon=ft.icons.PIN_DROP_OUTLINED, selected_icon=ft.icons.PIN_DROP_ROUNDED),
             ft.NavigationBarDestination(icon=ft.icons.SETTINGS_OUTLINED, selected_icon=ft.icons.SETTINGS_ROUNDED),
         ], on_change=navigate,
         label_behavior=ft.NavigationBarLabelBehavior.ONLY_SHOW_SELECTED,

@@ -37,7 +37,7 @@ def show_meters_data(page, id_task):
     def on_click_back(e):
         user_main(page)
 
-    def on_click_save(e): # переписать чтобы не выходило а перезапускало страницу
+    def on_click_save(e):  # переписать чтобы не выходило а перезапускало страницу
         scr.BD.bd_users.update_bd.update_dop_data_address(
             remark_textfield.value, registered_residing_textfield.value, standarts_textfield.value,
             area_textfield.value, id_address, id_task)
@@ -428,6 +428,15 @@ def user_main(page):
     def on_click_upload(e):
         scr.BD.bd_server.upload_data_to_server()
 
+    def on_click_update(e):
+        result = scr.BD.bd_users.select_bd.select_user_data()
+        if result:
+            for record in result:
+                user_id, login_user, password_user, privileges, first_name, last_name = record
+            scr.BD.bd_server.select_task_data_for_update(user_id)
+        update_results()
+        page.update()
+
     update_results()
 
     page.add(column)
@@ -436,7 +445,8 @@ def user_main(page):
     page.add(
         ft.Row(
             [
-                ft.ElevatedButton(text="Отгрузить все данные", on_click=on_click_upload, )
+                ft.ElevatedButton(text="Отгрузить все данные", on_click=on_click_upload, ),
+                ft.ElevatedButton(text="Обновить", on_click=on_click_update, )
             ], alignment=ft.MainAxisAlignment.CENTER,
         )
     )

@@ -44,10 +44,10 @@ def insert_bd_meters(id_meter, meter_number, instalation_day, meter_type, id_add
         cursor.execute(query)
 
 
-def insert_bd_meter_reading(meter_id, reading_date, reading_values):
+def insert_bd_meter_reading(id_meter_reading, meter_id, reading_date, reading_values):
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         query = f""" Insert into meter_reading 
-        (meter_id,last_reading_date, last_reading_value)
-         values ({meter_id}, '{reading_date}', {reading_values}) """
+        (id, meter_id,last_reading_date, last_reading_value)
+         values ({id_meter_reading},{meter_id}, '{reading_date}', {reading_values}) """
         cursor.execute(query)

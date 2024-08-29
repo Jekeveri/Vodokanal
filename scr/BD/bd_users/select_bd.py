@@ -4,7 +4,7 @@ import sqlite3 as sl
 def select_user_data():
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
-        query = """ Select login, password, privileges, last_name, first_name from user """
+        query = """ Select id, login, password, privileges, last_name, first_name from user """
         cursor.execute(query)
         result = cursor.fetchall()
         return result

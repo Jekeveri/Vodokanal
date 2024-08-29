@@ -41,7 +41,7 @@ def update_local_tasks(unloading_time, task_id, reading_value, remark, meter_id)
         db.commit()
 
 
-def update_dop_data_address(remark, registered_residing, standarts, area, address_id, task_id,):
+def update_dop_data_address(remark, registered_residing, standarts, area, address_id, task_id, ):
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         query = f""" update tasks set 
@@ -54,4 +54,87 @@ def update_dop_data_address(remark, registered_residing, standarts, area, addres
             area = '{area}'
             where id = {address_id} """
         cursor.execute(query1)
+        db.commit()
+
+
+def update_tasks_data_from_server(task_id, name, address_id, city, district, street, dom, apartment, entrance,
+                                  registered_residing, address_status, standarts, area, phone_number,
+                                  personal_account, date_task, remark, status_task, purpose, saldo):
+    with sl.connect('database_client.db') as db:
+        cursor = db.cursor()
+        query = f""" 
+        insert into tasks (id, name,id_address, phone_number,
+                            personal_account, date, remark, status, purpose, saldo)
+        values
+        ({task_id}, '{name}', {address_id}, '{phone_number}','{personal_account}', '{date_task}', '{remark}', 
+        '{status_task}', '{purpose}', '{saldo}')
+        on conflict(id) do update set
+            name = '{name}',
+            id_address = {address_id}, 
+            phone_number = '{phone_number}',
+            personal_account = '{personal_account}',
+            date = '{date_task}',
+            remark =' {remark}',
+            status = '{status_task}',
+            purpose = '{purpose}',
+            saldo = '{saldo}'"""
+        cursor.execute(query)
+        db.commit()
+        query = f""" 
+                insert into address (id, city, district, street, dom, apartment, entrance, registered_residing, status, 
+                                    standarts, area)
+                values
+                ('{address_id}', '{city}', '{district}', '{street}', '{dom}', '{apartment}', '{entrance}', 
+                {registered_residing}, '{address_status}', {standarts}, {area})
+                on conflict(id) do update set
+                    city = '{city}', 
+                    district = '{district}', 
+                    street = '{street}', 
+                    dom = '{dom}', 
+                    apartment = '{apartment}', 
+                    entrance = '{entrance}', 
+                    registered_residing = {registered_residing}, 
+                    status = '{address_status}', 
+                    standarts = {standarts}, 
+                    area = {area}"""
+        cursor.execute(query)
+
+
+def update_meter_data_from_server(id_meter, meter_number, instalation_day, meter_type, id_address, meter_remark,
+                                  marka, seal_number, date_next_verification, location):
+    with sl.connect('database_client.db') as db:
+        cursor = db.cursor()
+        query = f""" 
+        insert into meters (id, meter_number, instalation_date, meter_type, id_address,
+        marka, seal_number, date_next_verification, location,
+        meter_remark)
+        values
+        ({id_meter}, '{meter_number}', '{instalation_day}', '{meter_type}', {id_address}, '{marka}', '{seal_number}', 
+        '{date_next_verification}', '{location}', '{meter_remark}')
+        on conflict(id) do update set
+            meter_number = '{meter_number}', 
+            instalation_date = '{instalation_day}', 
+            meter_type = '{meter_type}', 
+            id_address = {id_address},
+            marka = '{marka}', 
+            seal_number = '{seal_number}', 
+            date_next_verification = '{date_next_verification}', 
+            location = '{location}',
+            meter_remark = '{meter_remark}'"""
+        cursor.execute(query)
+        db.commit()
+
+
+def update_meter_reading_data_from_server(id_meter_reading, meter_id, reading_date, reading_values):
+    with sl.connect('database_client.db') as db:
+        cursor = db.cursor()
+        query = f""" 
+        insert into meter_reading (id, meter_id, last_reading_date, last_reading_value)
+        values
+        ({id_meter_reading}, {meter_id}, '{reading_date}', '{reading_values}')
+        on conflict(id) do update set
+            meter_id = {meter_id}, 
+            last_reading_date = '{reading_date}', 
+            last_reading_value = '{reading_values}' """
+        cursor.execute(query)
         db.commit()

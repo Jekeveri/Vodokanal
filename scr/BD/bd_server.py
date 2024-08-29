@@ -4,6 +4,7 @@ import datetime
 import scr.BD.bd_users.select_bd
 import scr.BD.bd_users.insert_bd
 import scr.BD.bd_users.create_bd
+import scr.BD.bd_users.update_bd
 import scr.func
 import scr.navigation_apps.navigations
 
@@ -45,9 +46,7 @@ def select_task_data(id_user):
     )
     cursor = conn.cursor()
 
-    cursor.execute(f"""
-        SELECT * FROM get_task_data_new({id_user})
-    """)
+    cursor.execute(f""" SELECT * FROM get_task_data_new({id_user}) """)
     task_data = cursor.fetchall()
 
     if task_data:
@@ -62,9 +61,7 @@ def select_task_data(id_user):
                 registered_residing, address_status, standarts, area, saldo
             )
 
-    cursor.execute(f"""
-        SELECT * FROM get_meters_data_new({id_user})
-    """)
+    cursor.execute(f""" SELECT * FROM get_meters_data_new({id_user}) """)
     meter_data = cursor.fetchall()
 
     if meter_data:
@@ -83,9 +80,60 @@ def select_task_data(id_user):
 
     if meter_reading_data:
         for record in meter_reading_data:
-            meter_id, reading_date, reading_values = record
+            id_meter_reading, meter_id, reading_date, reading_values = record
             scr.BD.bd_users.insert_bd.insert_bd_meter_reading(
+                id_meter_reading,
                 meter_id, reading_date, reading_values
+            )
+
+    cursor.close()
+    conn.close()
+
+
+def select_task_data_for_update(id_user):
+    conn = psycopg2.connect(
+        dbname="test",
+        user="postgres",
+        password="123321"
+    )
+    cursor = conn.cursor()
+
+    cursor.execute(f""" SELECT * FROM get_task_data_new({id_user}) """)
+    task_data = cursor.fetchall()
+
+    if task_data:
+        for record in task_data:
+            task_id, name, address_id, city, district, street, dom, apartment, entrance, \
+                registered_residing, address_status, standarts, area, phone_number, \
+                personal_account, date_task, remark, status_task, purpose, saldo = record
+
+            scr.BD.bd_users.update_bd.update_tasks_data_from_server(task_id, name, address_id, city, district, street,
+                                                                    dom, apartment, entrance,
+                                                                    registered_residing, address_status, standarts,
+                                                                    area, phone_number,
+                                                                    personal_account, date_task, remark, status_task,
+                                                                    purpose, saldo)
+
+    cursor.execute(f""" SELECT * FROM get_meters_data_new({id_user}) """)
+    meter_data = cursor.fetchall()
+
+    if meter_data:
+        for record in meter_data:
+            id_meter, meter_number, instalation_day, meter_type, id_address, meter_remark, marka, seal_number, \
+                date_next_verification, location = record
+            scr.BD.bd_users.update_bd.update_meter_data_from_server(id_meter, meter_number, instalation_day, meter_type,
+                                                                    id_address, meter_remark, marka, seal_number,
+                                                                    date_next_verification, location)
+    cursor.execute(f"""
+        SELECT * FROM get_meter_reading_data_new({id_user})
+    """)
+    meter_reading_data = cursor.fetchall()
+
+    if meter_reading_data:
+        for record in meter_reading_data:
+            id_meter_reading, meter_id, reading_date, reading_values = record
+            scr.BD.bd_users.update_bd.update_meter_reading_data_from_server(
+                id_meter_reading, meter_id, reading_date, reading_values
             )
 
     cursor.close()

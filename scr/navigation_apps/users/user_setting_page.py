@@ -22,7 +22,6 @@ def setting(page):
         scr.BD.bd_users.delete_bd.delete_data_db()
         scr.exit.exit_account(page)
 
-    scr.func.show_snack_bar(page, "Setting")
     result = scr.BD.bd_users.select_bd.select_user_data()
 
     bte = ft.Container(
@@ -47,7 +46,7 @@ def setting(page):
 
     if result:
         for record in result:
-            login_user, password_user, privileges, first_name, last_name = record
+            user_id, login_user, password_user, privileges, first_name, last_name = record
 
     page.add(
         ft.Column(
