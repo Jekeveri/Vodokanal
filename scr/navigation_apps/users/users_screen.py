@@ -173,6 +173,7 @@ def show_meters_data(page, id_task):
 
 m_value = ""
 m_remark = ""
+statuses = []
 
 
 def update_data(page, meter_id, id_task):
@@ -360,7 +361,6 @@ def user_main(page):
     page.controls.clear()
     screen_width = page.width
     screen_height = page.height
-    color = const.tasks_pending_color
     page.vertical_alignment = ft.MainAxisAlignment.START
 
     page.appbar = ft.AppBar(
@@ -371,17 +371,70 @@ def user_main(page):
     )
     page.update()
 
-    def filter_completed(e):
-        pass
+    completed_icon = ft.Icon(ft.icons.TASK_ALT, color=ft.colors.WHITE)
+    failed_icon = ft.Icon(ft.icons.ERROR_OUTLINE, color=ft.colors.WHITE)
+    pending_icon = ft.Icon(ft.icons.HOURGLASS_EMPTY, color=ft.colors.WHITE)
+    unloaded_icon = ft.Icon(ft.icons.BUILD, color=ft.colors.WHITE)
+
+    def filter_completed(e, color):
+        global statuses
+        if color == ft.colors.WHITE:
+            statuses.append('выполнен')
+            completed_icon.color = ft.colors.BLACK
+            completed_tasks_container.shadow.color = const.tasks_completed_text_color
+            update_results(filter_statuses=statuses)
+        else:
+            statuses.remove('выполнен')
+            completed_icon.color = ft.colors.WHITE
+            completed_tasks_container.shadow.color = ft.colors.BLACK38
+            update_results(filter_statuses=statuses)
+
+    def filter_failed(e, color):
+        global statuses
+        if color == ft.colors.WHITE:
+            statuses.append('просрочен')
+            failed_icon.color = ft.colors.BLACK
+            completed_tasks_container.shadow.color = const.tasks_completed_text_color
+            update_results(filter_statuses=statuses)
+        else:
+            statuses.remove('просрочен')
+            failed_icon.color = ft.colors.WHITE
+            completed_tasks_container.shadow.color = ft.colors.BLACK38
+            update_results(filter_statuses=statuses)
+
+    def filter_pending(e, color):
+        global statuses
+        if color == ft.colors.WHITE:
+            statuses.append('невыполнен')
+            pending_icon.color = ft.colors.BLACK
+            completed_tasks_container.shadow.color = const.tasks_completed_text_color
+            update_results(filter_statuses=statuses)
+        else:
+            statuses.remove('невыполнен')
+            pending_icon.color = ft.colors.WHITE
+            completed_tasks_container.shadow.color = ft.colors.BLACK38
+            update_results(filter_statuses=statuses)
+
+    def filter_unloaded(e, color):
+        global statuses
+        if color == ft.colors.WHITE:
+            statuses.append('в_исполнении')
+            unloaded_icon.color = ft.colors.BLACK
+            completed_tasks_container.shadow.color = const.tasks_completed_text_color
+            update_results(filter_statuses=statuses)
+        else:
+            statuses.remove('в_исполнении')
+            unloaded_icon.color = ft.colors.WHITE
+            completed_tasks_container.shadow.color = ft.colors.BLACK38
+            update_results(filter_statuses=statuses)
 
     completed_tasks_container = ft.Container(
         content=ft.Row([
-            ft.Icon(ft.icons.TASK_ALT, color=ft.colors.WHITE),
-            ft.Text("Выполненные", style=ft.TextStyle(color=ft.colors.WHITE))
+            completed_icon
         ],
             alignment=ft.MainAxisAlignment.CENTER,
         ),
-        padding=ft.padding.only(top=20, left=50, right=50, bottom=20),
+        padding=ft.padding.only(top=20, bottom=20),
         bgcolor=const.tasks_completed_text_color,
         border_radius=ft.border_radius.all(35),
         shadow=ft.BoxShadow(
@@ -392,16 +445,15 @@ def user_main(page):
         ink=True,
         ink_color=ft.colors.RED_200,
         col=1,
-        on_click=filter_completed
+        on_click=lambda e: filter_completed(e, completed_icon.color)
     )
     failed_tasks_container = ft.Container(
         content=ft.Row([
-            ft.Icon(ft.icons.TASK_ALT, color=ft.colors.WHITE),
-            ft.Text("Просроченые", style=ft.TextStyle(color=ft.colors.WHITE))
+            failed_icon
         ],
             alignment=ft.MainAxisAlignment.CENTER,
         ),
-        padding=ft.padding.only(top=20, left=50, right=50, bottom=20),
+        padding=ft.padding.only(top=20, bottom=20),
         bgcolor=const.tasks_failed_text_color,
         border_radius=ft.border_radius.all(35),
         shadow=ft.BoxShadow(
@@ -412,16 +464,15 @@ def user_main(page):
         ink=True,
         ink_color=ft.colors.RED_200,
         col=1,
-        on_click=filter_completed
+        on_click=lambda e: filter_failed(e, failed_icon.color)
     )
     pending_tasks_container = ft.Container(
         content=ft.Row([
-            ft.Icon(ft.icons.TASK_ALT, color=ft.colors.WHITE),
-            ft.Text("В ожидании", style=ft.TextStyle(color=ft.colors.WHITE))
+            pending_icon
         ],
             alignment=ft.MainAxisAlignment.CENTER,
         ),
-        padding=ft.padding.only(top=20, left=50, right=50, bottom=20),
+        padding=ft.padding.only(top=20, bottom=20),
         bgcolor=const.tasks_pending_text_color,
         border_radius=ft.border_radius.all(35),
         shadow=ft.BoxShadow(
@@ -432,16 +483,15 @@ def user_main(page):
         ink=True,
         ink_color=ft.colors.RED_200,
         col=1,
-        on_click=filter_completed
+        on_click=lambda e: filter_pending(e, pending_icon.color)
     )
     unloaded_tasks_container = ft.Container(
         content=ft.Row([
-            ft.Icon(ft.icons.TASK_ALT, color=ft.colors.WHITE),
-            ft.Text("В процессе", style=ft.TextStyle(color=ft.colors.WHITE))
+            unloaded_icon
         ],
             alignment=ft.MainAxisAlignment.CENTER,
         ),
-        padding=ft.padding.only(top=20, left=50, right=50, bottom=20),
+        padding=ft.padding.only(top=20, bottom=20),
         bgcolor=const.tasks_unloaded_text_color,
         border_radius=ft.border_radius.all(35),
         shadow=ft.BoxShadow(
@@ -452,16 +502,55 @@ def user_main(page):
         ink=True,
         ink_color=ft.colors.RED_200,
         col=1,
-        on_click=filter_completed
+        on_click=lambda e: filter_unloaded(e, unloaded_icon.color)
     )
 
-    def update_results():
+    def close_anchor(e):
+        text = f"Color {e.control.data}"
+        print(f"closing view from {text}")
+        search_task.close_view(text)
+
+    def handle_change(e):
+        # вывод в консоль при каждом изменении вводимой строки, тут будет обновление заданий и отправка запроса
+        print(f"handle_change e.data: {e.data}")
+        search_task.open_view()
+
+    def handle_submit(e):
+        # выбор при enter, тут то же будет запрос, но уже с готовым заданием, может быть даже сразу будет открывать
+        # плашку
+        print(f"handle_submit e.data: {e.data}")
+        search_task.close_view()
+
+    def handle_tap(e):
+        search_task.open_view()
+
+    search_task = ft.SearchBar(
+        view_elevation=4,
+        divider_color=ft.colors.AMBER,
+        bar_hint_text="Поиск задания...",
+        view_hint_text="Последние результаты...",
+        on_change=handle_change,
+        on_submit=handle_submit,
+        on_tap=handle_tap,
+        controls=[
+            # нужно как то листом сохранять запросы и усе
+            # также тут будет в зависимости от запроса менятся отображение задания
+            ft.ListTile(title=ft.Text(f"Color {i}"), on_click=close_anchor, data=i)
+            for i in range(10)
+        ],
+        col=3
+    )
+
+    def update_results(filter_statuses=None):
         results = scr.BD.bd_users.select_bd.select_tasks_data_new()
-        filtered_results = [
-            result for result in results
-        ]
+        if filter_statuses:
+            filtered_results = [result for result in results if result[9] in filter_statuses]
+        else:
+            filtered_results = [
+                result for result in results
+            ]
+
         column.controls.clear()
-        global color
 
         for result in filtered_results:
             id_task, person_name, street, dom, apartment, phone_number, \
@@ -528,13 +617,30 @@ def user_main(page):
     page.add(
         ft.ResponsiveRow(
             [
+                ft.ResponsiveRow(
+                    [
+                        search_task,
+                        ft.Dropdown(
+                            width=100,
+                            options=[
+                                ft.dropdown.Option("Red"),
+                                ft.dropdown.Option("Green"),
+                                ft.dropdown.Option("Blue"),
+                            ],
+                            col=1
+                        )
+                    ], columns=4
+                ),
                 unloaded_tasks_container,
                 completed_tasks_container,
                 pending_tasks_container,
                 failed_tasks_container
             ],
-            columns=2
-        )
+            columns=4,
+            spacing=5,
+            alignment=ft.MainAxisAlignment.CENTER
+        ),
+        ft.Divider(thickness=2, color=ft.colors.BLACK45)
     )
 
     page.add(column)
