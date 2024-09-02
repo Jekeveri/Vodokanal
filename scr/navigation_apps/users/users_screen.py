@@ -505,7 +505,9 @@ def user_main(page):
         # плашку
         query = e.control.value.strip()
         if query and query not in search_history_list:
-            search_history_list.append(query)
+            if len(search_history_list) >= 10:
+                del search_history_list[9]
+            search_history_list.insert(0, query)
             update_search_history()  # Обновляем историю запросов
         update_search_results("")
         page.update()
@@ -519,7 +521,6 @@ def user_main(page):
         search_task.close_view()
 
     def create_search_list():
-        search_history_list.reverse()
         return [
             ft.ListTile(
                 title=ft.Text(query),
