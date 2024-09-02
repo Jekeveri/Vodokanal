@@ -175,6 +175,7 @@ m_value = ""
 m_remark = ""
 statuses = []
 sorting = "Адрес"
+search_history_list = []  # длина будет максимум 10
 
 
 def update_data(page, meter_id, id_task):
@@ -363,7 +364,7 @@ def user_main(page):
     screen_width = page.width
     screen_height = page.height
     page.vertical_alignment = ft.MainAxisAlignment.START
-    global statuses, sorting
+    global statuses, sorting, search_history_list
 
     page.appbar = ft.AppBar(
         title=ft.Text("Задачи"),
@@ -431,7 +432,7 @@ def user_main(page):
             update_results(filter_statuses=statuses)
 
     completed_tasks_container = ft.Container(
-        content=ft.Row([completed_icon], alignment=ft.MainAxisAlignment.CENTER,),
+        content=ft.Row([completed_icon], alignment=ft.MainAxisAlignment.CENTER, ),
         padding=ft.padding.only(top=20, bottom=20),
         bgcolor=const.tasks_completed_text_color,
         border_radius=ft.border_radius.all(35),
@@ -446,7 +447,7 @@ def user_main(page):
         on_click=lambda e: filter_completed(e, completed_icon.color)
     )
     failed_tasks_container = ft.Container(
-        content=ft.Row([failed_icon], alignment=ft.MainAxisAlignment.CENTER,),
+        content=ft.Row([failed_icon], alignment=ft.MainAxisAlignment.CENTER, ),
         padding=ft.padding.only(top=20, bottom=20),
         bgcolor=const.tasks_failed_text_color,
         border_radius=ft.border_radius.all(35),
@@ -461,7 +462,7 @@ def user_main(page):
         on_click=lambda e: filter_failed(e, failed_icon.color)
     )
     pending_tasks_container = ft.Container(
-        content=ft.Row([pending_icon], alignment=ft.MainAxisAlignment.CENTER,),
+        content=ft.Row([pending_icon], alignment=ft.MainAxisAlignment.CENTER, ),
         padding=ft.padding.only(top=20, bottom=20),
         bgcolor=const.tasks_pending_text_color,
         border_radius=ft.border_radius.all(35),
@@ -476,7 +477,7 @@ def user_main(page):
         on_click=lambda e: filter_pending(e, pending_icon.color)
     )
     unloaded_tasks_container = ft.Container(
-        content=ft.Row([unloaded_icon], alignment=ft.MainAxisAlignment.CENTER,),
+        content=ft.Row([unloaded_icon], alignment=ft.MainAxisAlignment.CENTER, ),
         padding=ft.padding.only(top=20, bottom=20),
         bgcolor=const.tasks_unloaded_text_color,
         border_radius=ft.border_radius.all(35),
@@ -491,24 +492,51 @@ def user_main(page):
         on_click=lambda e: filter_unloaded(e, unloaded_icon.color)
     )
 
-    def close_anchor(e):
-        text = f"Color {e.control.data}"
-        print(f"closing view from {text}")
-        search_task.close_view(text)
+    def handle_tap(e):
+        search_task.open_view()
 
     def handle_change(e):
         # вывод в консоль при каждом изменении вводимой строки, тут будет обновление заданий и отправка запроса
-        print(f"handle_change e.data: {e.data}")
-        search_task.open_view()
+        # Логика обработки изменения текста (фильтрация, обновление списка и т.д.)
+        update_search_results(e.control.value)
 
     def handle_submit(e):
         # выбор при enter, тут то же будет запрос, но уже с готовым заданием, может быть даже сразу будет открывать
         # плашку
-        print(f"handle_submit e.data: {e.data}")
+        query = e.control.value.strip()
+        if query and query not in search_history_list:
+            search_history_list.append(query)
+            update_search_history()  # Обновляем историю запросов
+        update_search_results("")
+        page.update()
         search_task.close_view()
 
-    def handle_tap(e):
-        search_task.open_view()
+    def close_anchor(e):
+        # Логика обработки выбора элемента из истории
+        search_task.value = e.control.data
+        update_search_results("")
+        page.update()
+        search_task.close_view()
+
+    def create_search_list():
+        search_history_list.reverse()
+        return [
+            ft.ListTile(
+                title=ft.Text(query),
+                on_click=close_anchor,
+                data=query
+            )
+            for query in search_history_list
+        ]
+
+    def update_search_history():
+        # Обновляем элементы управления в SearchBar с новой историей запросов
+        search_task.controls = create_search_list()
+        page.update()
+
+    def update_search_results(query):
+        # Логика обновления отображения в зависимости от запроса
+        pass
 
     search_task = ft.SearchBar(
         view_elevation=4,
@@ -518,12 +546,7 @@ def user_main(page):
         on_change=handle_change,
         on_submit=handle_submit,
         on_tap=handle_tap,
-        controls=[
-            # нужно как то листом сохранять запросы и усе
-            # также тут будет в зависимости от запроса менятся отображение задания
-            ft.ListTile(title=ft.Text(f"Color {i}"), on_click=close_anchor, data=i)
-            for i in range(10)
-        ],
+        controls=create_search_list(),  # Изначально отображаем пустой список или последние результаты
         col=3
     )
 
@@ -614,6 +637,7 @@ def user_main(page):
         global sorting
         sorting = e.control.value
         update_results()
+
     page.add(
         ft.ResponsiveRow(
             [
@@ -633,8 +657,8 @@ def user_main(page):
                     ], columns=4
                 ),
                 unloaded_tasks_container,
-                completed_tasks_container,
                 pending_tasks_container,
+                completed_tasks_container,
                 failed_tasks_container
             ],
             columns=4,
