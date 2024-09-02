@@ -17,6 +17,14 @@ def update_local_tasks(unloading_time, task_id, reading_value, remark, meter_id)
         cursor.execute(query1)
         cursor.execute(query2)
         db.commit()
+
+        query = f""" update tasks set 
+                   unloading_time = '{unloading_time}',  
+                   status = 'в_исполнении'
+                   where id = {task_id}"""
+        cursor.execute(query)
+        db.commit()
+
         query = f""" update tasks set 
             unloading_time = '{unloading_time}',  
             status = 'выполнен'

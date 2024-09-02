@@ -9,4 +9,4 @@ def main(page: ft.Page):
     scr.exit.exit_account(page)
 
 
-ft.app(target=main, view=ft.FLET_APP)
+ft.app(target=main)

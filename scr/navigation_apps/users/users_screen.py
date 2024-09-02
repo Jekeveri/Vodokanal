@@ -174,6 +174,7 @@ def show_meters_data(page, id_task):
 m_value = ""
 m_remark = ""
 statuses = []
+sorting = "Адрес"
 
 
 def update_data(page, meter_id, id_task):
@@ -362,6 +363,7 @@ def user_main(page):
     screen_width = page.width
     screen_height = page.height
     page.vertical_alignment = ft.MainAxisAlignment.START
+    global statuses, sorting
 
     page.appbar = ft.AppBar(
         title=ft.Text("Задачи"),
@@ -394,12 +396,12 @@ def user_main(page):
         if color == ft.colors.WHITE:
             statuses.append('просрочен')
             failed_icon.color = ft.colors.BLACK
-            completed_tasks_container.shadow.color = const.tasks_completed_text_color
+            failed_tasks_container.shadow.color = const.tasks_failed_text_color
             update_results(filter_statuses=statuses)
         else:
             statuses.remove('просрочен')
             failed_icon.color = ft.colors.WHITE
-            completed_tasks_container.shadow.color = ft.colors.BLACK38
+            failed_tasks_container.shadow.color = ft.colors.BLACK38
             update_results(filter_statuses=statuses)
 
     def filter_pending(e, color):
@@ -407,12 +409,12 @@ def user_main(page):
         if color == ft.colors.WHITE:
             statuses.append('невыполнен')
             pending_icon.color = ft.colors.BLACK
-            completed_tasks_container.shadow.color = const.tasks_completed_text_color
+            pending_tasks_container.shadow.color = ft.colors.BLACK54
             update_results(filter_statuses=statuses)
         else:
             statuses.remove('невыполнен')
             pending_icon.color = ft.colors.WHITE
-            completed_tasks_container.shadow.color = ft.colors.BLACK38
+            pending_tasks_container.shadow.color = ft.colors.BLACK38
             update_results(filter_statuses=statuses)
 
     def filter_unloaded(e, color):
@@ -420,20 +422,16 @@ def user_main(page):
         if color == ft.colors.WHITE:
             statuses.append('в_исполнении')
             unloaded_icon.color = ft.colors.BLACK
-            completed_tasks_container.shadow.color = const.tasks_completed_text_color
+            unloaded_tasks_container.shadow.color = const.tasks_unloaded_text_color
             update_results(filter_statuses=statuses)
         else:
             statuses.remove('в_исполнении')
             unloaded_icon.color = ft.colors.WHITE
-            completed_tasks_container.shadow.color = ft.colors.BLACK38
+            unloaded_tasks_container.shadow.color = ft.colors.BLACK38
             update_results(filter_statuses=statuses)
 
     completed_tasks_container = ft.Container(
-        content=ft.Row([
-            completed_icon
-        ],
-            alignment=ft.MainAxisAlignment.CENTER,
-        ),
+        content=ft.Row([completed_icon], alignment=ft.MainAxisAlignment.CENTER,),
         padding=ft.padding.only(top=20, bottom=20),
         bgcolor=const.tasks_completed_text_color,
         border_radius=ft.border_radius.all(35),
@@ -448,11 +446,7 @@ def user_main(page):
         on_click=lambda e: filter_completed(e, completed_icon.color)
     )
     failed_tasks_container = ft.Container(
-        content=ft.Row([
-            failed_icon
-        ],
-            alignment=ft.MainAxisAlignment.CENTER,
-        ),
+        content=ft.Row([failed_icon], alignment=ft.MainAxisAlignment.CENTER,),
         padding=ft.padding.only(top=20, bottom=20),
         bgcolor=const.tasks_failed_text_color,
         border_radius=ft.border_radius.all(35),
@@ -467,11 +461,7 @@ def user_main(page):
         on_click=lambda e: filter_failed(e, failed_icon.color)
     )
     pending_tasks_container = ft.Container(
-        content=ft.Row([
-            pending_icon
-        ],
-            alignment=ft.MainAxisAlignment.CENTER,
-        ),
+        content=ft.Row([pending_icon], alignment=ft.MainAxisAlignment.CENTER,),
         padding=ft.padding.only(top=20, bottom=20),
         bgcolor=const.tasks_pending_text_color,
         border_radius=ft.border_radius.all(35),
@@ -486,11 +476,7 @@ def user_main(page):
         on_click=lambda e: filter_pending(e, pending_icon.color)
     )
     unloaded_tasks_container = ft.Container(
-        content=ft.Row([
-            unloaded_icon
-        ],
-            alignment=ft.MainAxisAlignment.CENTER,
-        ),
+        content=ft.Row([unloaded_icon], alignment=ft.MainAxisAlignment.CENTER,),
         padding=ft.padding.only(top=20, bottom=20),
         bgcolor=const.tasks_unloaded_text_color,
         border_radius=ft.border_radius.all(35),
@@ -542,7 +528,7 @@ def user_main(page):
     )
 
     def update_results(filter_statuses=None):
-        results = scr.BD.bd_users.select_bd.select_tasks_data_new()
+        results = scr.BD.bd_users.select_bd.select_tasks_data_new(sorting)
         if filter_statuses:
             filtered_results = [result for result in results if result[9] in filter_statuses]
         else:
@@ -604,6 +590,16 @@ def user_main(page):
         scr.BD.bd_server.upload_data_to_server()
 
     def on_click_update(e):
+        statuses.clear()
+        unloaded_icon.color = ft.colors.WHITE
+        unloaded_tasks_container.shadow.color = ft.colors.BLACK38
+        pending_icon.color = ft.colors.WHITE
+        pending_tasks_container.shadow.color = ft.colors.BLACK38
+        failed_icon.color = ft.colors.WHITE
+        failed_tasks_container.shadow.color = ft.colors.BLACK38
+        completed_icon.color = ft.colors.WHITE
+        completed_tasks_container.shadow.color = ft.colors.BLACK38
+
         result = scr.BD.bd_users.select_bd.select_user_data()
         if result:
             for record in result:
@@ -614,6 +610,10 @@ def user_main(page):
 
     update_results()
 
+    def sorting_change(e):
+        global sorting
+        sorting = e.control.value
+        update_results()
     page.add(
         ft.ResponsiveRow(
             [
@@ -621,11 +621,12 @@ def user_main(page):
                     [
                         search_task,
                         ft.Dropdown(
+                            on_change=sorting_change,
+                            value=sorting,
                             width=100,
                             options=[
-                                ft.dropdown.Option("Red"),
-                                ft.dropdown.Option("Green"),
-                                ft.dropdown.Option("Blue"),
+                                ft.dropdown.Option("Адрес"),
+                                ft.dropdown.Option("Статус"),
                             ],
                             col=1
                         )
