@@ -1,7 +1,6 @@
 import datetime
-
+import os
 import flet as ft
-
 import scr.BD.bd_users.update_bd
 import scr.BD.bd_users.insert_bd
 import scr.BD.bd_users.select_bd
@@ -317,6 +316,47 @@ def update_data(page, meter_id, id_task):
         controls=panels
     )
 
+    def save_image_to_db(file_path):
+        with open(file_path, 'rb') as file:
+            file_data = file.read()
+
+        file_name = os.path.basename(file_path)
+        scr.BD.bd_users.insert_bd.insert_photo(file_name, file_data, id_task, meter_id)
+
+    def pick_files_result(e: ft.FilePickerResultEvent):
+        if e.files:
+            for file in e.files:
+                save_image_to_db(file.path)  # Сохраняем изображение в базу данных
+                selected_images.append(file.name)
+                update_saving_data(meter_id, id_task)
+                scr.func.show_snack_bar(page, f"Изображение {file.name} сохранено в базу данных.")
+        else:
+            scr.func.show_snack_bar(page, "Выбор файла отменен.")
+
+    pick_files_dialog = ft.FilePicker(on_result=pick_files_result)
+    page.overlay.append(pick_files_dialog)
+    selected_images = []
+    save_photos = ft.Column()
+
+    def update_saving_data(meter_id, id_task):
+        images = scr.BD.bd_users.select_bd.select_photo_data_new(meter_id, id_task)
+        if images:
+            selected_images.clear()
+            for result in images:
+                id_photo, value_photo, file_name1, task_id, meter_id = result
+                selected_images.append(file_name1)
+        save_photos.controls.clear()
+        if selected_images:
+            for i in selected_images:
+                save_photos.controls.append(ft.Text(i))
+                print(selected_images)
+            page.update()
+
+    update_saving_data(meter_id, id_task)
+
+    def zagr(e):
+        pick_files_dialog.pick_files(allow_multiple=True)
+
     # Основной контент модального окна
     meters_data = ft.Container(
         content=ft.Column(
@@ -325,7 +365,8 @@ def update_data(page, meter_id, id_task):
                 ft.Text(f"Контрольные показания: {last_reading_value}"),
                 reading_value,
                 remark,
-                ft.ElevatedButton("Добавить фотографию"),
+                save_photos,
+                ft.ElevatedButton("Добавить фотографию", on_click=zagr),
                 ft.Column(
                     [
                         panel_list
@@ -637,7 +678,7 @@ def user_main(page):
     def sorting_change(e):
         global sorting
         sorting = e.control.value
-        update_results()
+        update_results(statuses)
 
     page.add(
         ft.ResponsiveRow(

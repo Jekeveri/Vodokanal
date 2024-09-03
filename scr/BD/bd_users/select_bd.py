@@ -86,3 +86,12 @@ def get_data_to_upload():
         cursor.execute(query)
         result = cursor.fetchall()
         return result
+
+
+def select_photo_data_new(meter_id, task_id):
+    with sl.connect('database_client.db') as db:
+        cursor = db.cursor()
+        query = f""" select * from picture where meter_id = {meter_id} and task_id = {task_id} """
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return result

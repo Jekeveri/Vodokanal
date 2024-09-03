@@ -17,7 +17,8 @@ def local_user_db():
         meter_id integer, last_reading_date Text, last_reading_value Text, 
         new_reading_date Text, new_reading_value Text,
         CONSTRAINT meter_reading_pk PRIMARY KEY (id)) """
-        table_picture = """ Create table if not exists picture(id Integer, value BLOB, task_id Integer) """
+        table_picture = """ Create table if not exists picture(id Integer, value BLOB,
+                            name_file Text, task_id Integer, meter_id integer) """
         table_user = """ Create table if not exists user
         (id Integer, login Text, password Text, privileges integer, first_name Text, last_name Text) """
         table_address = """ Create table if not exists address(id integer, city text, district text, street Text, 
@@ -30,4 +31,3 @@ def local_user_db():
         cursor.execute(table_picture)
         cursor.execute(table_user)
         cursor.execute(table_address)
-
