@@ -51,3 +51,13 @@ def insert_bd_meter_reading(id_meter_reading, meter_id, reading_date, reading_va
         (id, meter_id,last_reading_date, last_reading_value)
          values ({id_meter_reading},{meter_id}, '{reading_date}', {reading_values}) """
         cursor.execute(query)
+
+
+def insert_photo(name_file, value, task_id, meter_id):
+    with sl.connect('database_client.db') as db:
+        cursor = db.cursor()
+        query = """INSERT INTO picture 
+                   (name_file, value, task_id, meter_id) 
+                   VALUES (?, ?, ?, ?)"""
+        cursor.execute(query, (name_file, value, task_id, meter_id))
+        db.commit()
