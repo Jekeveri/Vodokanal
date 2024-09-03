@@ -62,3 +62,10 @@ def insert_photo(name_file, value, task_id, meter_id):
         cursor.execute(query, (name_file, value, task_id, meter_id))
         db.commit()
 
+
+
+
+
+
+
+
