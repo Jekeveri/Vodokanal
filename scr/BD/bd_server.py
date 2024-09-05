@@ -13,7 +13,7 @@ def check_user_credentials(login, password, page):
     conn = psycopg2.connect(
         dbname="test",
         user="postgres",
-        password=123321
+        password='nikita041216'
     )
     cursor = conn.cursor()
     cursor.execute("""
@@ -42,7 +42,7 @@ def select_task_data(id_user):
     conn = psycopg2.connect(
         dbname="test",
         user="postgres",
-        password="123321"
+        password='nikita041216'
     )
     cursor = conn.cursor()
 
@@ -94,7 +94,7 @@ def select_task_data_for_update(id_user):
     conn = psycopg2.connect(
         dbname="test",
         user="postgres",
-        password="123321"
+        password='nikita041216'
     )
     cursor = conn.cursor()
 

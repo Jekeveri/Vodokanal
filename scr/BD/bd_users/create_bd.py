@@ -31,4 +31,3 @@ def local_user_db():
         cursor.execute(table_picture)
         cursor.execute(table_user)
         cursor.execute(table_address)
-
