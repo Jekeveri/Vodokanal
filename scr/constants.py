@@ -16,8 +16,6 @@ tasks_completed_text_color = '#338309'  # Зеленый
 tasks_pending_text_color = '#c3beba'  # Серый
 tasks_failed_text_color = '#BC0000'  # Красный
 
-tasks_unloaded_text_color = '#FAAB01'  # Желтый     
+tasks_unloaded_text_color = '#FAAB01'  # Желтый
 
 tasks_text_color = '#120D0C'
-
-

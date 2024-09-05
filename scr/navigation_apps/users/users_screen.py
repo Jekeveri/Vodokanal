@@ -10,6 +10,10 @@ import scr.func
 import scr.constants as const
 
 
+def call_show_meters_data(page, id_task):
+    show_meters_data(page, id_task)
+
+
 def show_meters_data(page, id_task):
     screen_width = page.width
     screen_height = page.height
@@ -36,11 +40,11 @@ def show_meters_data(page, id_task):
     def on_click_back(e):
         user_main(page)
 
-    def on_click_save(e):  # переписать чтобы не выходило а перезапускало страницу
+    def on_click_save(e):
         scr.BD.bd_users.update_bd.update_dop_data_address(
             remark_textfield.value, registered_residing_textfield.value, standarts_textfield.value,
             area_textfield.value, id_address, id_task)
-        user_main(page)
+        call_show_meters_data(page, id_task)
         page.update()
 
     button_back = ft.ElevatedButton("Назад", on_click=on_click_back, bgcolor=ft.colors.RED_200)
@@ -102,7 +106,17 @@ def show_meters_data(page, id_task):
     remark_textfield = ft.TextField(label="Примечание", value=remark, on_change=on_change_dop_data)
     registered_residing_textfield = ft.TextField(label="Прописанно", value=registered_residing,
                                                  on_change=on_change_dop_data)
-    standarts_textfield = ft.TextField(label="Нормативы", value=standarts, on_change=on_change_dop_data)
+    for i in const.norma_water_supply:
+        if i == standarts:
+            standarts = i
+    standarts_textfield = ft.Dropdown(
+        on_change=on_change_dop_data,
+        label="Нормативы",
+        value=standarts,
+        options=[
+            ft.dropdown.Option(value) for value in const.norma_water_supply
+        ],
+    )
     area_textfield = ft.TextField(label="Площадь", value=area, on_change=on_change_dop_data)
     dop_buttons_redact = ft.Row(
         [
@@ -229,7 +243,7 @@ def update_data(page, meter_id, id_task):
 
     # Обработка нажатия кнопки назад
     def on_click_back(e):
-        if reading_value.value != m_value or remark.value != m_remark:
+        if reading_value.value != new_reading_value or remark.value != meter_remark:
             page.open(bottom_sheet)
         else:
             page.close(dlg_modal)
@@ -264,6 +278,8 @@ def update_data(page, meter_id, id_task):
     if results:
         for result in results:
             id_meters, last_reading_date, last_reading_value, new_reading_date, new_reading_value = result
+            if new_reading_value is None:
+                new_reading_value = ""
 
     # Поля ввода для показаний и примечаний
     reading_value = ft.TextField(label="Показания счетчика", value=new_reading_value)
@@ -336,7 +352,7 @@ def update_data(page, meter_id, id_task):
     pick_files_dialog = ft.FilePicker(on_result=pick_files_result)
     page.overlay.append(pick_files_dialog)
     selected_images = []
-    save_photos = ft.Column()
+    save_photos = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True, )
 
     def update_saving_data(meter_id, id_task):
         images = scr.BD.bd_users.select_bd.select_photo_data_new(meter_id, id_task)
@@ -349,7 +365,6 @@ def update_data(page, meter_id, id_task):
         if selected_images:
             for i in selected_images:
                 save_photos.controls.append(ft.Text(i))
-                print(selected_images)
             page.update()
 
     update_saving_data(meter_id, id_task)
@@ -374,7 +389,7 @@ def update_data(page, meter_id, id_task):
                     expand=True,
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER
                 )
-            ]
+            ], scroll=ft.ScrollMode.AUTO,
         )
     )
 
@@ -690,6 +705,7 @@ def user_main(page):
                             on_change=sorting_change,
                             value=sorting,
                             width=100,
+                            label="Сортировка",
                             options=[
                                 ft.dropdown.Option("Адрес"),
                                 ft.dropdown.Option("Статус"),
