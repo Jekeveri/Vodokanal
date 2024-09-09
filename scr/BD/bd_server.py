@@ -13,7 +13,7 @@ def check_user_credentials(login, password, page):
     conn = psycopg2.connect(
         dbname="test",
         user="postgres",
-        password='nikita041216'
+        password='123321'
     )
     cursor = conn.cursor()
     cursor.execute("""
@@ -42,7 +42,7 @@ def select_task_data(id_user):
     conn = psycopg2.connect(
         dbname="test",
         user="postgres",
-        password='nikita041216'
+        password='123321'
     )
     cursor = conn.cursor()
 
@@ -94,7 +94,7 @@ def select_task_data_for_update(id_user):
     conn = psycopg2.connect(
         dbname="test",
         user="postgres",
-        password='nikita041216'
+        password='123321'
     )
     cursor = conn.cursor()
 
@@ -158,6 +158,7 @@ def upload_data_to_server():
             remark = record[4]
             status = record[5]
             meter_id = record[6]
+            meter_remark = record[7]
             cursor = conn.cursor()
             if status == "выполнен":
                 cursor.execute(f""" update tasks set uploud_to_local_data = '{unloading_time}',
@@ -165,7 +166,32 @@ def upload_data_to_server():
                 query = f""" insert into meter_reading (meter_id, reading_date, reading_values) values
                             ({meter_id}, '{last_reading_date}', {last_reading_value})"""
                 cursor.execute(query)
+                query = f""" update  meters set remark = '{meter_remark}' where id = {meter_id} """
+                cursor.execute(query)
+        conn.commit()
+        conn.close()
+    except Exception as ex:
+        print(ex)
+    upload_dop_address_data_to_server()
 
+
+def upload_dop_address_data_to_server():
+    try:
+        conn = psycopg2.connect(
+            dbname="test",
+            user="postgres",
+            password=123321
+        )
+        cursor = conn.cursor()
+        result = scr.BD.bd_users.select_bd.get_dop_data_to_upload()
+        for record in result:
+            addrss_id, registered_residing, address_status, address_standarts, address_area, \
+                task_remark, task_id = record
+            query = f""" update address set registered_residing = {registered_residing}, status = '{address_status}', 
+            area = {address_area}, standarts = {address_standarts} where id = {addrss_id}  """
+            cursor.execute(query)
+            query = f""" update tasks set remark = '{task_remark}' where id = {task_id} """
+            cursor.execute(query)
         conn.commit()
         conn.close()
     except Exception as ex:
