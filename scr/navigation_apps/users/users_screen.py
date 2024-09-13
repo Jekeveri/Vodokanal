@@ -29,7 +29,7 @@ def show_meters_data(page, id_task):
         id_task, person_name, street, dom, apartment, phone_number, \
             personal_account, date, remark, status, purpose, registered_residing, \
             status_address, standarts, area, saldo = result
-    result_info_address = f"Улица: {street} Дом {dom} Квартира {apartment}"
+    result_info_address = f"Адрес: ул.{street} д.{dom} кв.{apartment}"
     result_info_person = f"ФИО владельца: {person_name}"
     row_address = ft.Column(
         [
@@ -422,11 +422,33 @@ def user_main(page):
     page.vertical_alignment = ft.MainAxisAlignment.START
     global statuses, sorting, search_history_list
 
+    def on_click_update(e):
+        statuses.clear()
+        unloaded_icon.color = ft.colors.WHITE
+        unloaded_tasks_container.shadow.color = ft.colors.BLACK38
+        pending_icon.color = ft.colors.WHITE
+        pending_tasks_container.shadow.color = ft.colors.BLACK38
+        failed_icon.color = ft.colors.WHITE
+        failed_tasks_container.shadow.color = ft.colors.BLACK38
+        completed_icon.color = ft.colors.WHITE
+        completed_tasks_container.shadow.color = ft.colors.BLACK38
+
+        result = scr.BD.bd_users.select_bd.select_user_data()
+        if result:
+            for record in result:
+                user_id, login_user, password_user, privileges, first_name, last_name = record
+                scr.BD.bd_server.select_task_data_for_update(user_id)
+        update_results()
+        page.update()
+
     page.appbar = ft.AppBar(
         title=ft.Text("Задачи"),
         center_title=True,
         toolbar_height=40,
-        bgcolor=ft.colors.BLUE_GREY_50
+        bgcolor=ft.colors.BLUE_GREY_50,
+        actions=[
+            ft.IconButton(icon=ft.icons.AUTORENEW, on_click=on_click_update)
+        ]
     )
     page.update()
 
@@ -489,7 +511,8 @@ def user_main(page):
 
     completed_tasks_container = ft.Container(
         content=ft.Row([completed_icon], alignment=ft.MainAxisAlignment.CENTER, ),
-        padding=ft.padding.only(top=20, bottom=20),
+        padding=ft.padding.only(top=5, bottom=5),
+        margin=ft.margin.only(left=5, right=5),
         bgcolor=const.tasks_completed_text_color,
         border_radius=ft.border_radius.all(35),
         shadow=ft.BoxShadow(
@@ -504,7 +527,8 @@ def user_main(page):
     )
     failed_tasks_container = ft.Container(
         content=ft.Row([failed_icon], alignment=ft.MainAxisAlignment.CENTER, ),
-        padding=ft.padding.only(top=20, bottom=20),
+        padding=ft.padding.only(top=5, bottom=5),
+        margin=ft.margin.only(left=5, right=5),
         bgcolor=const.tasks_failed_text_color,
         border_radius=ft.border_radius.all(35),
         shadow=ft.BoxShadow(
@@ -519,7 +543,8 @@ def user_main(page):
     )
     pending_tasks_container = ft.Container(
         content=ft.Row([pending_icon], alignment=ft.MainAxisAlignment.CENTER, ),
-        padding=ft.padding.only(top=20, bottom=20),
+        padding=ft.padding.only(top=5, bottom=5),
+        margin=ft.margin.only(left=5, right=5),
         bgcolor=const.tasks_pending_text_color,
         border_radius=ft.border_radius.all(35),
         shadow=ft.BoxShadow(
@@ -534,7 +559,8 @@ def user_main(page):
     )
     unloaded_tasks_container = ft.Container(
         content=ft.Row([unloaded_icon], alignment=ft.MainAxisAlignment.CENTER, ),
-        padding=ft.padding.only(top=20, bottom=20),
+        padding=ft.padding.only(top=5, bottom=5),
+        margin=ft.margin.only(left=5, right=5),
         bgcolor=const.tasks_unloaded_text_color,
         border_radius=ft.border_radius.all(35),
         shadow=ft.BoxShadow(
@@ -567,7 +593,7 @@ def user_main(page):
             update_search_history()  # Обновляем историю запросов
         update_search_results("")
         page.update()
-        search_task.close_view()
+        search_task.close_view(query)
 
     def close_anchor(e):
         # Логика обработки выбора элемента из истории
@@ -604,7 +630,7 @@ def user_main(page):
         on_submit=handle_submit,
         on_tap=handle_tap,
         controls=create_search_list(),  # Изначально отображаем пустой список или последние результаты
-        col=3
+        col=3,
     )
 
     def update_results(filter_statuses=None):
@@ -628,7 +654,7 @@ def user_main(page):
                 color = const.tasks_unloaded_color
             else:
                 color = const.tasks_pending_color
-            result_info = f"Улица: {street} Дом {dom} Квартира {apartment}"
+            result_info = f"ул.{street} д.{dom} кв.{apartment}"
             row = ft.Column(
                 [
                     ft.Text(result_info, size=17, color=const.tasks_text_color),
@@ -669,25 +695,6 @@ def user_main(page):
     def on_click_upload(e):
         scr.BD.bd_server.upload_data_to_server()
 
-    def on_click_update(e):
-        statuses.clear()
-        unloaded_icon.color = ft.colors.WHITE
-        unloaded_tasks_container.shadow.color = ft.colors.BLACK38
-        pending_icon.color = ft.colors.WHITE
-        pending_tasks_container.shadow.color = ft.colors.BLACK38
-        failed_icon.color = ft.colors.WHITE
-        failed_tasks_container.shadow.color = ft.colors.BLACK38
-        completed_icon.color = ft.colors.WHITE
-        completed_tasks_container.shadow.color = ft.colors.BLACK38
-
-        result = scr.BD.bd_users.select_bd.select_user_data()
-        if result:
-            for record in result:
-                user_id, login_user, password_user, privileges, first_name, last_name = record
-                scr.BD.bd_server.select_task_data_for_update(user_id)
-        update_results()
-        page.update()
-
     update_results()
 
     def sorting_change(e):
@@ -723,7 +730,10 @@ def user_main(page):
             spacing=5,
             alignment=ft.MainAxisAlignment.CENTER
         ),
-        ft.Divider(thickness=2, color=ft.colors.BLACK45)
+        ft.Container(
+            content=ft.Column([ft.Divider(thickness=4, color=ft.colors.WHITE)]),
+
+        )
     )
 
     page.add(column)
@@ -733,7 +743,6 @@ def user_main(page):
         ft.Row(
             [
                 ft.ElevatedButton(text="Отгрузить все данные", on_click=on_click_upload, ),
-                ft.ElevatedButton(text="Обновить", on_click=on_click_update, )
             ], alignment=ft.MainAxisAlignment.CENTER,
         )
     )
