@@ -10,7 +10,6 @@ import scr.func
 import scr.constants as const
 
 
-
 def call_show_meters_data(page, id_task):
     show_meters_data(page, id_task)
 
