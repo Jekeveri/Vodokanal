@@ -457,57 +457,46 @@ def user_main(page):
     pending_icon = ft.Icon(ft.icons.HOURGLASS_EMPTY, color=ft.colors.WHITE)
     unloaded_icon = ft.Icon(ft.icons.BUILD, color=ft.colors.WHITE)
 
-    def filter_completed(e, color):
+    def filtration(e, color, text):
         global statuses
-        if color == ft.colors.WHITE:
-            statuses.append('выполнен')
-            completed_icon.color = ft.colors.BLACK
-            completed_tasks_container.shadow.color = const.tasks_completed_text_color
-            update_results(filter_statuses=statuses)
+        if text not in statuses:
+            if color == ft.colors.WHITE:
+                statuses.append(text)
+                if text == 'выполнен':
+                    completed_icon.color = ft.colors.BLACK
+                    completed_tasks_container.shadow.color = const.tasks_completed_text_color
+                    update_results(filter_statuses=statuses)
+                elif text == 'просрочен':
+                    failed_icon.color = ft.colors.BLACK
+                    failed_tasks_container.shadow.color = const.tasks_failed_text_color
+                    update_results(filter_statuses=statuses)
+                elif text == 'невыполнен':
+                    pending_icon.color = ft.colors.BLACK
+                    pending_tasks_container.shadow.color = ft.colors.BLACK54
+                    update_results(filter_statuses=statuses)
+                elif text == 'в_исполнении':
+                    unloaded_icon.color = ft.colors.BLACK
+                    unloaded_tasks_container.shadow.color = const.tasks_unloaded_text_color
+                    update_results(filter_statuses=statuses)
         else:
-            statuses.remove('выполнен')
-            completed_icon.color = ft.colors.WHITE
-            completed_tasks_container.shadow.color = ft.colors.BLACK38
-            update_results(filter_statuses=statuses)
-
-    def filter_failed(e, color):
-        global statuses
-        if color == ft.colors.WHITE:
-            statuses.append('просрочен')
-            failed_icon.color = ft.colors.BLACK
-            failed_tasks_container.shadow.color = const.tasks_failed_text_color
-            update_results(filter_statuses=statuses)
-        else:
-            statuses.remove('просрочен')
-            failed_icon.color = ft.colors.WHITE
-            failed_tasks_container.shadow.color = ft.colors.BLACK38
-            update_results(filter_statuses=statuses)
-
-    def filter_pending(e, color):
-        global statuses
-        if color == ft.colors.WHITE:
-            statuses.append('невыполнен')
-            pending_icon.color = ft.colors.BLACK
-            pending_tasks_container.shadow.color = ft.colors.BLACK54
-            update_results(filter_statuses=statuses)
-        else:
-            statuses.remove('невыполнен')
-            pending_icon.color = ft.colors.WHITE
-            pending_tasks_container.shadow.color = ft.colors.BLACK38
-            update_results(filter_statuses=statuses)
-
-    def filter_unloaded(e, color):
-        global statuses
-        if color == ft.colors.WHITE:
-            statuses.append('в_исполнении')
-            unloaded_icon.color = ft.colors.BLACK
-            unloaded_tasks_container.shadow.color = const.tasks_unloaded_text_color
-            update_results(filter_statuses=statuses)
-        else:
-            statuses.remove('в_исполнении')
-            unloaded_icon.color = ft.colors.WHITE
-            unloaded_tasks_container.shadow.color = ft.colors.BLACK38
-            update_results(filter_statuses=statuses)
+            if color != ft.colors.WHITE:
+                statuses.remove(text)
+                if text == 'выполнен':
+                    completed_icon.color = ft.colors.WHITE
+                    completed_tasks_container.shadow.color = ft.colors.BLACK38
+                    update_results(filter_statuses=statuses)
+                elif text == 'просрочен':
+                    failed_icon.color = ft.colors.WHITE
+                    failed_tasks_container.shadow.color = ft.colors.BLACK38
+                    update_results(filter_statuses=statuses)
+                elif text == 'невыполнен':
+                    pending_icon.color = ft.colors.WHITE
+                    pending_tasks_container.shadow.color = ft.colors.BLACK38
+                    update_results(filter_statuses=statuses)
+                elif text == 'в_исполнении':
+                    unloaded_icon.color = ft.colors.WHITE
+                    unloaded_tasks_container.shadow.color = ft.colors.BLACK38
+                    update_results(filter_statuses=statuses)
 
     completed_tasks_container = ft.Container(
         content=ft.Row([completed_icon], alignment=ft.MainAxisAlignment.CENTER, ),
@@ -523,7 +512,7 @@ def user_main(page):
         ink=True,
         ink_color=ft.colors.RED_200,
         col=1,
-        on_click=lambda e: filter_completed(e, completed_icon.color)
+        on_click=lambda e: filtration(e, completed_icon.color, 'выполнен')
     )
     failed_tasks_container = ft.Container(
         content=ft.Row([failed_icon], alignment=ft.MainAxisAlignment.CENTER, ),
@@ -539,7 +528,7 @@ def user_main(page):
         ink=True,
         ink_color=ft.colors.RED_200,
         col=1,
-        on_click=lambda e: filter_failed(e, failed_icon.color)
+        on_click=lambda e: filtration(e, failed_icon.color, 'просрочен')
     )
     pending_tasks_container = ft.Container(
         content=ft.Row([pending_icon], alignment=ft.MainAxisAlignment.CENTER, ),
@@ -555,7 +544,7 @@ def user_main(page):
         ink=True,
         ink_color=ft.colors.RED_200,
         col=1,
-        on_click=lambda e: filter_pending(e, pending_icon.color)
+        on_click=lambda e: filtration(e, pending_icon.color, 'невыполнен')
     )
     unloaded_tasks_container = ft.Container(
         content=ft.Row([unloaded_icon], alignment=ft.MainAxisAlignment.CENTER, ),
@@ -571,7 +560,7 @@ def user_main(page):
         ink=True,
         ink_color=ft.colors.RED_200,
         col=1,
-        on_click=lambda e: filter_unloaded(e, unloaded_icon.color)
+        on_click=lambda e: filtration(e, unloaded_icon.color, 'в_исполнении')
     )
 
     def handle_tap(e):
@@ -580,7 +569,10 @@ def user_main(page):
     def handle_change(e):
         # вывод в консоль при каждом изменении вводимой строки, тут будет обновление заданий и отправка запроса
         # Логика обработки изменения текста (фильтрация, обновление списка и т.д.)
+        if search_task.value != '':
+            search_task.close_view(e.control.value)
         update_search_results(e.control.value)
+        update_results(statuses)
 
     def handle_submit(e):
         # выбор при enter, тут то же будет запрос, но уже с готовым заданием, может быть даже сразу будет открывать
@@ -594,11 +586,13 @@ def user_main(page):
         update_search_results("")
         page.update()
         search_task.close_view(query)
+        update_results(statuses)
 
     def close_anchor(e):
         # Логика обработки выбора элемента из истории
         search_task.value = e.control.data
         update_search_results("")
+        update_results(statuses)
         page.update()
         search_task.close_view()
 
@@ -629,12 +623,14 @@ def user_main(page):
         on_change=handle_change,
         on_submit=handle_submit,
         on_tap=handle_tap,
+        value="",
         controls=create_search_list(),  # Изначально отображаем пустой список или последние результаты
         col=3,
     )
 
     def update_results(filter_statuses=None):
-        results = scr.BD.bd_users.select_bd.select_tasks_data_new(sorting)
+        search_value = search_task.value
+        results = scr.BD.bd_users.select_bd.select_tasks_data_new(sorting, search_value)
         if filter_statuses:
             filtered_results = [result for result in results if result[9] in filter_statuses]
         else:
@@ -658,7 +654,7 @@ def user_main(page):
             row = ft.Column(
                 [
                     ft.Text(result_info, size=17, color=const.tasks_text_color),
-                ],
+                ]
             )
 
             # Используем замыкание для передачи правильного apartment
@@ -682,7 +678,7 @@ def user_main(page):
                     blur_radius=10,
                     color=ft.colors.BLACK38
                 ),
-                alignment=ft.alignment.center,
+                alignment=ft.alignment.bottom_left,
                 on_click=on_click_container
             )
 
@@ -690,7 +686,7 @@ def user_main(page):
 
         page.update()
 
-    column = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+    column = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True)
 
     def on_click_upload(e):
         scr.BD.bd_server.upload_data_to_server()
@@ -742,8 +738,8 @@ def user_main(page):
     page.add(
         ft.Row(
             [
-                ft.ElevatedButton(text="Отгрузить все данные", on_click=on_click_upload, ),
-            ], alignment=ft.MainAxisAlignment.CENTER,
+                ft.ElevatedButton(text="Отгрузить все данные", on_click=on_click_upload, icon="BACKUP_ROUNDED",),
+            ], alignment=ft.MainAxisAlignment.CENTER
         )
     )
     page.update()
