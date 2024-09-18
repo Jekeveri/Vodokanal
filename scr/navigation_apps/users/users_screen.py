@@ -738,7 +738,7 @@ def user_main(page):
     page.add(
         ft.Row(
             [
-                ft.ElevatedButton(text="Отгрузить все данные", on_click=on_click_upload, icon="BACKUP_ROUNDED",),
+                ft.ElevatedButton(text="Отгрузить все данные", on_click=on_click_upload, icon="BACKUP_ROUNDED", ),
             ], alignment=ft.MainAxisAlignment.CENTER
         )
     )
