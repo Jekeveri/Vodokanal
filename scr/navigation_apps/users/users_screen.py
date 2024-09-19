@@ -631,6 +631,7 @@ def user_main(page):
     def update_results(filter_statuses=None):
         search_value = search_task.value
         results = scr.BD.bd_users.select_bd.select_tasks_data_new(sorting, search_value)
+        districts = scr.BD.bd_users.select_bd.select_group_district_new()
         if filter_statuses:
             filtered_results = [result for result in results if result[9] in filter_statuses]
         else:
@@ -640,10 +641,22 @@ def user_main(page):
 
         column.controls.clear()
 
+        # Словарь для хранения задач по районам
+        tasks_by_district = {}
+        panel_list = ft.ExpansionPanelList(
+            elevation=25,
+            expanded_header_padding=3
+        )
+
         for result in filtered_results:
-            id_task, person_name, street, dom, apartment, phone_number, \
+            id_task, person_name, district, street, dom, apartment, phone_number, \
                 personal_account, date, remark, status, purpose, registered_residing, \
                 status_address, standarts, area, saldo = result
+
+            # Проверяем, существует ли уже ключ для этого района, если нет - создаем
+            if district not in tasks_by_district:
+                tasks_by_district[district] = []
+
             if status == 'выполнен':
                 color = const.tasks_completed_color
             elif status == 'в_исполнении':
@@ -682,7 +695,20 @@ def user_main(page):
                 on_click=on_click_container
             )
 
-            column.controls.append(task_container)
+            # Добавляем контейнер с задачей в соответствующий район
+            tasks_by_district[district].append(task_container)
+
+        # Создаем раскрывающиеся панели для каждого района
+        for district, tasks in tasks_by_district.items():
+            panel = ft.ExpansionPanel(
+                header=ft.Text(f"{district}"),
+                content=ft.Column(tasks),  # Добавляем список задач в панель
+                expanded=True,
+                can_tap_header=True
+            )
+            panel_list.controls.append(panel)
+
+        column.controls.append(panel_list)
 
         page.update()
 

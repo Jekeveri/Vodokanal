@@ -36,7 +36,7 @@ def select_tasks_data_new(sorting, search_value):
     search_value = search_value.lower()
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
-        query = f"""Select t.id|| '', t.name, a.street, a.dom, a.apartment, t.phone_number, 
+        query = f"""Select t.id|| '', t.name, a.district, a.street, a.dom, a.apartment, t.phone_number, 
                     t.personal_account || '', t.date, t.remark, t.status, t.purpose, 
                     a.registered_residing '', a.status, a.standarts '', a.area|| '', t.saldo 
                     from tasks as t
@@ -52,9 +52,9 @@ def select_tasks_data_new(sorting, search_value):
 
         filtered_result = [
             row for row in result if
-            search_value in row[2].lower() or  # a.street
-            search_value in row[3].lower() or  # a.dom
-            search_value in row[4].lower()     # a.apartment
+            search_value in row[2].lower() or  # a.district
+            search_value in row[3].lower() or  # a.street
+            search_value in row[4].lower()  # a.dom
         ]
 
         return filtered_result
@@ -110,6 +110,15 @@ def get_dop_data_to_upload():
         cursor = db.cursor()
         query = """ Select a.id, a.registered_residing, a.status, a.standarts, a.area, t.remark, t.id from address as a
                     join tasks as t on t.id_address = a.id"""
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return result
+
+
+def select_group_district_new():
+    with sl.connect('database_client.db') as db:
+        cursor = db.cursor()
+        query = f""" select district from address group by district """
         cursor.execute(query)
         result = cursor.fetchall()
         return result
