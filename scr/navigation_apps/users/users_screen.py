@@ -631,9 +631,8 @@ def user_main(page):
     def update_results(filter_statuses=None):
         search_value = search_task.value
         results = scr.BD.bd_users.select_bd.select_tasks_data_new(sorting, search_value)
-        districts = scr.BD.bd_users.select_bd.select_group_district_new()
         if filter_statuses:
-            filtered_results = [result for result in results if result[9] in filter_statuses]
+            filtered_results = [result for result in results if result[10] in filter_statuses]
         else:
             filtered_results = [
                 result for result in results

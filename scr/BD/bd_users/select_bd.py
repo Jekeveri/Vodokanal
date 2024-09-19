@@ -54,7 +54,8 @@ def select_tasks_data_new(sorting, search_value):
             row for row in result if
             search_value in row[2].lower() or  # a.district
             search_value in row[3].lower() or  # a.street
-            search_value in row[4].lower()  # a.dom
+            search_value in row[4].lower() or  # a.dom
+            search_value in row[5].lower()  # a.apartment
         ]
 
         return filtered_result
@@ -114,11 +115,3 @@ def get_dop_data_to_upload():
         result = cursor.fetchall()
         return result
 
-
-def select_group_district_new():
-    with sl.connect('database_client.db') as db:
-        cursor = db.cursor()
-        query = f""" select district from address group by district """
-        cursor.execute(query)
-        result = cursor.fetchall()
-        return result
