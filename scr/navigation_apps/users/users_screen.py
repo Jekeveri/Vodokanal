@@ -641,7 +641,7 @@ def user_main(page):
         column.controls.clear()
 
         # Словарь для хранения задач по районам
-        tasks_by_district = {}
+        tasks_by_street = {}
         panel_list = ft.ExpansionPanelList(
             elevation=25,
             expanded_header_padding=3
@@ -653,8 +653,8 @@ def user_main(page):
                 status_address, standarts, area, saldo = result
 
             # Проверяем, существует ли уже ключ для этого района, если нет - создаем
-            if district not in tasks_by_district:
-                tasks_by_district[district] = []
+            if street not in tasks_by_street:
+                tasks_by_street[street] = []
 
             if status == 'выполнен':
                 color = const.tasks_completed_color
@@ -695,12 +695,12 @@ def user_main(page):
             )
 
             # Добавляем контейнер с задачей в соответствующий район
-            tasks_by_district[district].append(task_container)
+            tasks_by_street[street].append(task_container)
 
         # Создаем раскрывающиеся панели для каждого района
-        for district, tasks in tasks_by_district.items():
+        for street, tasks in tasks_by_street.items():
             panel = ft.ExpansionPanel(
-                header=ft.Text(f"{district}"),
+                header=ft.Text(f"{street}"),
                 content=ft.Column(tasks),  # Добавляем список задач в панель
                 expanded=True,
                 can_tap_header=True
