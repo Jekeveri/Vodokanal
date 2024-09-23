@@ -2,6 +2,7 @@ import datetime
 import os
 import flet as ft
 import scr.BD.bd_users.update_bd
+import scr.BD.bd_users.delete_bd
 import scr.BD.bd_users.insert_bd
 import scr.BD.bd_users.select_bd
 import scr.BD.bd_server
@@ -229,11 +230,8 @@ def update_data(page, meter_id, id_task):
     def on_click_time_task(e):
         today = datetime.datetime.now().strftime("%H:%M:%S")
         if remark.value and reading_value.value:  # Упростил проверку на пустоту
-            global m_remark, m_value
-            m_value = reading_value.value
-            m_remark = remark.value
             scr.BD.bd_users.update_bd.update_local_tasks(
-                str(today), id_task, m_value, m_remark, meter_id)
+                str(today), id_task, reading_value.value, remark.value, meter_id)
             show_meters_data(page, id_task)
             page.close(dlg_modal)
             page.update()
@@ -266,7 +264,7 @@ def update_data(page, meter_id, id_task):
                 date_next_verification, location, status_filling, meter_remark = result
 
     # Формирование текста с информацией о счетчике
-    result_info_meters = f"Счетчик: {marka} Дата установки: {instalation_day} Тип: {meter_type}"
+    result_info_meters = f"Счетчик: {marka} \nДата установки: {instalation_day} \nТип: {meter_type}"
 
     # Инициализация переменных для показаний
     last_reading_date = "Неизвестно"
@@ -343,7 +341,6 @@ def update_data(page, meter_id, id_task):
         if e.files:
             for file in e.files:
                 save_image_to_db(file.path)  # Сохраняем изображение в базу данных
-                selected_images.append(file.name)
                 update_saving_data(meter_id, id_task)
                 scr.func.show_snack_bar(page, f"Изображение {file.name} сохранено в базу данных.")
         else:
@@ -351,8 +348,15 @@ def update_data(page, meter_id, id_task):
 
     pick_files_dialog = ft.FilePicker(on_result=pick_files_result)
     page.overlay.append(pick_files_dialog)
-    selected_images = []
+    selected_images = {}
     save_photos = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True, )
+
+    def on_click_delete_photo(e, id_p, meter_id, id_task):
+        scr.BD.bd_users.delete_bd.delete_photo_db(id_p)
+        if id_p in selected_images:
+            del selected_images[id_p]
+        update_saving_data(meter_id, id_task)
+        page.update()
 
     def update_saving_data(meter_id, id_task):
         images = scr.BD.bd_users.select_bd.select_photo_data_new(meter_id, id_task)
@@ -360,24 +364,36 @@ def update_data(page, meter_id, id_task):
             selected_images.clear()
             for result in images:
                 id_photo, value_photo, file_name1, task_id, meter_id = result
-                selected_images.append(file_name1)
+                selected_images[id_photo] = file_name1  # Добавляем фото в словарь
         save_photos.controls.clear()
         if selected_images:
-            for i in selected_images:
-                save_photos.controls.append(ft.Text(i))
-            page.update()
+            for id_p, file in selected_images.items():
+                save_photos.controls.append(
+                    ft.Container(
+                        content=ft.Row(
+                            [
+                                ft.Text(file),
+                                ft.IconButton(
+                                    icon=ft.icons.DELETE,
+                                    on_click=lambda e, id_p=id_p: on_click_delete_photo(e, id_p, meter_id, id_task)
+                                )
+                            ]
+                        )
+                    )
+                )
+        page.update()
 
     update_saving_data(meter_id, id_task)
 
     def zagr(e):
-        pick_files_dialog.pick_files(allow_multiple=True)
+        pick_files_dialog.pick_files(allow_multiple=True, allowed_extensions=["jpeg", "gif", "png"])
 
     # Основной контент модального окна
     meters_data = ft.Container(
         content=ft.Column(
             [
-                ft.Text(f"Дата контрольных показаний: {last_reading_date}"),
-                ft.Text(f"Контрольные показания: {last_reading_value}"),
+                ft.Text(f"Дата контрольных показаний: {last_reading_date}", size=17),
+                ft.Text(f"Контрольные показания: {last_reading_value}", size=17),
                 reading_value,
                 remark,
                 save_photos,
@@ -715,6 +731,7 @@ def user_main(page):
 
     def on_click_upload(e):
         scr.BD.bd_server.upload_data_to_server()
+        scr.func.show_snack_bar(page, "Выгруженны данные по выполненым заданиям и все дополнительные данные")
 
     update_results()
 
