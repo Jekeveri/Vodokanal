@@ -70,37 +70,118 @@ def admin_main(page):
         else:
             scr.func.show_snack_bar(page, "Выберите задания")
 
+    sort_index = 1
+    sort_ascending = True
+
+    def on_sort(e):
+        nonlocal sort_index, sort_ascending
+        sort_index = e.column_index
+        sort_ascending = True
+        print(f"{e.column_index}, {e.ascending}")
+        page.update()
+
     home_tabs = ft.Container(
-        content=ft.DataTable(
-            columns=[
-                ft.DataColumn(ft.Text("First name")),
-                ft.DataColumn(ft.Text("Last name")),
-                ft.DataColumn(ft.Text("Age"), numeric=True),
+        content=ft.Column(
+            [
+                ft.ResponsiveRow(
+                    [
+                        ft.SearchBar(col=3),
+                        ft.Container(
+                            content=ft.Row([ft.Text("Сортировка\nфилтр")], alignment=ft.MainAxisAlignment.CENTER, ),
+                            padding=ft.padding.only(top=5, bottom=5),
+                            margin=ft.margin.only(left=5, right=5),
+                            bgcolor=const.tasks_unloaded_text_color,
+                            border_radius=ft.border_radius.all(35),
+                            shadow=ft.BoxShadow(
+                                offset=ft.Offset(5, 5),
+                                blur_radius=10,
+                                color=ft.colors.BLACK38
+                            ),
+                            ink=True,
+                            ink_color=ft.colors.RED_200,
+                            col=1,
+                        ),
+                        ft.Container(
+                            content=ft.Row([ft.Text("Сортировка\nфилтр")], alignment=ft.MainAxisAlignment.CENTER, ),
+                            padding=ft.padding.only(top=5, bottom=5),
+                            margin=ft.margin.only(left=5, right=5),
+                            bgcolor=const.tasks_unloaded_text_color,
+                            border_radius=ft.border_radius.all(35),
+                            shadow=ft.BoxShadow(
+                                offset=ft.Offset(5, 5),
+                                blur_radius=10,
+                                color=ft.colors.BLACK38
+                            ),
+                            ink=True,
+                            ink_color=ft.colors.RED_200,
+                            col=1,
+                        ),
+                    ],
+                    columns=5,
+                ),
+                ft.DataTable(
+                    width=screen_width,
+                    columns=[
+                        ft.DataColumn(ft.Text("№"), on_sort=on_sort),
+                        ft.DataColumn(ft.Text("Счет"), on_sort=on_sort),
+                        ft.DataColumn(ft.Text("Адрес"), on_sort=on_sort),
+                        ft.DataColumn(ft.Text("ФИО")),
+                        ft.DataColumn(ft.Text("Кол-во\nсчетчиков")),
+                        ft.DataColumn(ft.Text("Примечание")),
+                        ft.DataColumn(ft.Text("Контролер")),
+                    ],
+                    border=ft.border.all(2, "grey"),
+                    vertical_lines=ft.BorderSide(1, "grey"),
+                    sort_ascending=sort_ascending,
+                    sort_column_index=sort_index,
+                    data_row_color={ft.ControlState.HOVERED: "0x30FF0000"},
+                    rows=[
+                        ft.DataRow(
+                            cells=[
+                                ft.DataCell(ft.Text("54")),
+                                ft.DataCell(ft.Text("54")),
+                                ft.DataCell(ft.Text("54")),
+                                ft.DataCell(ft.Text("54")),
+                                ft.DataCell(ft.Text("54")),
+                                ft.DataCell(ft.Text("54")),
+                                ft.DataCell(ft.Text("54")),
+                            ],
+                            selected=True,
+                            on_select_changed=lambda e: print(f"row select changed: {e.data}"),
+                        ),
+                        ft.DataRow(
+                            cells=[
+                                ft.DataCell(ft.Text("Jack")),
+                                ft.DataCell(ft.Text("Brown")),
+                                ft.DataCell(ft.Text("19")),
+                                ft.DataCell(ft.Text("54")),
+                                ft.DataCell(ft.Text("54")),
+                                ft.DataCell(ft.Text("54")),
+                                ft.DataCell(ft.Text("54")),
+
+                            ],
+                            selected=True,
+                            on_select_changed=lambda e: print(f"row select changed: {e.data}"),
+                        ),
+                        ft.DataRow(
+                            cells=[
+                                ft.DataCell(ft.Text("Alice")),
+                                ft.DataCell(ft.Text("Wong")),
+                                ft.DataCell(ft.Text("25")),
+                                ft.DataCell(ft.Text("54")),
+                                ft.DataCell(ft.Text("54")),
+                                ft.DataCell(ft.Text("54")),
+                                ft.DataCell(ft.Text("54")),
+                            ],
+                            selected=True,
+                            on_select_changed=lambda e: print(f"row select changed: {e.data}"),
+                        ),
+                    ],
+                ),
             ],
-            rows=[
-                ft.DataRow(
-                    cells=[
-                        ft.DataCell(ft.Text("54"), on_double_tap=True),
-                        ft.DataCell(ft.Text("54")),
-                        ft.DataCell(ft.Text("54")),
-                    ],
-                ),
-                ft.DataRow(
-                    cells=[
-                        ft.DataCell(ft.Text("Jack"), on_double_tap=True),
-                        ft.DataCell(ft.Text("Brown")),
-                        ft.DataCell(ft.Text("19")),
-                    ],
-                ),
-                ft.DataRow(
-                    cells=[
-                        ft.DataCell(ft.Text("Alice")),
-                        ft.DataCell(ft.Text("Wong")),
-                        ft.DataCell(ft.Text("25")),
-                    ],
-                ),
-            ],
+            expand=True,
         ),
+        expand=True
     )
 
     def show_results():

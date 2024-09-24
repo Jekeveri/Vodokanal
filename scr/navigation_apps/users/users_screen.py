@@ -32,11 +32,6 @@ def show_meters_data(page, id_task):
             status_address, standarts, area, saldo = result
     result_info_address = f"Адрес: ул.{street} д.{dom} кв.{apartment}"
     result_info_person = f"ФИО владельца: {person_name}"
-    row_address = ft.Column(
-        [
-            ft.Text(result_info_address, size=17, color=const.tasks_text_color),
-        ],
-    )
 
     def on_click_back(e):
         user_main(page)
@@ -196,7 +191,6 @@ def update_data(page, meter_id, id_task):
     screen_width = page.width
     screen_height = page.height
 
-    # Функции для работы с BottomSheet
     def bottom_sheet_yes(e):
         page.close(bottom_sheet)
         page.close(dlg_modal)
@@ -205,7 +199,6 @@ def update_data(page, meter_id, id_task):
     def bottom_sheet_no(e):
         page.close(bottom_sheet)
 
-    # BottomSheet для подтверждения выхода
     bottom_sheet = ft.BottomSheet(
         content=ft.Container(
             padding=50,
@@ -256,22 +249,17 @@ def update_data(page, meter_id, id_task):
     location = "Неизвестно"
     meter_remark = "Неизвестно"
 
-    # Получение данных счетчика
     results_meters_data = scr.BD.bd_users.select_bd.select_meters_data_new_for_one(id_task, meter_id)
     if results_meters_data:
         for result in results_meters_data:
             id_meters, meter_number, instalation_day, meter_type, id_address, marka, seal_number, \
                 date_next_verification, location, status_filling, meter_remark = result
-
-    # Формирование текста с информацией о счетчике
     result_info_meters = f"Счетчик: {marka} \nДата установки: {instalation_day} \nТип: {meter_type}"
 
-    # Инициализация переменных для показаний
     last_reading_date = "Неизвестно"
     last_reading_value = "Неизвестно"
     new_reading_value = ""
 
-    # Получение данных показаний счетчика
     results = scr.BD.bd_users.select_bd.select_meter_reading_new(meter_id)
     if results:
         for result in results:
@@ -279,12 +267,10 @@ def update_data(page, meter_id, id_task):
             if new_reading_value is None:
                 new_reading_value = ""
 
-    # Поля ввода для показаний и примечаний
     reading_value = ft.TextField(label="Показания счетчика", value=new_reading_value)
     remark = ft.TextField(label="Примечания по счетчику", value=meter_remark, multiline=True, min_lines=1,
                           max_lines=3)
 
-    # Заголовок
     title = ft.Column(
         [
             ft.Text(f"Номер: {meter_id}", size=17),
@@ -386,7 +372,7 @@ def update_data(page, meter_id, id_task):
     update_saving_data(meter_id, id_task)
 
     def zagr(e):
-        pick_files_dialog.pick_files(allow_multiple=True, allowed_extensions=["jpeg", "gif", "png"])
+        pick_files_dialog.pick_files(allow_multiple=True, allowed_extensions=["jpeg", "gif", "png", "webp"])
 
     # Основной контент модального окна
     meters_data = ft.Container(
