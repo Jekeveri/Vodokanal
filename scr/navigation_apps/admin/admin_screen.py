@@ -70,27 +70,77 @@ def admin_main(page):
         else:
             scr.func.show_snack_bar(page, "Выберите задания")
 
-    sort_index = 1
+    data = [
+        ["54", "54", "Адрес 2", "ФИО 1", "1", "Примечание 1", "Контролер 1"],
+        ["55", "54", "Адрес 1", "ФИО 2", "2", "Примечание 2", "Контролер 2"],
+        ["56", "54", "Адрес 3", "ФИО 3", "3", "Примечание 3", "Контролер 3"]
+    ]
+
+    sort_index = 0
     sort_ascending = True
 
     def on_sort(e):
         nonlocal sort_index, sort_ascending
         sort_index = e.column_index
-        sort_ascending = True
-        print(f"{e.column_index}, {e.ascending}")
+        sort_ascending = e.ascending
+        sorted_data = sorted(
+            data,
+            key=lambda row: row[sort_index],
+            reverse=not sort_ascending
+        )
+        # Обновляем таблицу
+        update_table(sorted_data)
+        table.sort_column_index = sort_index
+        table.sort_ascending = sort_ascending
         page.update()
 
+    table = ft.DataTable(
+        width=page.width,
+        columns=[
+            ft.DataColumn(ft.Text("№"), on_sort=on_sort),
+            ft.DataColumn(ft.Text("Счет"), on_sort=on_sort),
+            ft.DataColumn(ft.Text("Адрес"), on_sort=on_sort),
+            ft.DataColumn(ft.Text("ФИО"), on_sort=on_sort),
+            ft.DataColumn(ft.Text("Кол-во\nсчетчиков"), on_sort=on_sort),
+            ft.DataColumn(ft.Text("Примечание"), on_sort=on_sort),
+            ft.DataColumn(ft.Text("Контролер"), on_sort=on_sort),
+        ],
+        border=ft.border.all(2, "grey"),
+        vertical_lines=ft.BorderSide(1, "grey"),
+        sort_ascending=sort_ascending,
+        sort_column_index=sort_index,
+        data_row_color={ft.ControlState.HOVERED: "0x30FF0000"},
+        rows=[]
+    )
+
+    def update_table(sorted_data):
+        nonlocal table
+        table.rows.clear()
+        for row_data in sorted_data:
+            table.rows.append(
+                ft.DataRow(
+                    cells=[
+                        ft.DataCell(ft.Text(cell)) for cell in row_data
+                    ]
+                )
+            )
+        page.update()
+
+    update_table(data)
     home_tabs = ft.Container(
         content=ft.Column(
             [
                 ft.ResponsiveRow(
                     [
-                        ft.SearchBar(col=3),
                         ft.Container(
-                            content=ft.Row([ft.Text("Сортировка\nфилтр")], alignment=ft.MainAxisAlignment.CENTER, ),
+                            content=ft.SearchBar(),
+                            col=3,
+                        ),
+                        ft.Container(
+                            content=ft.Row([ft.Text("Сортировка\nфильтр")], alignment=ft.MainAxisAlignment.CENTER),
                             padding=ft.padding.only(top=5, bottom=5),
                             margin=ft.margin.only(left=5, right=5),
-                            bgcolor=const.tasks_unloaded_text_color,
+                            bgcolor="0xFFBDBDBD",
                             border_radius=ft.border_radius.all(35),
                             shadow=ft.BoxShadow(
                                 offset=ft.Offset(5, 5),
@@ -102,10 +152,10 @@ def admin_main(page):
                             col=1,
                         ),
                         ft.Container(
-                            content=ft.Row([ft.Text("Сортировка\nфилтр")], alignment=ft.MainAxisAlignment.CENTER, ),
+                            content=ft.Row([ft.Text("Сортировка\nфильтр")], alignment=ft.MainAxisAlignment.CENTER),
                             padding=ft.padding.only(top=5, bottom=5),
                             margin=ft.margin.only(left=5, right=5),
-                            bgcolor=const.tasks_unloaded_text_color,
+                            bgcolor="0xFFBDBDBD",
                             border_radius=ft.border_radius.all(35),
                             shadow=ft.BoxShadow(
                                 offset=ft.Offset(5, 5),
@@ -119,67 +169,13 @@ def admin_main(page):
                     ],
                     columns=5,
                 ),
-                ft.DataTable(
-                    width=screen_width,
-                    columns=[
-                        ft.DataColumn(ft.Text("№"), on_sort=on_sort),
-                        ft.DataColumn(ft.Text("Счет"), on_sort=on_sort),
-                        ft.DataColumn(ft.Text("Адрес"), on_sort=on_sort),
-                        ft.DataColumn(ft.Text("ФИО")),
-                        ft.DataColumn(ft.Text("Кол-во\nсчетчиков")),
-                        ft.DataColumn(ft.Text("Примечание")),
-                        ft.DataColumn(ft.Text("Контролер")),
-                    ],
-                    border=ft.border.all(2, "grey"),
-                    vertical_lines=ft.BorderSide(1, "grey"),
-                    sort_ascending=sort_ascending,
-                    sort_column_index=sort_index,
-                    data_row_color={ft.ControlState.HOVERED: "0x30FF0000"},
-                    rows=[
-                        ft.DataRow(
-                            cells=[
-                                ft.DataCell(ft.Text("54")),
-                                ft.DataCell(ft.Text("54")),
-                                ft.DataCell(ft.Text("54")),
-                                ft.DataCell(ft.Text("54")),
-                                ft.DataCell(ft.Text("54")),
-                                ft.DataCell(ft.Text("54")),
-                                ft.DataCell(ft.Text("54")),
-                            ],
-                            selected=True,
-                            on_select_changed=lambda e: print(f"row select changed: {e.data}"),
-                        ),
-                        ft.DataRow(
-                            cells=[
-                                ft.DataCell(ft.Text("Jack")),
-                                ft.DataCell(ft.Text("Brown")),
-                                ft.DataCell(ft.Text("19")),
-                                ft.DataCell(ft.Text("54")),
-                                ft.DataCell(ft.Text("54")),
-                                ft.DataCell(ft.Text("54")),
-                                ft.DataCell(ft.Text("54")),
-
-                            ],
-                            selected=True,
-                            on_select_changed=lambda e: print(f"row select changed: {e.data}"),
-                        ),
-                        ft.DataRow(
-                            cells=[
-                                ft.DataCell(ft.Text("Alice")),
-                                ft.DataCell(ft.Text("Wong")),
-                                ft.DataCell(ft.Text("25")),
-                                ft.DataCell(ft.Text("54")),
-                                ft.DataCell(ft.Text("54")),
-                                ft.DataCell(ft.Text("54")),
-                                ft.DataCell(ft.Text("54")),
-                            ],
-                            selected=True,
-                            on_select_changed=lambda e: print(f"row select changed: {e.data}"),
-                        ),
-                    ],
-                ),
+                ft.ResponsiveRow(
+                    [
+                        table
+                    ]
+                )
             ],
-            expand=True,
+            expand=True
         ),
         expand=True
     )
@@ -193,7 +189,6 @@ def admin_main(page):
         if res:
             for record in filtered_results:
                 task_id, address_id, city, district, street, dom, apartment, entrance = record
-                # Изначально все чекбоксы отключены (False)
                 task_status[task_id] = False
 
                 row = ft.Container(
