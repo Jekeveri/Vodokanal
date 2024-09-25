@@ -7,7 +7,7 @@ import scr.navigation_apps.navigations
 import scr.verifications
 
 
-def exit_account(page):
+def handle_user_sessions(page):
     if os.path.exists("database_client.db"):
         result = scr.BD.bd_users.select_bd.select_user_data()
         if result:  # Проверяем, что содержимое не пустое

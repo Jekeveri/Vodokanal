@@ -1,6 +1,6 @@
 import flet as ft
 
-import scr.exit
+import scr.toggle_user_sessions
 import scr.func
 import scr.BD.bd_users.delete_bd
 import scr.BD.bd_users.select_bd
@@ -20,7 +20,7 @@ def setting(page):
 
     def on_click_exit(e):
         scr.BD.bd_users.delete_bd.delete_data_db()
-        scr.exit.exit_account(page)
+        scr.toggle_user_sessions.handle_user_sessions(page)
 
     result = scr.BD.bd_users.select_bd.select_user_data()
 

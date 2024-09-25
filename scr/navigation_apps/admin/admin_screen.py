@@ -2,7 +2,7 @@ import flet as ft
 
 import scr.BD.bd_admin.select_server
 import scr.BD.bd_admin.update_server
-import scr.exit
+import scr.toggle_user_sessions
 import scr.func
 import scr.constants as const
 
@@ -233,7 +233,7 @@ def admin_main(page):
     )
 
     def on_click_exit(e):
-        scr.exit.exit_account(page)
+        scr.toggle_user_sessions.handle_user_sessions(page)
 
     setting_tabs = ft.Container(
         content=ft.Row([

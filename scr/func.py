@@ -1,6 +1,6 @@
 import flet as ft
 
-import scr.navigation_apps.users.users_screen
+import scr.navigation_apps.users.main_users_screen
 
 
 def show_snack_bar(page, message):

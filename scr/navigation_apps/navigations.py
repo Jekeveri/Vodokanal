@@ -1,6 +1,6 @@
 import scr.navigation_apps.admin.admin_screen
-import scr.navigation_apps.users.users_screen
-import scr.navigation_apps.users.user_setting_page
+import scr.navigation_apps.users.main_users_screen
+import scr.navigation_apps.users.user_setting_screen
 import scr.navigation_apps.users.ratyng_user_screen
 import scr.navigation_apps.users.map_user_screen
 import flet as ft
@@ -13,7 +13,7 @@ def role_definition(privileges, page):
         scr.navigation_apps.admin.admin_screen.admin_main(page)
     else:
         employee_navigation(privileges, page)
-        scr.navigation_apps.users.users_screen.user_main(page)
+        scr.navigation_apps.users.main_users_screen.user_main(page)
 
 
 def employee_navigation(privileges, page):
@@ -24,11 +24,11 @@ def employee_navigation(privileges, page):
             pass
         else:
             if nav == 0:
-                scr.navigation_apps.users.users_screen.user_main(page)
+                scr.navigation_apps.users.main_users_screen.user_main(page)
             elif nav == 1:
                 scr.navigation_apps.users.ratyng_user_screen.rating(page)
             elif nav == 2:
-                scr.navigation_apps.users.user_setting_page.setting(page)
+                scr.navigation_apps.users.user_setting_screen.setting(page)
 
     page.navigation_bar = ft.NavigationBar(
         destinations=[
