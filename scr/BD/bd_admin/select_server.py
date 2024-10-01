@@ -1,14 +1,24 @@
+import os
+
 import psycopg2
 import datetime
 import scr.func
 
 
+HOST = os.environ.get("HOST", default="localhost")
+DBNAME = os.environ.get("DBNAME", default="Vodokanal")
+PASSWORD = os.environ.get("PASSWORD", default="1")
+USER = os.environ.get("USER", default="postgres")
+PORT = os.environ.get("PORT", default="5432")
+
 def select_address_to_choice():
     try:
         conn = psycopg2.connect(
-            dbname="test",
-            user="postgres",
-            password='123321'
+            dbname=DBNAME,
+            user=USER,
+            password=PASSWORD,
+            host=HOST,
+            port=PORT
         )
         cursor = conn.cursor()
 
@@ -25,9 +35,11 @@ def select_address_to_choice():
 def select_employer_to_choice():
     try:
         conn = psycopg2.connect(
-            dbname="test",
-            user="postgres",
-            password='123321'
+            dbname=DBNAME,
+            user=USER,
+            password=PASSWORD,
+            host=HOST,
+            port=PORT
         )
         cursor = conn.cursor()
 

@@ -1,3 +1,5 @@
+import os
+
 import psycopg2
 import datetime
 
@@ -8,12 +10,20 @@ import scr.BD.bd_users.update_bd
 import scr.func
 import scr.navigation_apps.navigations
 
+HOST = os.environ.get("HOST", default="localhost")
+DBNAME = os.environ.get("DBNAME", default="Vodokanal")
+PASSWORD = os.environ.get("PASSWORD", default="1")
+USER = os.environ.get("USER", default="postgres")
+PORT = os.environ.get("PORT", default="5432")
+
 
 def check_user_credentials(login, password, page):
     conn = psycopg2.connect(
-        dbname="test",
-        user="postgres",
-        password='123321'
+        dbname=DBNAME,
+        user=USER,
+        password=PASSWORD,
+        host=HOST,
+        port=PORT
     )
     cursor = conn.cursor()
     cursor.execute("""
@@ -40,9 +50,11 @@ def check_user_credentials(login, password, page):
 
 def select_task_data(id_user):
     conn = psycopg2.connect(
-        dbname="test",
-        user="postgres",
-        password='123321'
+        dbname=DBNAME,
+        user=USER,
+        password=PASSWORD,
+        host=HOST,
+        port=PORT
     )
     cursor = conn.cursor()
 
@@ -92,9 +104,11 @@ def select_task_data(id_user):
 
 def select_task_data_for_update(id_user):
     conn = psycopg2.connect(
-        dbname="test",
-        user="postgres",
-        password='123321'
+        dbname=DBNAME,
+        user=USER,
+        password=PASSWORD,
+        host=HOST,
+        port=PORT
     )
     cursor = conn.cursor()
 
@@ -144,9 +158,11 @@ def select_task_data_for_update(id_user):
 def upload_data_to_server():
     try:
         conn = psycopg2.connect(
-            dbname="test",
-            user="postgres",
-            password=123321
+            dbname=DBNAME,
+            user=USER,
+            password=PASSWORD,
+            host=HOST,
+            port=PORT
         )
         time_to_server = datetime.datetime.now().strftime("%H:%M:%S")
         result = scr.BD.bd_users.select_bd.get_data_to_upload()
@@ -178,9 +194,11 @@ def upload_data_to_server():
 def upload_dop_address_data_to_server():
     try:
         conn = psycopg2.connect(
-            dbname="test",
-            user="postgres",
-            password=123321
+            dbname=DBNAME,
+            user=USER,
+            password=PASSWORD,
+            host=HOST,
+            port=PORT
         )
         cursor = conn.cursor()
         result = scr.BD.bd_users.select_bd.get_dop_data_to_upload()
