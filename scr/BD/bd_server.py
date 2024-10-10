@@ -65,12 +65,12 @@ def select_task_data(id_user):
         for record in task_data:
             task_id, name, address_id, city, district, street, dom, apartment, entrance, \
                 registered_residing, address_status, standarts, area, phone_number, \
-                personal_account, date_task, remark, status_task, purpose, saldo = record
+                personal_account, date_task, remark, status_task, purpose, saldo, type_address = record
 
             scr.BD.bd_users.insert_bd.insert_bd_task(
                 task_id, name, address_id, city, district, street, dom, apartment,
                 entrance, phone_number, personal_account, date_task, remark, status_task, purpose,
-                registered_residing, address_status, standarts, area, saldo
+                registered_residing, address_status, standarts, area, saldo, type_address
             )
 
     cursor.execute(f""" SELECT * FROM get_meters_data_new({id_user}) """)
@@ -119,7 +119,7 @@ def select_task_data_for_update(id_user):
         for record in task_data:
             task_id, name, address_id, city, district, street, dom, apartment, entrance, \
                 registered_residing, address_status, standarts, area, phone_number, \
-                personal_account, date_task, remark, status_task, purpose, saldo = record
+                personal_account, date_task, remark, status_task, purpose, saldo, type_address = record
 
             scr.BD.bd_users.update_bd.update_tasks_data_from_server(task_id, name, address_id, city, district, street,
                                                                     dom, apartment, entrance,

@@ -13,7 +13,7 @@ def show_snack_bar(page, message):
     page.update()
 
 
-def show_alert_yn(page, message, integer_for_someone):
+def show_alert_yn(page, message):
     def on_button_yes(e):
         page.close(bs)
         # scr.navigation_apps.users.users_screen.add_meters(page, integer_for_someone)

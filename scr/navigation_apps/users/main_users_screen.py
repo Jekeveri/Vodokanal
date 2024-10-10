@@ -29,9 +29,162 @@ def show_meters_data(page, id_task):
     for result in filtered_results:
         id_task, person_name, street, dom, apartment, phone_number, \
             personal_account, date, remark, status, purpose, registered_residing, \
-            status_address, standarts, area, saldo = result
+            status_address, standarts, area, saldo, type_address = result
     result_info_address = f"Адрес: ул.{street} д.{dom} кв.{apartment}"
     result_info_person = f"ФИО владельца: {person_name}"
+
+    dict_checkboxes = {}
+
+    def on_checkbox_change(checkbox, name):
+        dict_checkboxes[name] = checkbox.value
+
+    def toggle_checkbox(e, checkbox, name):
+        checkbox.value = not checkbox.value
+        checkbox.update()
+        on_checkbox_change(checkbox, name)
+
+    fio_checkbox = ft.Ref[ft.Checkbox]()
+    residing_checkbox = ft.Ref[ft.Checkbox]()
+    standarts_checkbox = ft.Ref[ft.Checkbox]()
+    area_checkbox = ft.Ref[ft.Checkbox]()
+
+    if type_address == "МКД" and purpose == "Контрольный съем показаний":
+        dict_checkboxes["FIO"] = False
+        dict_checkboxes["registered_residing"]= False
+        dict_checkboxes["standarts"]= False
+
+        content = ft.Column(
+            [
+                ft.Container(
+                    content=ft.Row([
+                        ft.Checkbox(on_change=lambda e, name="FIO": on_checkbox_change(e.control, name),
+                                    ref=fio_checkbox),
+                        ft.Text("ФИО совпадает с "),
+                        ft.Text(f"{person_name}", weight=ft.FontWeight.BOLD),
+                        ft.Text("?")
+                    ]),
+                    on_click=lambda e, name="FIO": toggle_checkbox(e, fio_checkbox.current, name)
+                ),
+                ft.Container(
+                    content=ft.Row([
+                        ft.Checkbox(on_change=lambda e, name="registered_residing": on_checkbox_change(e.control, name),
+                                    ref=residing_checkbox),
+                        ft.Text("Количество прописанных/проживающих совпадает с "),
+                        ft.Text(f"{registered_residing}", weight=ft.FontWeight.BOLD),
+                        ft.Text("?")
+                    ]),
+                    on_click=lambda e, name="registered_residing": toggle_checkbox(e, residing_checkbox.current, name)
+                ),
+                ft.Container(
+                    content=ft.Row([
+                        ft.Checkbox(on_change=lambda e, name="standarts": on_checkbox_change(e.control, name),
+                                    ref=standarts_checkbox),
+                        ft.Text("Нормативы совпадают с "),
+                        ft.Text(f"{standarts}", weight=ft.FontWeight.BOLD),
+                        ft.Text("?")
+                    ]),
+                    on_click=lambda e, name="standarts": toggle_checkbox(e, standarts_checkbox.current, name)
+                )
+            ]
+        )
+    elif type_address == "ЧС" and purpose == "Контрольный съем показаний":
+        dict_checkboxes["FIO"]= False
+        dict_checkboxes["registered_residing"]= False
+        dict_checkboxes["standarts"]= False
+        dict_checkboxes["area"]= False
+        content = ft.Column(
+            [
+                ft.Container(
+                    content=ft.Row([
+                        ft.Checkbox(on_change=lambda e, name="FIO": on_checkbox_change(e.control, name),
+                                    ref=fio_checkbox),
+                        ft.Text("ФИО совпадает с "),
+                        ft.Text(f"{person_name}", weight=ft.FontWeight.BOLD),
+                        ft.Text("?")
+                    ]),
+                    on_click=lambda e, name="FIO": toggle_checkbox(e, fio_checkbox.current, name)
+                ),
+                ft.Container(
+                    content=ft.Row([
+                        ft.Checkbox(on_change=lambda e, name="registered_residing": on_checkbox_change(e.control, name),
+                                    ref=residing_checkbox),
+                        ft.Text("Количество прописанных/проживающих совпадает с "),
+                        ft.Text(f"{registered_residing}", weight=ft.FontWeight.BOLD),
+                        ft.Text("?")
+                    ]),
+                    on_click=lambda e, name="registered_residing": toggle_checkbox(e, residing_checkbox.current, name)
+                ),
+                ft.Container(
+                    content=ft.Row([
+                        ft.Checkbox(on_change=lambda e, name="standarts": on_checkbox_change(e.control, name),
+                                    ref=standarts_checkbox),
+                        ft.Text("Нормативы совпадают с "),
+                        ft.Text(f"{standarts}", weight=ft.FontWeight.BOLD),
+                        ft.Text("?")
+                    ]),
+                    on_click=lambda e, name="standarts": toggle_checkbox(e, standarts_checkbox.current, name)
+                ),
+                ft.Container(
+                    content=ft.Row([
+                        ft.Checkbox(on_change=lambda e, name="area": on_checkbox_change(e.control, name),
+                                    ref=area_checkbox),
+                        ft.Text("Площадь без построек совпадает с "),
+                        ft.Text(f"{area}", weight=ft.FontWeight.BOLD),
+                        ft.Text("?")
+                    ]),
+                    on_click=lambda e, name="area": toggle_checkbox(e, area_checkbox.current, name)
+                ),
+            ]
+        )
+    else:
+        dict_checkboxes["FIO"]= False
+        content = ft.Column(
+            [
+                ft.Container(
+                    content=ft.Row([
+                        ft.Checkbox(on_change=lambda e, name="FIO": on_checkbox_change(e.control, name),
+                                    ref=fio_checkbox),
+                        ft.Text("ФИО совпадает с "),
+                        ft.Text(f"{person_name}", weight=ft.FontWeight.BOLD),
+                        ft.Text("?")
+                    ]),
+                    on_click=lambda e, name="FIO": toggle_checkbox(e, fio_checkbox.current, name)
+                )
+            ]
+        )
+
+    def button_yes(e):
+        chect_list = [name for name, is_checked in dict_checkboxes.items() if not is_checked]
+        print(chect_list)
+        if not chect_list:
+            scr.func.show_alert_yn(page, "Выпишите предписание")
+            scr.func.show_alert_yn(page, "Выпишите Акт")
+        for chect in chect_list:
+            if chect =="FIO":
+                scr.func.show_alert_yn(page,"Выдайте предписание о несоответствии ФИО ")
+            else:
+                scr.func.show_alert_yn(page,"Выдайте Акт о несоответствии данных")
+            print(chect)
+        page.close(check_address_data)
+
+    def button_no(e):
+        page.close(check_address_data)
+        print("напоминалка об предписании")
+
+    check_address_data = ft.AlertDialog(
+        modal=True,
+        content=content,
+        title=ft.Text("Уточните Данные - нет"),
+        actions=[
+            ft.Row(
+                [
+                    ft.ElevatedButton("Да", on_click=button_yes, bgcolor=ft.colors.BLUE_200),
+                ], alignment=ft.MainAxisAlignment.CENTER
+            )
+        ],
+    )
+
+    page.open(check_address_data)
 
     def on_click_back(e):
         user_main(page)
@@ -353,7 +506,7 @@ def update_data(page, meter_id, id_task):
                 selected_images[id_photo] = file_name1  # Добавляем фото в словарь
         save_photos.controls.clear()
         if selected_images:
-            for id_p, file in selected_images.items():
+            for id_page, file in selected_images.items():
                 save_photos.controls.append(
                     ft.Container(
                         content=ft.Row(
@@ -361,7 +514,7 @@ def update_data(page, meter_id, id_task):
                                 ft.Text(file),
                                 ft.IconButton(
                                     icon=ft.icons.DELETE,
-                                    on_click=lambda e, id_p=id_p: on_click_delete_photo(e, id_p, meter_id, id_task)
+                                    on_click=lambda e, id_p=id_page: on_click_delete_photo(e, id_p, meter_id, id_task)
                                 )
                             ]
                         )

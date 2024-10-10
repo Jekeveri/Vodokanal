@@ -9,11 +9,14 @@ import flet as ft
 # тут программа смотрит какая роль у человека
 def role_definition(privileges, page):
     # Тут мы ищим данные уже из таблици юзера как то так
+    print(privileges)
     if privileges == 1:
         scr.navigation_apps.admin.admin_screen.admin_main(page)
-    else:
+    elif privileges == 2:
         employee_navigation(privileges, page)
         scr.navigation_apps.users.main_users_screen.user_main(page)
+    else:
+        debugging()
 
 
 def employee_navigation(privileges, page):
@@ -40,3 +43,7 @@ def employee_navigation(privileges, page):
         indicator_color=ft.colors.TRANSPARENT,
         height=50
     )
+
+
+def debugging():
+    print('Тут можно добавить инфу по приложению, может быть обратную связь')

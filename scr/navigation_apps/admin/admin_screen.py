@@ -195,7 +195,7 @@ def admin_main(page):
                     content=ft.Row(
                         [
                             ft.Checkbox(value=False,
-                                        on_change=lambda e, task_id=task_id: on_checkbox_change(e, task_id),
+                                        on_change=lambda e, task=task_id: on_checkbox_change(e, task_id),
                                         label=f"р.{district} ул.{street} д.{dom} кв.{apartment}",
                                         label_style=ft.TextStyle(size=17)),
                         ]

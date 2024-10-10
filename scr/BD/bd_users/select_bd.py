@@ -66,7 +66,7 @@ def select_tasks_data_for_one(id_task):
         cursor = db.cursor()
         query = f""" Select t.id|| '', t.name, a.street, a.dom, a.apartment, t.phone_number, 
         t.personal_account || '', t.date, t.remark, t.status, t.purpose, a.registered_residing|| '', 
-        a.status, a.standarts|| '', a.area|| '', t.saldo from tasks as t
+        a.status, a.standarts|| '', a.area|| '', t.saldo, a.type_address from tasks as t
             join address as a on a.id = t.id_address 
             where t.id = {id_task} """
         cursor.execute(query)

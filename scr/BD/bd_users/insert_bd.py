@@ -15,7 +15,7 @@ def insert_bd_user(id_user, login, password, privileges, first_name, last_name, 
 
 def insert_bd_task(task_id, name, address_id, city, district, street, dom, apartment,
                    entrance, phone_number, personal_account, date_task, remark, status_task, purpose,
-                   registered_residing, address_status, standarts, area, saldo):
+                   registered_residing, address_status, standarts, area, saldo, type_address):
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         query = f""" Insert into tasks 
@@ -25,7 +25,7 @@ def insert_bd_task(task_id, name, address_id, city, district, street, dom, apart
         cursor.execute(query)
 
         query2 = f""" Insert into address values ({address_id}, '{city}', '{district}', '{street}', '{dom}', 
-            '{apartment}', '{entrance}', {registered_residing}, '{address_status}',  {standarts}, {area})"""
+            '{apartment}', '{entrance}', {registered_residing}, '{address_status}',  {standarts}, {area}, '{type_address}')"""
         cursor.execute(query2)
 
 
