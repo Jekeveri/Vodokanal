@@ -26,8 +26,8 @@ def show_alert_yn(page, message):
         title=ft.Text("Предупреждение"),
         content=ft.Text(message),
         actions=[
-            ft.ElevatedButton("ДА", on_click=on_button_yes),
-            ft.ElevatedButton("НЕТ", on_click=on_button_no)
+            ft.ElevatedButton("Да", on_click=on_button_yes),
+            ft.ElevatedButton("Назад", on_click=on_button_no)
         ],
     )
     page.open(bs)

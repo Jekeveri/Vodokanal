@@ -155,30 +155,34 @@ def show_meters_data(page, id_task):
 
     def button_yes(e):
         chect_list = [name for name, is_checked in dict_checkboxes.items() if not is_checked]
-        print(chect_list)
+        message_string = ""
         if not chect_list:
-            scr.func.show_alert_yn(page, "Выпишите предписание")
-            scr.func.show_alert_yn(page, "Выпишите Акт")
+            page.close(check_address_data)
         for chect in chect_list:
             if chect =="FIO":
-                scr.func.show_alert_yn(page,"Выдайте предписание о несоответствии ФИО ")
-            else:
-                scr.func.show_alert_yn(page,"Выдайте Акт о несоответствии данных")
-            print(chect)
+                message_string += "Включите в акт пердписание о несоответствии ФИО\n"
+            elif chect == "registered_residing":
+                message_string += "Включите в акт несоответствие количества прописанных\n"
+            elif chect == "standarts":
+                message_string += "Включите в акт несоответствие с нормативами\n"
+            elif chect == "area" and type_address == "ЧС":
+                message_string += "Включите в акт несоответствие площади\n"
+        scr.func.show_alert_yn(page,message_string)
         page.close(check_address_data)
 
     def button_no(e):
         page.close(check_address_data)
-        print("напоминалка об предписании")
+        user_main(page)
 
     check_address_data = ft.AlertDialog(
         modal=True,
         content=content,
-        title=ft.Text("Уточните Данные - нет"),
+        title=ft.Text("Уточните Данные"),
         actions=[
             ft.Row(
                 [
                     ft.ElevatedButton("Да", on_click=button_yes, bgcolor=ft.colors.BLUE_200),
+                    ft.ElevatedButton("Назад", on_click=button_no, bgcolor=ft.colors.BLUE_200),
                 ], alignment=ft.MainAxisAlignment.CENTER
             )
         ],
@@ -337,7 +341,7 @@ m_value = ""
 m_remark = ""
 statuses = []
 sorting = "Адрес"
-search_history_list = []  # длина будет максимум 10
+search_history_list = []  # длина будет--------------------------максимум 10
 
 
 def update_data(page, meter_id, id_task):
@@ -375,12 +379,20 @@ def update_data(page, meter_id, id_task):
     # Обработка нажатия кнопки сохранения
     def on_click_time_task(e):
         today = datetime.datetime.now().strftime("%H:%M:%S")
+        average_consumption = 20
+        value = int(reading_value.value) - int(last_reading_value)
+        print(value)
+        procent = abs(average_consumption - abs(value))/((abs(value)+average_consumption)/2)*100
+        print(procent)
         if remark.value and reading_value.value:  # Упростил проверку на пустоту
-            scr.BD.bd_users.update_bd.update_local_tasks(
-                str(today), id_task, reading_value.value, remark.value, meter_id)
-            show_meters_data(page, id_task)
-            page.close(dlg_modal)
-            page.update()
+            if procent<20:
+                scr.BD.bd_users.update_bd.update_local_tasks(
+                    str(today), id_task, reading_value.value, remark.value, meter_id)
+                show_meters_data(page, id_task)
+                page.close(dlg_modal)
+                page.update()
+            else:
+                scr.func.show_alert_yn(page,"Прикрепите фото/видео прибора")
         else:
             reading_value.error_text = "✱ Введите данные"
             page.update()
@@ -408,6 +420,100 @@ def update_data(page, meter_id, id_task):
             id_meters, meter_number, instalation_day, meter_type, id_address, marka, seal_number, \
                 date_next_verification, location, status_filling, meter_remark = result
     result_info_meters = f"Счетчик: {marka} \nДата установки: {instalation_day} \nТип: {meter_type}"
+
+    dict_checkboxes = {}
+
+    def on_checkbox_change(checkbox, name):
+        dict_checkboxes[name] = checkbox.value
+
+    def toggle_checkbox(e, checkbox, name):
+        checkbox.value = not checkbox.value
+        checkbox.update()
+        on_checkbox_change(checkbox, name)
+
+    marka_checkbox = ft.Ref[ft.Checkbox]()
+    serial_number_checkbox = ft.Ref[ft.Checkbox]()
+    seal_number_checkbox = ft.Ref[ft.Checkbox]()
+
+    dict_checkboxes["marka"] = False
+    dict_checkboxes["serial_number"] = False
+    dict_checkboxes["seal"] = False
+
+
+    content = ft.Column(
+        [
+            ft.Container(
+                content=ft.Row([
+                    ft.Checkbox(on_change=lambda e, name="marka": on_checkbox_change(e.control, name),
+                                    ref=marka_checkbox),
+                    ft.Text("Марка счетчика совпадает с "),
+                    ft.Text(f"{marka}", weight=ft.FontWeight.BOLD),
+                    ft.Text("?")
+                ]),
+                on_click=lambda e, name="marka": toggle_checkbox(e, marka_checkbox.current, name)
+            ),
+            ft.Container(
+                content=ft.Row([
+                    ft.Checkbox(on_change=lambda e, name="serial_number": on_checkbox_change(e.control, name),
+                                ref=serial_number_checkbox),
+                    ft.Text("Заводской номер счетчика совпадает с "),
+                    ft.Text(f"{meter_number}", weight=ft.FontWeight.BOLD),
+                    ft.Text("?")
+                ]),
+                on_click=lambda e, name="serial_number": toggle_checkbox(e, serial_number_checkbox.current, name)
+            ),
+            ft.Container(
+                content=ft.Row([
+                    ft.Checkbox(on_change=lambda e, name="seal": on_checkbox_change(e.control, name),
+                                ref=seal_number_checkbox),
+                    ft.Text("Номер пломбы совпадает с "),
+                    ft.Text(f"{seal_number}", weight=ft.FontWeight.BOLD),
+                    ft.Text("?")
+                ]),
+                on_click=lambda e, name="seal": toggle_checkbox(e, seal_number_checkbox.current, name)
+            )
+        ]
+    )
+
+    def button_yes(e):
+        print(dict_checkboxes)
+        chect_list = [name for name, is_checked in dict_checkboxes.items() if not is_checked]
+        message_string = ""
+        today = datetime.datetime.now()
+        date = datetime.datetime.strptime(date_next_verification, "%Y-%m-%d")
+        total_months = (today.year - date.year) * 12 + (today.month - date.month)
+        if not chect_list:
+            page.close(check_meters_data)
+        for chect in chect_list:
+            if chect =="marka":
+                message_string += "Включите в акт несоответствие Марки счетчика\n"
+            elif chect == "serial_number":
+                message_string += "Включите в акт несоответствие Заводского номера\n"
+            elif chect == "seal":
+                message_string += "Включите в акт несоответствие Номера пломбы\n"
+        if total_months >= 6:
+            message_string += "Включите в акт предписание о скором выходе МПИ\n"
+        page.open(dlg_modal)
+        scr.func.show_alert_yn(page,message_string)
+        page.close(check_meters_data)
+
+    def button_no(e):
+        page.close(check_meters_data)
+        show_meters_data(page,id_task)
+
+    check_meters_data = ft.AlertDialog(
+        modal=True,
+        content=content,
+        title=ft.Text("Уточните Данные"),
+        actions=[
+            ft.Row(
+                [
+                    ft.ElevatedButton("Да", on_click=button_yes, bgcolor=ft.colors.BLUE_200),
+                    ft.ElevatedButton("Назад", on_click=button_no, bgcolor=ft.colors.BLUE_200),
+                ], alignment=ft.MainAxisAlignment.CENTER
+            )
+        ],
+    )
 
     last_reading_date = "Неизвестно"
     last_reading_value = "Неизвестно"
@@ -565,7 +671,7 @@ def update_data(page, meter_id, id_task):
 
     # Очищаем и обновляем контент страницы
     page.controls.clear()
-    page.open(dlg_modal)
+    page.open(check_meters_data)
     page.update()
 
 
