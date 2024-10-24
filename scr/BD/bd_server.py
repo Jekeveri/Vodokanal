@@ -153,8 +153,71 @@ def select_task_data_for_update(id_user):
     cursor.close()
     conn.close()
 
+#---- Вывод списка назначенных заданий
+def select_task_data_all():
+    conn = psycopg2.connect(
+        dbname=DBNAME,
+        user=USER,
+        password=PASSWORD,
+        host=HOST,
+        port=PORT
+    )
+    cursor = conn.cursor()
+    # Тут у нас идет запрос для заполнения таблицы в страничке поиск, нужно будет подкоректировать данные
+    try:
+        cursor.execute("SELECT * FROM get_task_data_all()")
+        results = cursor.fetchall()  # Получаем все записи
+        return results
+    except Exception as e:
+        print(f"Ошибка при выборке данных: {e}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
 
-# переписать отгрузку на сервер новых показаний (пересмотреть запсросы)
+#---- Вывод списка сотрудников для его выбора после того, как он выберет задания для назначения
+def select_employer_data_statistic_tasks():
+    conn = psycopg2.connect(
+        dbname=DBNAME,
+        user=USER,
+        password=PASSWORD,
+        host=HOST,
+        port=PORT
+    )
+    cursor = conn.cursor()
+    try:
+        cursor.execute("Select * from get_list_employer_for_assign_tasks()")
+        results = cursor.fetchall()  # Получаем все записи
+        return results
+    except Exception as e:
+        print(f"Ошибка при выборке данных: {e}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
+
+#---- Вывод списка не назначенных задания для назначения (страница назначения)
+def select_task_data_unmade():
+    conn = psycopg2.connect(
+        dbname=DBNAME,
+        user=USER,
+        password=PASSWORD,
+        host=HOST,
+        port=PORT
+    )
+    cursor = conn.cursor()
+    try:
+        cursor.execute("Select * from get_task_data_unassigned()")
+        results = cursor.fetchall()  # Получаем все записи
+        return results
+    except Exception as e:
+        print(f"Ошибка при выборке данных: {e}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
+
+# переписать отгрузку на сервер новых показаний (пересмотреть запросы)
 def upload_data_to_server():
     try:
         conn = psycopg2.connect(

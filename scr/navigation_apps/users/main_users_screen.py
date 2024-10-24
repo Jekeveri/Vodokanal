@@ -48,7 +48,7 @@ def show_meters_data(page, id_task):
     standarts_checkbox = ft.Ref[ft.Checkbox]()
     area_checkbox = ft.Ref[ft.Checkbox]()
 
-    if type_address == "МКД" and purpose == "Контрольный съем показаний":
+    if type_address == "МКД":
         dict_checkboxes["FIO"] = False
         dict_checkboxes["registered_residing"]= False
         dict_checkboxes["standarts"]= False
@@ -87,7 +87,7 @@ def show_meters_data(page, id_task):
                 )
             ]
         )
-    elif type_address == "ЧС" and purpose == "Контрольный съем показаний":
+    elif type_address == "ЧС":
         dict_checkboxes["FIO"]= False
         dict_checkboxes["registered_residing"]= False
         dict_checkboxes["standarts"]= False
