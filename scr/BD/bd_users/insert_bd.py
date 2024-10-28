@@ -30,17 +30,17 @@ def insert_bd_task(task_id, name, address_id, city, district, street, dom, apart
 
 
 def insert_bd_meters(id_meter, meter_number, instalation_day, meter_type, id_address, meter_remark, marka, seal_number,
-                     date_next_verification, location):
+                     date_next_verification, location, type_protection):
     if meter_remark is None:
         meter_remark = ""
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         query = f""" Insert into meters 
         (id, meter_number, instalation_date, meter_type, id_address, status_filling, meter_remark,
-        marka, seal_number, date_next_verification, location)
+        marka, seal_number, date_next_verification, location, type_protection)
          values ({id_meter}, '{meter_number}', '{instalation_day}', '{meter_type}', 
             {id_address}, 'невыполнено', '{meter_remark}', '{marka}', '{seal_number}', 
-            '{date_next_verification}', '{location}')"""
+            '{date_next_verification}', '{location}', {type_protection})"""
         cursor.execute(query)
 
 

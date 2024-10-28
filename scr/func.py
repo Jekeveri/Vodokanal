@@ -1,6 +1,7 @@
-import flet as ft
+import os
 
-import scr.navigation_apps.users.main_users_screen
+import flet as ft
+import psycopg2
 
 
 def show_snack_bar(page, message):
@@ -16,7 +17,6 @@ def show_snack_bar(page, message):
 def show_alert_yn(page, message):
     def on_button_yes(e):
         page.close(bs)
-        # scr.navigation_apps.users.users_screen.add_meters(page, integer_for_someone)
 
     def on_button_no(e):
         page.close(bs)
@@ -32,3 +32,17 @@ def show_alert_yn(page, message):
     )
     page.open(bs)
     page.update()
+
+
+def get_user_db_connection(login, password):
+    try:
+        conn = psycopg2.connect(
+            dbname=os.environ.get("DBNAME", default="Vodocanal"),
+            user=login,  # Логин пользователя
+            password=password,  # Пароль пользователя
+            host=os.environ.get("HOST", default="localhost"),
+            port=os.environ.get("PORT", default="5432")
+        )
+        return conn
+    except Exception as ex:
+        return None  # Возвращаем None в случае ошибки подключения

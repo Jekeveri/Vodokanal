@@ -16,7 +16,7 @@ def authentication(page):
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
 
     login = ft.TextField(label="Логин", )
-    password = ft.TextField(label="Пароль", )
+    password = ft.TextField(label="Пароль", password=True, can_reveal_password=True)
 
     def on_click(e):
         if login.value != "" and password.value != "":

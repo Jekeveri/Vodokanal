@@ -10,21 +10,12 @@ import scr.BD.bd_users.update_bd
 import scr.func
 import scr.navigation_apps.navigations
 
-HOST = os.environ.get("HOST", default="localhost")
-DBNAME = os.environ.get("DBNAME", default="Vodokanal")
-PASSWORD = os.environ.get("PASSWORD", default="1")
-USER = os.environ.get("USER", default="postgres")
-PORT = os.environ.get("PORT", default="5432")
-
 
 def check_user_credentials(login, password, page):
-    conn = psycopg2.connect(
-        dbname=DBNAME,
-        user=USER,
-        password=PASSWORD,
-        host=HOST,
-        port=PORT
-    )
+    conn = scr.func.get_user_db_connection(login, password)
+    if conn is None:
+        scr.func.show_snack_bar(page, "Неправильный логин или пароль. Проверьте введенные данные.")
+        return
     cursor = conn.cursor()
     cursor.execute("""
         SELECT e.id, e.login, e.password, p.privileges, e.first_name, e.last_name FROM public.employees e
@@ -49,13 +40,11 @@ def check_user_credentials(login, password, page):
 
 
 def select_task_data(id_user):
-    conn = psycopg2.connect(
-        dbname=DBNAME,
-        user=USER,
-        password=PASSWORD,
-        host=HOST,
-        port=PORT
-    )
+    res = scr.BD.bd_users.select_bd.select_user_data()
+    if res:
+        for record in res:
+            user_id, login, password, privileges, first_name, last_name = record
+    conn = scr.func.get_user_db_connection(login, password)
     cursor = conn.cursor()
 
     cursor.execute(f""" SELECT * FROM get_task_data_new({id_user}) """)
@@ -79,10 +68,10 @@ def select_task_data(id_user):
     if meter_data:
         for record in meter_data:
             id_meter, meter_number, instalation_day, meter_type, id_address, meter_remark, marka, seal_number, \
-                date_next_verification, location = record
+                date_next_verification, location, type_protection = record
             scr.BD.bd_users.insert_bd.insert_bd_meters(
                 id_meter, meter_number, instalation_day, meter_type, id_address, meter_remark, marka, seal_number,
-                date_next_verification, location
+                date_next_verification, location, type_protection
             )
 
     cursor.execute(f"""
@@ -103,13 +92,11 @@ def select_task_data(id_user):
 
 
 def select_task_data_for_update(id_user):
-    conn = psycopg2.connect(
-        dbname=DBNAME,
-        user=USER,
-        password=PASSWORD,
-        host=HOST,
-        port=PORT
-    )
+    res = scr.BD.bd_users.select_bd.select_user_data()
+    if res:
+        for record in res:
+            user_id, login, password, privileges, first_name, last_name = record
+    conn = scr.func.get_user_db_connection(login, password)
     cursor = conn.cursor()
 
     cursor.execute(f""" SELECT * FROM get_task_data_new({id_user}) """)
@@ -155,15 +142,13 @@ def select_task_data_for_update(id_user):
 
 
 # переписать отгрузку на сервер новых показаний (пересмотреть запсросы)
-def upload_data_to_server():
+def upload_data_to_server(page):
     try:
-        conn = psycopg2.connect(
-            dbname=DBNAME,
-            user=USER,
-            password=PASSWORD,
-            host=HOST,
-            port=PORT
-        )
+        res = scr.BD.bd_users.select_bd.select_user_data()
+        if res:
+            for record in res:
+                user_id, login, password, privileges, first_name, last_name = record
+        conn = scr.func.get_user_db_connection(login, password)
         time_to_server = datetime.datetime.now().strftime("%H:%M:%S")
         result = scr.BD.bd_users.select_bd.get_data_to_upload()
         for record in result:
@@ -175,42 +160,51 @@ def upload_data_to_server():
             status = record[5]
             meter_id = record[6]
             meter_remark = record[7]
+            purpose = record[8]
+            seal_number = record[9]
             cursor = conn.cursor()
             if status == "выполнен":
-                cursor.execute(f""" update tasks set uploud_to_local_data = '{unloading_time}',
-                 uploud_to_server = '{time_to_server}',remark = '{remark}', status = '{status}' where id = {task_id}""")
-                query = f""" insert into meter_reading (meter_id, reading_date, reading_values) values
-                            ({meter_id}, '{last_reading_date}', {last_reading_value})"""
-                cursor.execute(query)
-                query = f""" update  meters set remark = '{meter_remark}' where id = {meter_id} """
-                cursor.execute(query)
+                if purpose == "Контрольный съем показаний":
+                    cursor.execute(f"""select update_task_meter_data (
+                        {task_id}, '{unloading_time}'::time, '{time_to_server}'::time, 
+                        '{remark}'::text, '{status}', {meter_id},
+                        '{last_reading_date}'::date, {last_reading_value}::numeric, '{meter_remark}'::text
+                    )""")
+                else:
+                    cursor.execute(f"""select update_task_meter_seal (
+                        {task_id}::integer, '{unloading_time}'::time, '{time_to_server}'::time,
+                        '{remark}'::text, '{status}'::text, {meter_id}::integer, 
+                        '{meter_remark}'::text, '{seal_number}'::text
+                    )""")
         conn.commit()
         conn.close()
+        scr.func.show_snack_bar(page, "Выгруженны данные по выполненым заданиям")
     except Exception as ex:
         print(ex)
-    upload_dop_address_data_to_server()
+        scr.func.show_snack_bar(page, "Произошла ошибка при выгрузке")
+    upload_dop_address_data_to_server(page)
 
 
-def upload_dop_address_data_to_server():
+def upload_dop_address_data_to_server(page):
     try:
-        conn = psycopg2.connect(
-            dbname=DBNAME,
-            user=USER,
-            password=PASSWORD,
-            host=HOST,
-            port=PORT
-        )
+        res = scr.BD.bd_users.select_bd.select_user_data()
+        if res:
+            for record in res:
+                user_id, login, password, privileges, first_name, last_name = record
+        conn = scr.func.get_user_db_connection(login, password)
         cursor = conn.cursor()
         result = scr.BD.bd_users.select_bd.get_dop_data_to_upload()
         for record in result:
             addrss_id, registered_residing, address_status, address_standarts, address_area, \
                 task_remark, task_id = record
-            query = f""" update address set registered_residing = {registered_residing}, status = '{address_status}', 
-            area = {address_area}, standarts = {address_standarts} where id = {addrss_id}  """
-            cursor.execute(query)
-            query = f""" update tasks set remark = '{task_remark}' where id = {task_id} """
+            query = f""" select update_address_task_data (
+                {addrss_id}::integer, {registered_residing}::integer, '{address_status}'::varchar, 
+                {address_area}::numeric, '{address_standarts}', {task_id}::integer, '{task_remark}'::varchar
+            ) """
             cursor.execute(query)
         conn.commit()
         conn.close()
+        scr.func.show_snack_bar(page,"Выгруженны все дополнительные данные")
     except Exception as ex:
+        scr.func.show_snack_bar(page,"Ошибка выгрузки дополнительных данных")
         print(ex)

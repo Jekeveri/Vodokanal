@@ -146,3 +146,47 @@ def update_meter_reading_data_from_server(id_meter_reading, meter_id, reading_da
             last_reading_value = '{reading_values}' """
         cursor.execute(query)
         db.commit()
+
+
+def update_seal(seal_number, meter_id, task_id, remark):
+    with sl.connect('database_client.db') as db:
+        today = datetime.datetime.now().strftime("%H:%M:%S")
+        cursor = db.cursor()
+        query2 = f""" update meters set  
+                            status_filling = 'выполнен',
+                            seal_number = '{seal_number}'
+                            meter_remark = '{remark}'
+                            where id = {meter_id} """
+        cursor.execute(query2)
+        db.commit()
+
+        query = f""" update tasks set 
+                           unloading_time = '{str(today)}',  
+                           status = 'в_исполнении'
+                           where id = {task_id}"""
+        cursor.execute(query)
+        db.commit()
+
+        query = f""" update tasks set 
+                            unloading_time = '{str(today)}',  
+                            status = 'выполнен'
+                            where id = {task_id} and id IN (
+                              SELECT DISTINCT t.id
+                              FROM tasks t
+                              JOIN address a ON t.id_address = a.id
+                              JOIN meters m ON a.id = m.id_address
+                              WHERE m.status_filling = 'выполнен'
+                            );
+                  """
+        cursor.execute(query)
+        db.commit()
+
+
+def update_date(id_task, date):
+    with sl.connect('database_client.db') as db:
+        cursor = db.cursor()
+        query = f""" update tasks set 
+                           date = '{date}'  
+                           where id = {id_task}"""
+        cursor.execute(query)
+        db.commit()

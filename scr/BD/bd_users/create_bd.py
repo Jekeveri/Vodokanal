@@ -10,7 +10,7 @@ def local_user_db():
         table_meters = """ Create table if not exists meters(
         id Integer, meter_number Text, instalation_date Text, meter_type text, id_address integer,
         marka Text, seal_number Text, date_next_verification Text, location Text,
-        status_filling Text, meter_remark Text,
+        status_filling Text, meter_remark Text, type_protection bool,
         CONSTRAINT meters_pk PRIMARY KEY (id)) """
         table_meter_reading = """ Create table if not exists meter_reading(
         id integer,

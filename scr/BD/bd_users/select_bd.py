@@ -40,7 +40,40 @@ def select_tasks_data_new(sorting, search_value):
                     t.personal_account || '', t.date, t.remark, t.status, t.purpose, 
                     a.registered_residing '', a.status, a.standarts '', a.area|| '', t.saldo 
                     from tasks as t
-                    join address as a on a.id = t.id_address"""
+                    join address as a on a.id = t.id_address
+                    where t.date = current_date"""
+
+        if sorting == "Адрес":
+            query += f""" order by a.street, a.dom, a.apartment"""
+        elif sorting == "Дата":
+            query += f""" order by t.date"""
+        else:
+            query += f""" order by t.status"""
+
+        cursor.execute(query)
+        result = cursor.fetchall()
+
+        filtered_result = [
+            row for row in result if
+            search_value in row[2].lower() or  # a.district
+            search_value in row[3].lower() or  # a.street
+            search_value in row[4].lower() or  # a.dom
+            search_value in row[5].lower()  # a.apartment
+        ]
+
+        return filtered_result
+
+
+def select_future_tasks_data_new(sorting, search_value):
+    search_value = search_value.lower()
+    with sl.connect('database_client.db') as db:
+        cursor = db.cursor()
+        query = f"""Select t.id|| '', t.name, a.district, a.street, a.dom, a.apartment, t.phone_number, 
+                    t.personal_account || '', t.date, t.remark, t.status, t.purpose, 
+                    a.registered_residing '', a.status, a.standarts '', a.area|| '', t.saldo 
+                    from tasks as t
+                    join address as a on a.id = t.id_address
+                    where t.date > current_date"""
 
         if sorting == "Адрес":
             query += f""" order by a.street, a.dom, a.apartment"""
@@ -89,7 +122,7 @@ def get_data_to_upload():
     with sl.connect('database_client.db') as db:
         cursor = db.cursor()
         query = """ Select t.id, t.unloading_time, mr.new_reading_value, 
-        mr.new_reading_date, t.remark, t.status, mr.meter_id, m.meter_remark from tasks as t
+        mr.new_reading_date, t.remark, t.status, mr.meter_id, m.meter_remark, t.purpose, m.seal_number from tasks as t
         join meters as m on m.id_address = t.id_address
         join meter_reading as mr on mr.meter_id = m.id"""
         cursor.execute(query)

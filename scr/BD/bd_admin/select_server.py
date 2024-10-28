@@ -4,12 +4,12 @@ import psycopg2
 import datetime
 import scr.func
 
-
 HOST = os.environ.get("HOST", default="localhost")
 DBNAME = os.environ.get("DBNAME", default="Vodokanal")
-PASSWORD = os.environ.get("PASSWORD", default="1")
+PASSWORD = os.environ.get("PASSWORD", default="nikita041216")
 USER = os.environ.get("USER", default="postgres")
 PORT = os.environ.get("PORT", default="5432")
+
 
 def select_address_to_choice():
     try:
