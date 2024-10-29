@@ -1,10 +1,10 @@
 import datetime
 import flet as ft
-import scr.BD.bd_users.update_bd
-import scr.BD.bd_users.delete_bd
-import scr.BD.bd_users.insert_bd
-import scr.BD.bd_users.select_bd
-import scr.BD.bd_server
+import scr.BD.bd_users.local.update_bd
+import scr.BD.bd_users.local.delete_bd
+import scr.BD.bd_users.local.insert_bd
+import scr.BD.bd_users.local.select_bd
+import scr.BD.bd_users.bd_server_user
 import scr.toggle_user_sessions
 import scr.func
 import scr.constants as const
@@ -22,8 +22,8 @@ def show_meters_data(page, id_task, where):
     screen_width = page.width
     screen_height = page.height
     page.controls.clear()
-    results_meters_data = scr.BD.bd_users.select_bd.select_meters_data_new(id_task)
-    results_address_data = scr.BD.bd_users.select_bd.select_tasks_data_for_one(id_task)
+    results_meters_data = scr.BD.bd_users.local.select_bd.select_meters_data_new(id_task)
+    results_address_data = scr.BD.bd_users.local.select_bd.select_tasks_data_for_one(id_task)
 
     filtered_results = [
         result_address_data for result_address_data in results_address_data
@@ -254,7 +254,7 @@ def show_meters_data(page, id_task, where):
             scr.navigation_apps.users.pages.future_user_screen.main(page)
 
     def on_click_save(e):
-        scr.BD.bd_users.update_bd.update_dop_data_address(
+        scr.BD.bd_users.local.update_bd.update_dop_data_address(
             remark_textfield.value, registered_residing_textfield.value, standarts_textfield.value,
             area_textfield.value, id_address, id_task)
         call_show_meters_data(page, id_task, where)

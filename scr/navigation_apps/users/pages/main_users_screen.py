@@ -1,11 +1,10 @@
 import datetime
-import os
 import flet as ft
-import scr.BD.bd_users.update_bd
-import scr.BD.bd_users.delete_bd
-import scr.BD.bd_users.insert_bd
-import scr.BD.bd_users.select_bd
-import scr.BD.bd_server
+import scr.BD.bd_users.local.update_bd
+import scr.BD.bd_users.local.delete_bd
+import scr.BD.bd_users.local.insert_bd
+import scr.BD.bd_users.local.select_bd
+import scr.BD.bd_users.bd_server_user
 import scr.toggle_user_sessions
 import scr.func
 import scr.constants as const
@@ -42,11 +41,11 @@ def user_main(page):
         completed_icon.color = ft.colors.WHITE
         completed_tasks_container.shadow.color = ft.colors.BLACK38
 
-        result = scr.BD.bd_users.select_bd.select_user_data()
+        result = scr.BD.bd_users.local.select_bd.select_user_data()
         if result:
             for record in result:
                 user_id, login_user, password_user, privileges, first_name, last_name = record
-                scr.BD.bd_server.select_task_data_for_update(user_id)
+                scr.BD.bd_users.bd_server_user.select_task_data_for_update(user_id)
         update_results()
         page.update()
 
@@ -239,7 +238,7 @@ def user_main(page):
 
     def update_results(filter_statuses=None):
         search_value = search_task.value
-        results = scr.BD.bd_users.select_bd.select_tasks_data_new(sorting, search_value)
+        results = scr.BD.bd_users.local.select_bd.select_tasks_data_new(sorting, search_value)
         if filter_statuses:
             filtered_results = [result for result in results if result[10] in filter_statuses]
         else:
@@ -323,7 +322,7 @@ def user_main(page):
     column = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True)
 
     def on_click_upload(e):
-        scr.BD.bd_server.upload_data_to_server(page)
+        scr.BD.bd_users.bd_server_user.upload_data_to_server(page)
 
     update_results()
 

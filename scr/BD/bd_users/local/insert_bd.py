@@ -9,7 +9,7 @@ def insert_bd_user(id_user, login, password, privileges, first_name, last_name, 
         query = f""" Insert into user values({id_user}, '{login}', '{password}', 
             {privileges}, '{first_name}','{last_name}' ) """
         cursor.execute(query)
-    scr.BD.bd_server.select_task_data(id_user)
+    scr.BD.bd_users.bd_server_user.select_task_data(id_user)
     scr.navigation_apps.navigations.role_definition(privileges, page)
 
 

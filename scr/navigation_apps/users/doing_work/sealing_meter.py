@@ -1,10 +1,10 @@
 import datetime
 import flet as ft
-import scr.BD.bd_users.update_bd
-import scr.BD.bd_users.delete_bd
-import scr.BD.bd_users.insert_bd
-import scr.BD.bd_users.select_bd
-import scr.BD.bd_server
+import scr.BD.bd_users.local.update_bd
+import scr.BD.bd_users.local.delete_bd
+import scr.BD.bd_users.local.insert_bd
+import scr.BD.bd_users.local.select_bd
+import scr.BD.bd_users.bd_server_user
 import scr.toggle_user_sessions
 import scr.func
 import scr.navigation_apps.users.doing_work.chose_meters
@@ -14,7 +14,7 @@ def sealing(page, id_task, meter_id, where):
     screen_width = page.width
     screen_height = page.height
 
-    result_meters = scr.BD.bd_users.select_bd.select_meters_data_new_for_one(id_task, meter_id)
+    result_meters = scr.BD.bd_users.local.select_bd.select_meters_data_new_for_one(id_task, meter_id)
     if result_meters:
         for result in result_meters:
             id_meters, meter_number, instalation_day, meter_type, id_address, marka, seal_number, \
@@ -204,7 +204,7 @@ def sealing(page, id_task, meter_id, where):
         if seal_number_new.value is None:
             seal_number_new.error_text = "Введите номер пломбы"
         else:
-            scr.BD.bd_users.update_bd.update_seal(seal_number_new.value, meter_id, id_task, remark.value)
+            scr.BD.bd_users.local.update_bd.update_seal(seal_number_new.value, meter_id, id_task, remark.value)
         page.close(alert)
 
     def on_click_back(e):

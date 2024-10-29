@@ -1,6 +1,6 @@
 import flet as ft
 
-import scr.BD.bd_server
+import scr.BD.auth
 import scr.func
 import scr.navigation_apps.navigations
 
@@ -10,7 +10,7 @@ def authentication(page):
     page.navigation_bar = None
     page.appbar = None
     page.controls.clear()
-    screen_width = page.window.width
+    screen_width = page.width
     screen_height = page.height
 
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
@@ -20,7 +20,7 @@ def authentication(page):
 
     def on_click(e):
         if login.value != "" and password.value != "":
-            scr.BD.bd_server.check_user_credentials(login.value, password.value, page)
+            scr.BD.auth.check_user_credentials(login.value, password.value, page)
         else:
             scr.func.show_snack_bar(page, "Неправильный логин или пароль.")
 

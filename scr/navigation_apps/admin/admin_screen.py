@@ -7,6 +7,7 @@ from scr.navigation_apps.admin.task_controller import employer_tab
 
 tabs = []  # Список для хранения вкладок
 
+
 def admin_main(page):
     page.title = "Admin Panel"
     page.controls.clear()
@@ -27,11 +28,13 @@ def admin_main(page):
     page.add(t)
     page.update()
 
+
 def add_new_tab(page, selected_rows):
     new_tab = ft.Tab(text="Назначение - Задач", content=employer_tab(page, selected_rows))
     t.tabs.append(new_tab)
     t.selected_index = len(t.tabs) - 1  # Устанавливаем новую вкладку активной
     t.update()
+
 
 def return_tab():
     global t

@@ -1,5 +1,5 @@
 import flet as ft
-import scr.BD.bd_server  # Импортируем функцию для получения данных о сотрудниках
+import scr.BD.bd_admin.select_server  # Импортируем функцию для получения данных о сотрудниках
 import scr.BD.bd_admin.update_server
 import scr.navigation_apps.admin.admin_screen
 
@@ -45,7 +45,7 @@ def employer_tab(page, id_tasks):
         search_value = search_input.value.lower()
         filter_value = filter_dropdown.value
 
-        results = scr.BD.bd_server.select_employer_data_statistic_tasks()
+        results = scr.BD.bd_admin.select_server.select_employer_data_statistic_tasks()
 
         filtered_results = [
             record for record in results

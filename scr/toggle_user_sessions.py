@@ -1,7 +1,8 @@
 import os
 
-import scr.BD.bd_server
-import scr.BD.bd_users.select_bd
+import scr.BD.bd_users.bd_server_user
+import scr.BD.bd_users.local.select_bd
+import scr.BD.bd_admin.local
 import scr.func
 import scr.navigation_apps.navigations
 import scr.verifications
@@ -9,7 +10,10 @@ import scr.verifications
 
 def handle_user_sessions(page):
     if os.path.exists("database_client.db"):
-        result = scr.BD.bd_users.select_bd.select_user_data()
+        if scr.BD.bd_users.local.select_bd.select_user_data():
+            result = scr.BD.bd_users.local.select_bd.select_user_data()
+        else:
+            result = scr.BD.bd_admin.local.select_user_data()
         if result:  # Проверяем, что содержимое не пустое
             for record in result:
                 login = record[1]

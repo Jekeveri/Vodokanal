@@ -1,12 +1,10 @@
-import os
-
-import psycopg2
-import scr.BD.bd_users.select_bd
+import scr.BD.bd_users.local.select_bd
+import scr.func
 
 
 def set_employer_to_task(task_id, emp_id):
     try:
-        res = scr.BD.bd_users.select_bd.select_user_data()
+        res = scr.BD.bd_users.local.select_bd.select_user_data()
         if res:
             for record in res:
                 user_id, login, password, privileges, first_name, last_name = record

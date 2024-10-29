@@ -1,6 +1,7 @@
 import flet as ft
-import scr.BD.bd_server  # Импортируем функцию для получения данных из БД
+import scr.BD.bd_admin.select_server  # Импортируем функцию для получения данных из БД
 import scr.navigation_apps.admin.admin_screen as ad
+
 
 def assignment_tab(page):
     search_input = ft.TextField(label="Поиск", width=300, on_change=lambda e: update_table())
@@ -43,13 +44,13 @@ def assignment_tab(page):
         search_value = search_input.value.lower()
         filter_value = filter_dropdown.value
 
-        results = scr.BD.bd_server.select_task_data_unmade()
+        results = scr.BD.bd_admin.select_server.select_task_data_unmade()
 
         filtered_results = [
             record for record in results
             if (filter_value == "Все" or
                 (
-                            filter_value == "По адресу" and search_value in f"{record[3]}, {record[4]}, {record[5]}, {record[6]}, {record[7]}".lower()) or
+                        filter_value == "По адресу" and search_value in f"{record[3]}, {record[4]}, {record[5]}, {record[6]}, {record[7]}".lower()) or
                 (filter_value == "По ФИО" and search_value in record[1].lower()))
         ]
 

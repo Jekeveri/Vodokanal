@@ -1,14 +1,13 @@
 import datetime
 import os
 import flet as ft
-import scr.BD.bd_users.update_bd
-import scr.BD.bd_users.delete_bd
-import scr.BD.bd_users.insert_bd
-import scr.BD.bd_users.select_bd
-import scr.BD.bd_server
+import scr.BD.bd_users.local.update_bd
+import scr.BD.bd_users.local.delete_bd
+import scr.BD.bd_users.local.insert_bd
+import scr.BD.bd_users.local.select_bd
+import scr.BD.bd_users.bd_server_user
 import scr.toggle_user_sessions
 import scr.func
-import scr.constants as const
 import scr.navigation_apps.users.doing_work.chose_meters
 
 m_value = ""
@@ -58,7 +57,7 @@ def update_data(page, meter_id, id_task, where):
         procent = abs(average_consumption - abs(value)) / ((abs(value) + average_consumption) / 2) * 100
         if remark.value and reading_value.value:  # Упростил проверку на пустоту
             if procent < 20 or value == 0:
-                scr.BD.bd_users.update_bd.update_local_tasks(
+                scr.BD.bd_users.local.update_bd.update_local_tasks(
                     str(today), id_task, reading_value.value, remark.value, meter_id)
                 scr.navigation_apps.users.doing_work.chose_meters.show_meters_data(page, id_task, where)
                 page.close(dlg_modal)
@@ -86,7 +85,7 @@ def update_data(page, meter_id, id_task, where):
     location = "Неизвестно"
     meter_remark = "Неизвестно"
 
-    results_meters_data = scr.BD.bd_users.select_bd.select_meters_data_new_for_one(id_task, meter_id)
+    results_meters_data = scr.BD.bd_users.local.select_bd.select_meters_data_new_for_one(id_task, meter_id)
     if results_meters_data:
         for result in results_meters_data:
             id_meters, meter_number, instalation_day, meter_type, id_address, marka, seal_number, \
@@ -208,7 +207,7 @@ def update_data(page, meter_id, id_task, where):
     last_reading_value = "Неизвестно"
     new_reading_value = ""
 
-    results = scr.BD.bd_users.select_bd.select_meter_reading_new(meter_id)
+    results = scr.BD.bd_users.local.select_bd.select_meter_reading_new(meter_id)
     if results:
         for result in results:
             id_meters, last_reading_date, last_reading_value, new_reading_date, new_reading_value = result
@@ -268,7 +267,7 @@ def update_data(page, meter_id, id_task, where):
             file_data = file.read()
 
         file_name = os.path.basename(file_path)
-        scr.BD.bd_users.insert_bd.insert_photo(file_name, file_data, id_task, meter_id)
+        scr.BD.bd_users.local.insert_bd.insert_photo(file_name, file_data, id_task, meter_id)
 
     def pick_files_result(e: ft.FilePickerResultEvent):
         if e.files:
@@ -285,14 +284,14 @@ def update_data(page, meter_id, id_task, where):
     save_photos = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True, )
 
     def on_click_delete_photo(e, id_p, meter_id, id_task):
-        scr.BD.bd_users.delete_bd.delete_photo_db(id_p)
+        scr.BD.bd_users.local.delete_bd.delete_photo_db(id_p)
         if id_p in selected_images:
             del selected_images[id_p]
         update_saving_data(meter_id, id_task)
         page.update()
 
     def update_saving_data(meter_id, id_task):
-        images = scr.BD.bd_users.select_bd.select_photo_data_new(meter_id, id_task)
+        images = scr.BD.bd_users.local.select_bd.select_photo_data_new(meter_id, id_task)
         if images:
             selected_images.clear()
             for result in images:
