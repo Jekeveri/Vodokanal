@@ -10,13 +10,13 @@ def authentication(page):
     page.navigation_bar = None
     page.appbar = None
     page.controls.clear()
-    screen_width = page.width
+    screen_width = page.window.width
     screen_height = page.height
 
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
 
-    login = ft.TextField(label="Логин", )
-    password = ft.TextField(label="Пароль", password=True, can_reveal_password=True)
+    login = ft.TextField(label="Логин", width=screen_width*0.90)
+    password = ft.TextField(label="Пароль", password=True, can_reveal_password=True, width=screen_width*0.90)
 
     def on_click(e):
         if login.value != "" and password.value != "":
@@ -34,7 +34,6 @@ def authentication(page):
                         ft.ElevatedButton(text="Вход", on_click=on_click,)
                     ],
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    width=400,
                 )
             ], alignment=ft.MainAxisAlignment.CENTER
         )

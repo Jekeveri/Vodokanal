@@ -18,9 +18,15 @@ search_history_list = []  # длина будет--------------------------ма�
 
 
 def user_main(page):
+    page.window.width = 362.4
+    page.window.height = 800
+    page.window.max_width = 362.4
+    page.window.max_height = 800
+    page.window.min_width = 362.4
+    page.window.min_height = 800
     page.update()
     page.controls.clear()
-    screen_width = page.width
+    screen_width = page.window.width
     screen_height = page.height
     page.vertical_alignment = ft.MainAxisAlignment.START
     global statuses, sorting, search_history_list
