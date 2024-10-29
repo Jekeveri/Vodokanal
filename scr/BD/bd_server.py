@@ -29,11 +29,8 @@ def check_user_credentials(login, password, page):
     if result:
         for record in result:
             id_user, login_user, password_user, privileges, first_name, last_name = record
-            if privileges != 1:
-                scr.BD.bd_users.insert_bd.insert_bd_user(id_user, login_user, password_user, privileges,
+            scr.BD.bd_users.insert_bd.insert_bd_user(id_user, login_user, password_user, privileges,
                                                          first_name, last_name, page)
-            else:
-                scr.navigation_apps.navigations.role_definition(privileges, page)
     else:
         scr.func.show_snack_bar(page, "Нет пользователя в базе данных")  # Нормально написать
         pass
@@ -140,9 +137,66 @@ def select_task_data_for_update(id_user):
     cursor.close()
     conn.close()
 
+#---- Вывод списка назначенных заданий
+def select_task_data_all():
+    res = scr.BD.bd_users.select_bd.select_user_data()
+    if res:
+        for record in res:
+            user_id, login, password, privileges, first_name, last_name = record
+    conn = scr.func.get_user_db_connection(login, password)
+    cursor = conn.cursor()
+    # Тут у нас идет запрос для заполнения таблицы в страничке поиск, нужно будет подкоректировать данные
+    try:
+        cursor.execute("SELECT * FROM get_task_data_all()")
+        results = cursor.fetchall()  # Получаем все записи
+        return results
+    except Exception as e:
+        print(f"Ошибка при выборке данных: {e}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
 
-# переписать отгрузку на сервер новых показаний (пересмотреть запсросы)
-def upload_data_to_server(page):
+#---- Вывод списка сотрудников для его выбора после того, как он выберет задания для назначения
+def select_employer_data_statistic_tasks():
+    res = scr.BD.bd_users.select_bd.select_user_data()
+    if res:
+        for record in res:
+            user_id, login, password, privileges, first_name, last_name = record
+    conn = scr.func.get_user_db_connection(login, password)
+    cursor = conn.cursor()
+    try:
+        cursor.execute("Select * from get_list_employer_for_assign_tasks()")
+        results = cursor.fetchall()  # Получаем все записи
+        return results
+    except Exception as e:
+        print(f"Ошибка при выборке данных: {e}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
+
+#---- Вывод списка не назначенных задания для назначения (страница назначения)
+def select_task_data_unmade():
+    res = scr.BD.bd_users.select_bd.select_user_data()
+    if res:
+        for record in res:
+            user_id, login, password, privileges, first_name, last_name = record
+    conn = scr.func.get_user_db_connection(login, password)
+    cursor = conn.cursor()
+    try:
+        cursor.execute("Select * from get_task_data_unassigned()")
+        results = cursor.fetchall()  # Получаем все записи
+        return results
+    except Exception as e:
+        print(f"Ошибка при выборке данных: {e}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
+
+# переписать отгрузку на сервер новых показаний (пересмотреть запросы)
+def upload_data_to_server():
     try:
         res = scr.BD.bd_users.select_bd.select_user_data()
         if res:
@@ -160,29 +214,20 @@ def upload_data_to_server(page):
             status = record[5]
             meter_id = record[6]
             meter_remark = record[7]
-            purpose = record[8]
-            seal_number = record[9]
             cursor = conn.cursor()
             if status == "выполнен":
-                if purpose == "Контрольный съем показаний":
-                    cursor.execute(f"""select update_task_meter_data (
-                        {task_id}, '{unloading_time}'::time, '{time_to_server}'::time, 
-                        '{remark}'::text, '{status}', {meter_id},
-                        '{last_reading_date}'::date, {last_reading_value}::numeric, '{meter_remark}'::text
-                    )""")
-                else:
-                    cursor.execute(f"""select update_task_meter_seal (
-                        {task_id}::integer, '{unloading_time}'::time, '{time_to_server}'::time,
-                        '{remark}'::text, '{status}'::text, {meter_id}::integer, 
-                        '{meter_remark}'::text, '{seal_number}'::text
-                    )""")
+                cursor.execute(f""" update tasks set uploud_to_local_data = '{unloading_time}',
+                 uploud_to_server = '{time_to_server}',remark = '{remark}', status = '{status}' where id = {task_id}""")
+                query = f""" insert into meter_reading (meter_id, reading_date, reading_values) values
+                            ({meter_id}, '{last_reading_date}', {last_reading_value})"""
+                cursor.execute(query)
+                query = f""" update  meters set remark = '{meter_remark}' where id = {meter_id} """
+                cursor.execute(query)
         conn.commit()
         conn.close()
-        scr.func.show_snack_bar(page, "Выгруженны данные по выполненым заданиям")
     except Exception as ex:
         print(ex)
-        scr.func.show_snack_bar(page, "Произошла ошибка при выгрузке")
-    upload_dop_address_data_to_server(page)
+    upload_dop_address_data_to_server()
 
 
 def upload_dop_address_data_to_server(page):
