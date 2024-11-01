@@ -16,9 +16,7 @@ def check_user_credentials(login, password, page):
         return
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT e.id, e.login, e.password, p.privileges, e.first_name, e.last_name FROM public.employees e
-        JOIN public.post p on p.id = e.post_id 
-        WHERE login = %s AND password = %s
+        SELECT * from get_employee_by_login_and_password(%, %)
     """, (login, password))
     result = cursor.fetchall()
     cursor.close()
