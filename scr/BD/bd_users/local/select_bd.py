@@ -77,6 +77,8 @@ def select_future_tasks_data_new(sorting, search_value):
 
         if sorting == "Адрес":
             query += f""" order by a.street, a.dom, a.apartment"""
+        elif sorting == "Дата":
+            query += f""" order by t.date """
         else:
             query += f""" order by t.status"""
 
