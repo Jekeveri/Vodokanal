@@ -1,5 +1,5 @@
 <p align="center">
-  ![logo](https://magvoda.ru/assets/img/logo/logo.png)
+<img src="https://magvoda.ru/assets/img/logo/logo.png"/>
 </p>
 
 ## Description
