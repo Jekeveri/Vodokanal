@@ -1,5 +1,7 @@
+<p align="center">
+  ![logo](https://magvoda.ru/assets/img/logo/logo.png)
+</p>
 
-![logo](https://magvoda.ru/assets/img/logo/logo.png)
 ## Description
 
 
